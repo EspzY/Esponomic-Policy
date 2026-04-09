@@ -5,6 +5,10 @@ import { loginAction } from "@/app/actions";
 import { ModuleCard } from "@/components/module-card";
 import { buttonClasses } from "@/components/ui/button";
 import { getViewer } from "@/lib/auth";
+import {
+  demoPracticeProblems,
+  demoQuizItemsByModule,
+} from "@/lib/course-content";
 import { getCourseModules } from "@/lib/repository";
 
 export default async function Home({
@@ -22,6 +26,12 @@ export default async function Home({
     redirect("/dashboard");
   }
 
+  const lectureCount = modules.filter((module) => module.kind === "lecture").length;
+  const totalQuizQuestions = Object.values(demoQuizItemsByModule).reduce(
+    (sum, items) => sum + items.length,
+    0,
+  );
+
   return (
     <main className="space-y-8">
       <section className="grid gap-6 lg:grid-cols-[1.35fr_0.9fr]">
@@ -33,25 +43,25 @@ export default async function Home({
             Learn Economic Policy without skipping the reasoning.
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-8 text-[var(--color-slate)]">
-            This v1.1 rescue pass is built around verified lecture material, proper formula rendering, stepwise tutoring, and progress you can actually use. The current release focuses on a real notation hub, a rebuilt Lecture 2, a source-grounded tutor, and quiz feedback that explains the logic instead of rewarding rote recall.
+            The platform now follows one production standard across the course: math-first rendering, source-grounded explanations, lecture-specific glossaries, guided practice, and quizzes that test understanding instead of rote recall. Start from Module 1 if you need notation first, or go lecture by lecture if you want the full red thread through the course.
           </p>
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
             <div className="rounded-[1.5rem] border border-[var(--color-line)] bg-white px-4 py-4">
-              <p className="text-2xl font-semibold">2</p>
+              <p className="text-2xl font-semibold">{lectureCount}</p>
               <p className="mt-2 text-sm text-[var(--color-slate)]">
-                notation collections in consistent teaching format
+                lecture modules built with the Lecture 2 teaching method
               </p>
             </div>
             <div className="rounded-[1.5rem] border border-[var(--color-line)] bg-white px-4 py-4">
-              <p className="text-2xl font-semibold">10</p>
+              <p className="text-2xl font-semibold">{demoPracticeProblems.length}</p>
               <p className="mt-2 text-sm text-[var(--color-slate)]">
-                Lecture 2 sections with derivations, shocks, and guided examples
+                guided practice problems across the course
               </p>
             </div>
             <div className="rounded-[1.5rem] border border-[var(--color-line)] bg-white px-4 py-4">
-              <p className="text-2xl font-semibold">4</p>
+              <p className="text-2xl font-semibold">{totalQuizQuestions}</p>
               <p className="mt-2 text-sm text-[var(--color-slate)]">
-                concept questions in the rebuilt Lecture 2 quiz
+                concept questions in the current quiz bank
               </p>
             </div>
           </div>
@@ -60,7 +70,7 @@ export default async function Home({
               href="/dashboard"
               className={buttonClasses("primary")}
             >
-              Explore the v1 demo
+              Open the study dashboard
             </Link>
             <Link
               href="/modules/symbols"
@@ -118,7 +128,7 @@ export default async function Home({
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-rust)]">
               Current release
             </p>
-            <h2 className="text-3xl font-semibold">What ships in v1</h2>
+            <h2 className="text-3xl font-semibold">Current study path</h2>
           </div>
           <Link
             href="/dashboard"

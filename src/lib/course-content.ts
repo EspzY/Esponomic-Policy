@@ -1,17 +1,40 @@
-import type { ModuleDetail, ProgressSnapshot, Viewer } from "@/lib/types";
+import type {
+  ModuleDetail,
+  PracticeProblem,
+  ProgressSnapshot,
+  QuizItem,
+  Viewer,
+} from "@/lib/types";
 
+import {
+  allLecture1Citations,
+  lecture1Module,
+  lecture1NotationEntries,
+  lecture1PracticeProblem,
+  lecture1QuizItems,
+} from "@/lib/seed-content/lecture1-content";
 import { lecture2Module } from "@/lib/seed-content/lecture2-content";
 import {
+  demoPracticeProblem as lecture2PracticeProblem,
+  demoQuizItems as lecture2QuizItems,
+} from "@/lib/seed-content/learning-content";
+import {
+  lectures3To8Modules,
+  lectures3To8NotationEntries,
+  lectures3To8PracticeProblems,
+  lectures3To8QuizItemsByModule,
+} from "@/lib/seed-content/lectures3to8-content";
+import {
+  lectures9To12Modules,
+  lectures9To12NotationEntries,
+  lectures9To12PracticeProblems,
+  lectures9To12QuizItemsByModule,
+} from "@/lib/seed-content/lectures9to12-content";
+import {
   allLecture2Citations,
-  demoNotationEntries,
   globalNotationEntries,
   lecture2NotationEntries,
 } from "@/lib/seed-content/notation-content";
-import {
-  demoPracticeProblem,
-  demoQuizItems,
-  demoTutorSources,
-} from "@/lib/seed-content/learning-content";
 
 export const demoViewer: Viewer = {
   id: "demo-admin",
@@ -27,16 +50,16 @@ const symbolsModule: ModuleDetail = {
   title: "Module 1: Notation Hub",
   kind: "symbol_register",
   summary:
-    "A math-first notation hub that teaches symbols, parameters, shocks, and abbreviations in the same language as Lecture 2.",
+    "A math-first notation hub that teaches symbols, parameters, shocks, and abbreviations across the full course.",
   description:
-    "Use this as the course's notation anchor. Every entry is rendered as a proper formula, explains why it matters, and points back to where it is used in the model.",
+    "Use this as the course's notation anchor. Every entry is rendered as a proper formula, explains why it matters, and points back to where it is used in the relevant lecture.",
   estimatedMinutes: 45,
-  tags: ["notation", "reference", "lecture-2"],
+  tags: ["notation", "reference", "full-course"],
   publicationStatus: "published",
   objectives: [
     "Read the course notation as formulas rather than raw underscore text.",
-    "Keep actual, natural, and gap objects separate from the start.",
-    "Learn both symbol meanings and why each object matters in the model.",
+    "Keep model objects, policy rules, shocks, and abbreviations separate from the start.",
+    "Learn both symbol meanings and why each object matters in the relevant lecture.",
   ],
   sections: [
     {
@@ -49,7 +72,7 @@ const symbolsModule: ModuleDetail = {
         {
           type: "paragraph",
           markdown:
-            "The notation hub is split into **global course notation** and **module-specific notation**. Start with the global entries if you are new to the course. Then use the Lecture 2 glossary to see how those same symbols behave inside the New Keynesian model.",
+            "The notation hub is split into **global course notation** and **module-specific notation**. Start with the global entries if you are new to the course. Then move lecture by lecture to see how the same notation changes role across monetary policy, debt, inequality, and sustainability.",
         },
         {
           type: "paragraph",
@@ -62,21 +85,55 @@ const symbolsModule: ModuleDetail = {
           items: [
             "Read each symbol out loud as you study it. The spoken form helps you recognize it faster in derivations and seminar questions.",
             "Focus first on the objects that create the model's backbone: $y_t$, $y_t^n$, $\\tilde{y}_t$, $\\pi_t$, $r_t$, and $r_t^n$.",
-            "Treat abbreviations such as DIS, NKPC, and $mc_t$ as part of the model's vocabulary, not side notes.",
+            "Treat abbreviations such as DIS, NKPC, HANK, and the Gini coefficient as part of the model's vocabulary, not side notes.",
           ],
         },
       ],
-      citations: allLecture2Citations,
+      citations: [...allLecture1Citations, ...allLecture2Citations],
     },
   ],
-  citations: allLecture2Citations,
+  citations: [...allLecture1Citations, ...allLecture2Citations],
 };
 
-export const demoModules: ModuleDetail[] = [symbolsModule, lecture2Module];
-export const demoNotation = demoNotationEntries;
+export const demoModules: ModuleDetail[] = [
+  symbolsModule,
+  lecture1Module,
+  lecture2Module,
+  ...lectures3To8Modules,
+  ...lectures9To12Modules,
+];
+export const demoNotation = [
+  ...globalNotationEntries,
+  ...lecture1NotationEntries,
+  ...lecture2NotationEntries,
+  ...lectures3To8NotationEntries,
+  ...lectures9To12NotationEntries,
+];
 export const demoGlobalNotation = globalNotationEntries;
-export const demoLecture2Notation = lecture2NotationEntries;
-export { demoPracticeProblem, demoQuizItems, demoTutorSources };
+export const demoPracticeProblems: PracticeProblem[] = [
+  lecture1PracticeProblem,
+  lecture2PracticeProblem,
+  ...lectures3To8PracticeProblems,
+  ...lectures9To12PracticeProblems,
+];
+export const demoQuizItemsByModule: Record<string, QuizItem[]> = {
+  "lecture-1": lecture1QuizItems,
+  "lecture-2": lecture2QuizItems,
+  ...lectures3To8QuizItemsByModule,
+  ...lectures9To12QuizItemsByModule,
+};
+
+export function getLocalPracticeProblemBySlug(slug: string) {
+  return demoPracticeProblems.find((problem) => problem.slug === slug) ?? null;
+}
+
+export function getLocalPracticeProblemForModule(moduleSlug: string) {
+  return demoPracticeProblems.find((problem) => problem.moduleSlug === moduleSlug) ?? null;
+}
+
+export function getLocalQuizItems(moduleSlug: string) {
+  return demoQuizItemsByModule[moduleSlug] ?? [];
+}
 
 export const demoProgress: ProgressSnapshot[] = [
   {
@@ -85,6 +142,13 @@ export const demoProgress: ProgressSnapshot[] = [
     completedSections: ["overview"],
     bestQuizScore: 0,
     weakTags: ["notation"],
+  },
+  {
+    moduleSlug: "lecture-1",
+    status: "in_progress",
+    completedSections: ["big-picture-and-exam-relevance"],
+    bestQuizScore: 0,
+    weakTags: ["systematic-policy"],
   },
   {
     moduleSlug: "lecture-2",

@@ -11,6 +11,7 @@ import { requireViewer } from "@/lib/auth";
 import {
   getModuleBySlug,
   getNotationEntries,
+  getPracticeProblemForModule,
   getProgressSnapshots,
 } from "@/lib/repository";
 
@@ -21,10 +22,11 @@ export default async function ModulePage({
 }) {
   const viewer = await requireViewer();
   const { slug } = await params;
-  const [module, progress, notation] = await Promise.all([
+  const [module, progress, notation, practiceProblem] = await Promise.all([
     getModuleBySlug(slug),
     getProgressSnapshots(viewer.demoMode ? undefined : viewer.id),
     getNotationEntries(slug),
+    getPracticeProblemForModule(slug),
   ]);
 
   if (!module || module.kind !== "lecture") {
@@ -72,14 +74,22 @@ export default async function ModulePage({
           >
             Open module quiz
           </Link>
+          {practiceProblem ? (
+            <Link
+              href={`/practice/${practiceProblem.slug}`}
+              className={buttonClasses("outline", "sm", "mt-3")}
+            >
+              Open guided practice
+            </Link>
+          ) : null}
         </div>
       </section>
 
       {notation.length ? (
         <NotationCollection
           entries={notation}
-          title="Lecture 2 glossary"
-          subtitle="This glossary stays in the same teaching format throughout the module: what the notation is, why it matters, where it appears, and what students commonly mix up."
+          title={`${module.title} glossary`}
+          subtitle="This glossary keeps the same teaching format throughout the course: what the notation is, why it matters, where it appears, and what students commonly mix up."
         />
       ) : null}
 

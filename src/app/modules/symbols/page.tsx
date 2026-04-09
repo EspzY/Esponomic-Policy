@@ -2,18 +2,29 @@ import { CitationList } from "@/components/citation-list";
 import { ContentBlocks } from "@/components/content-blocks";
 import { NotationCollection } from "@/components/notation-collection";
 import { requireViewer } from "@/lib/auth";
-import { getModuleBySlug, getNotationEntries } from "@/lib/repository";
+import { getCourseModules, getModuleBySlug, getNotationEntries } from "@/lib/repository";
 
 export default async function SymbolsPage() {
   await requireViewer();
 
-  const [module, globalNotation, lecture2Notation] = await Promise.all([
+  const [module, modules, globalNotation] = await Promise.all([
     getModuleBySlug("symbols"),
+    getCourseModules(),
     getNotationEntries(null),
-    getNotationEntries("lecture-2"),
   ]);
 
-  const verifiedCount = [...globalNotation, ...lecture2Notation].filter(
+  const lectureModules = modules.filter((entry) => entry.kind === "lecture");
+  const lectureNotationCollections = await Promise.all(
+    lectureModules.map(async (lectureModule) => ({
+      module: lectureModule,
+      entries: await getNotationEntries(lectureModule.slug),
+    })),
+  );
+
+  const verifiedCount = [
+    ...globalNotation,
+    ...lectureNotationCollections.flatMap((collection) => collection.entries),
+  ].filter(
     (entry) => entry.status === "verified",
   ).length;
 
@@ -68,11 +79,16 @@ export default async function SymbolsPage() {
         subtitle="These are the objects you should recognize immediately anywhere in the course: actual variables, natural variables, gap variables, parameters, shocks, and the expectation operator."
       />
 
-      <NotationCollection
-        entries={lecture2Notation}
-        title="Lecture 2 module notation"
-        subtitle="These entries are specific to the New Keynesian model in Lecture 2, including pricing notation, Phillips-curve coefficients, Taylor-rule coefficients, and the marginal-cost abbreviations students often find opaque."
-      />
+      {lectureNotationCollections
+        .filter((collection) => collection.entries.length > 0)
+        .map((collection) => (
+          <NotationCollection
+            key={collection.module.slug}
+            entries={collection.entries}
+            title={`${collection.module.title} notation`}
+            subtitle={`Module-specific notation for ${collection.module.title}. Each entry keeps the same teaching format: what it is, why it matters, where it appears, and what students commonly mix up.`}
+          />
+        ))}
 
       {module ? <CitationList citations={module.citations} /> : null}
     </main>

@@ -25,8 +25,9 @@ export async function SiteHeader() {
           <nav className="hidden items-center gap-4 text-sm text-[var(--color-slate)] md:flex">
             <Link href="/dashboard">Dashboard</Link>
             <Link href="/modules/symbols">Module 1</Link>
+            <Link href="/modules/lecture-1">Lecture 1</Link>
             <Link href="/modules/lecture-2">Lecture 2</Link>
-            <Link href="/practice/seminar-1-question-1">Practice</Link>
+            <Link href="/practice/lecture-1-guided-policy-rule">Practice</Link>
           </nav>
         </div>
 

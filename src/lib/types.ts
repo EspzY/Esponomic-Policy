@@ -19,6 +19,8 @@ export type SourceType =
   | "complementary_lecture"
   | "derivation_note"
   | "problem_set"
+  | "paper"
+  | "policy_report"
   | "exam"
   | "solution";
 

@@ -1,12 +1,11 @@
 import {
   demoGlobalNotation,
-  demoLecture2Notation,
   demoModules,
-  demoNotation,
-  demoPracticeProblem,
   demoProgress,
-  demoQuizItems,
-  demoTutorSources,
+  demoNotation,
+  getLocalPracticeProblemBySlug,
+  getLocalPracticeProblemForModule,
+  getLocalQuizItems,
 } from "@/lib/course-content";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import type {
@@ -128,6 +127,49 @@ function filterLocalNotation(moduleSlug?: string | null) {
   return demoNotation;
 }
 
+function getLocalTutorSources(moduleSlug: string): TutorSource[] {
+  const courseModule = curatedModulesBySlug.get(moduleSlug);
+
+  if (!courseModule) {
+    return [];
+  }
+
+  const notation = [...demoGlobalNotation, ...filterLocalNotation(moduleSlug)];
+  const sectionSources = courseModule.sections.map(
+    (section): TutorSource => ({
+      id: `local-section-${moduleSlug}-${section.slug}`,
+      moduleSlug,
+      title: section.title,
+      text: [section.summary, ...section.contentBlocks.map((block) => flattenBlockText(block))]
+        .join(" ")
+        .trim(),
+      citations: section.citations,
+      tags: [moduleSlug, section.slug],
+    }),
+  );
+
+  const notationSources = notation.map(
+    (entry): TutorSource => ({
+      id: `local-notation-${entry.id}`,
+      moduleSlug,
+      title: `${entry.spokenName} notation`,
+      text: [
+        entry.displayLatex,
+        entry.plainMeaning,
+        entry.whyItMatters,
+        ...entry.whereItAppears,
+        ...entry.commonConfusions,
+      ]
+        .join(" ")
+        .trim(),
+      citations: entry.citations,
+      tags: [String(entry.kind), entry.spokenName],
+    }),
+  );
+
+  return [...sectionSources, ...notationSources];
+}
+
 function mapNotationEntry(row: Record<string, unknown>): NotationEntry {
   return {
     id: String(row.id),
@@ -228,21 +270,21 @@ async function moduleHasRichContent(moduleSlug: string) {
     return false;
   }
 
-  const { data: module, error: moduleError } = await admin
+  const { data: moduleRow, error: moduleError } = await admin
     .from("modules")
     .select("id")
     .eq("slug", moduleSlug)
     .eq("publication_status", "published")
     .maybeSingle();
 
-  if (moduleError || !module) {
+  if (moduleError || !moduleRow) {
     return false;
   }
 
   const { data: sections, error: sectionError } = await admin
     .from("module_sections")
     .select("content_blocks")
-    .eq("module_id", module.id);
+    .eq("module_id", moduleRow.id);
 
   if (sectionError || !sections?.length) {
     return false;
@@ -286,21 +328,21 @@ export async function getModuleBySlug(slug: string) {
     return curated;
   }
 
-  const { data: module, error: moduleError } = await admin
+  const { data: moduleRow, error: moduleError } = await admin
     .from("modules")
     .select("*")
     .eq("slug", slug)
     .eq("publication_status", "published")
     .maybeSingle();
 
-  if (moduleError || !module) {
+  if (moduleError || !moduleRow) {
     return curated;
   }
 
   const { data: sections, error: sectionError } = await admin
     .from("module_sections")
     .select("*")
-    .eq("module_id", module.id)
+    .eq("module_id", moduleRow.id)
     .order("sort_order", { ascending: true });
 
   const mappedSections = sectionError ? [] : (sections ?? []).map((section) => mapModuleSection(section));
@@ -310,14 +352,14 @@ export async function getModuleBySlug(slug: string) {
     return curated;
   }
 
-  const summary = mapModuleSummary(module);
+  const summary = mapModuleSummary(moduleRow);
 
   return {
     ...summary,
-    objectives: stringArray(module.objectives),
+    objectives: stringArray(moduleRow.objectives),
     sections: mappedSections,
-    citations: isArrayOfObjects(module.citations)
-      ? (module.citations as ModuleDetail["citations"])
+    citations: isArrayOfObjects(moduleRow.citations)
+      ? (moduleRow.citations as ModuleDetail["citations"])
       : [],
   } satisfies ModuleDetail;
 }
@@ -350,34 +392,34 @@ export async function getQuizItems(moduleSlug: string) {
   const admin = createAdminSupabaseClient();
 
   if (!admin) {
-    return moduleSlug === "lecture-2" ? demoQuizItems : [];
+    return getLocalQuizItems(moduleSlug);
   }
 
   const richModule = await moduleHasRichContent(moduleSlug);
 
-  if (!richModule && moduleSlug === "lecture-2") {
-    return demoQuizItems;
+  if (!richModule) {
+    return getLocalQuizItems(moduleSlug);
   }
 
-  const { data: module, error: moduleError } = await admin
+  const { data: moduleRow, error: moduleError } = await admin
     .from("modules")
     .select("id")
     .eq("slug", moduleSlug)
     .maybeSingle();
 
-  if (moduleError || !module) {
-    return moduleSlug === "lecture-2" ? demoQuizItems : [];
+  if (moduleError || !moduleRow) {
+    return getLocalQuizItems(moduleSlug);
   }
 
   const { data, error } = await admin
     .from("quiz_items")
     .select("*")
-    .eq("module_id", module.id)
+    .eq("module_id", moduleRow.id)
     .eq("is_published", true)
     .order("sort_order", { ascending: true });
 
   if (error || !data?.length) {
-    return moduleSlug === "lecture-2" ? demoQuizItems : [];
+    return getLocalQuizItems(moduleSlug);
   }
 
   return data.map(
@@ -397,15 +439,17 @@ export async function getQuizItems(moduleSlug: string) {
 
 export async function getPracticeProblemBySlug(slug: string) {
   const admin = createAdminSupabaseClient();
+  const localProblem = getLocalPracticeProblemBySlug(slug);
 
   if (!admin) {
-    return slug === demoPracticeProblem.slug ? demoPracticeProblem : null;
+    return localProblem;
   }
 
-  const richLecture2 = await moduleHasRichContent("lecture-2");
+  const moduleSlug = localProblem?.moduleSlug;
+  const richModule = moduleSlug ? await moduleHasRichContent(moduleSlug) : false;
 
-  if (!richLecture2 && slug === demoPracticeProblem.slug) {
-    return demoPracticeProblem;
+  if (!richModule && localProblem) {
+    return localProblem;
   }
 
   const { data, error } = await admin
@@ -416,7 +460,7 @@ export async function getPracticeProblemBySlug(slug: string) {
     .maybeSingle();
 
   if (error || !data) {
-    return slug === demoPracticeProblem.slug ? demoPracticeProblem : null;
+    return localProblem;
   }
 
   const steps = Array.isArray(data.problem_steps) ? data.problem_steps : [];
@@ -446,7 +490,7 @@ export async function getPracticeProblemBySlug(slug: string) {
     id: String(data.id),
     slug: String(data.slug),
     title: String(data.title),
-    moduleSlug: String(data.module_slug ?? "lecture-2"),
+    moduleSlug: String(data.module_slug ?? localProblem?.moduleSlug ?? "lecture-2"),
     prompt: stringArray(data.prompt_lines),
     supportingEquations: mapPracticeSupportEquations(data),
     hints: grouped.hints,
@@ -458,17 +502,46 @@ export async function getPracticeProblemBySlug(slug: string) {
   } satisfies PracticeProblem;
 }
 
-export async function getTutorSources(moduleSlug: string) {
+export async function getPracticeProblemForModule(moduleSlug: string) {
+  const localProblem = getLocalPracticeProblemForModule(moduleSlug);
   const admin = createAdminSupabaseClient();
 
   if (!admin) {
-    return demoTutorSources.filter((entry) => entry.moduleSlug === moduleSlug);
+    return localProblem;
   }
 
   const richModule = await moduleHasRichContent(moduleSlug);
 
   if (!richModule) {
-    return demoTutorSources.filter((entry) => entry.moduleSlug === moduleSlug);
+    return localProblem;
+  }
+
+  const { data, error } = await admin
+    .from("problems")
+    .select("slug")
+    .eq("module_slug", moduleSlug)
+    .eq("is_published", true)
+    .limit(1)
+    .maybeSingle();
+
+  if (error || !data?.slug) {
+    return localProblem;
+  }
+
+  return getPracticeProblemBySlug(String(data.slug));
+}
+
+export async function getTutorSources(moduleSlug: string) {
+  const admin = createAdminSupabaseClient();
+
+  if (!admin) {
+    return getLocalTutorSources(moduleSlug);
+  }
+
+  const richModule = await moduleHasRichContent(moduleSlug);
+
+  if (!richModule) {
+    return getLocalTutorSources(moduleSlug);
   }
 
   const { data: module, error: moduleError } = await admin
@@ -478,7 +551,7 @@ export async function getTutorSources(moduleSlug: string) {
     .maybeSingle();
 
   if (moduleError || !module) {
-    return demoTutorSources.filter((entry) => entry.moduleSlug === moduleSlug);
+    return getLocalTutorSources(moduleSlug);
   }
 
   const [{ data: sections, error: sectionsError }, { data: notation, error: notationError }] =
@@ -537,9 +610,7 @@ export async function getTutorSources(moduleSlug: string) {
 
   const combined = [...sectionSources, ...notationSources];
 
-  return combined.length
-    ? combined
-    : demoTutorSources.filter((entry) => entry.moduleSlug === moduleSlug);
+  return combined.length ? combined : getLocalTutorSources(moduleSlug);
 }
 
 export async function getProgressSnapshots(userId?: string) {
@@ -575,9 +646,5 @@ export async function getProgressSnapshots(userId?: string) {
 }
 
 export function getLocalModuleNotation(moduleSlug: string) {
-  if (moduleSlug === "lecture-2") {
-    return demoLecture2Notation;
-  }
-
   return filterLocalNotation(moduleSlug);
 }

@@ -1,12 +1,10 @@
 export {
   demoGlobalNotation as demoSymbols,
-  demoLecture2Notation,
   demoModules,
   demoNotation,
-  demoPracticeProblem,
+  demoPracticeProblems,
   demoProgress,
-  demoQuizItems,
-  demoTutorSources,
+  demoQuizItemsByModule,
   demoViewer,
 } from "@/lib/course-content";
 /*
