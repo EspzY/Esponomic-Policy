@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { buttonClasses } from "@/components/ui/button";
 import type { ModuleSummary, ProgressSnapshot } from "@/lib/types";
 
 export function ModuleCard({
@@ -52,7 +53,7 @@ export function ModuleCard({
         </div>
         <Link
           href={`/modules/${module.slug}`}
-          className="rounded-full bg-[var(--color-ink)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--color-teal)]"
+          className={buttonClasses("primary", "sm")}
         >
           Open module
         </Link>

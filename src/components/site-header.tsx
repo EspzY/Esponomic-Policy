@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { getViewer } from "@/lib/auth";
 import { logoutAction } from "@/app/actions";
+import { buttonClasses } from "@/components/ui/button";
 
 export async function SiteHeader() {
   const viewer = await getViewer();
@@ -41,7 +42,7 @@ export async function SiteHeader() {
               {viewer.role === "admin" ? (
                 <Link
                   href="/admin/modules"
-                  className="rounded-full border border-[var(--color-line)] px-3 py-2 text-sm font-medium text-[var(--color-slate)]"
+                  className={buttonClasses("outline", "sm")}
                 >
                   Admin
                 </Link>
@@ -52,7 +53,7 @@ export async function SiteHeader() {
               </div>
               {!viewer.demoMode ? (
                 <form action={logoutAction}>
-                  <button className="rounded-full bg-[var(--color-ink)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--color-teal)]">
+                  <button className={buttonClasses("primary", "sm")}>
                     Sign out
                   </button>
                 </form>
@@ -61,7 +62,7 @@ export async function SiteHeader() {
           ) : (
             <Link
               href="/#login"
-              className="rounded-full bg-[var(--color-ink)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--color-teal)]"
+              className={buttonClasses("primary", "sm")}
             >
               Sign in
             </Link>

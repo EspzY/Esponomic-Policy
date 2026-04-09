@@ -2,6 +2,12 @@ export type UserRole = "student" | "admin";
 export type ModuleKind = "lecture" | "symbol_register";
 export type ProgressState = "not_started" | "in_progress" | "completed";
 export type SymbolStatus = "verified" | "not_found_in_material";
+export type NotationKind =
+  | "symbol"
+  | "parameter"
+  | "abbreviation"
+  | "shock"
+  | "operator";
 export type TutorMode =
   | "qa"
   | "hint"
@@ -23,19 +29,110 @@ export type Citation = {
   sourceType: SourceType;
 };
 
-export type SymbolEntry = {
+export type NotationEntry = {
   id: string;
-  symbol: string;
+  moduleSlug: string | null;
+  kind: NotationKind;
+  displayLatex: string;
   spokenName: string;
-  definition: string;
-  context: string;
+  plainMeaning: string;
+  whyItMatters: string;
+  whereItAppears: string[];
+  commonConfusions: string[];
+  relatedTerms: string[];
   status: SymbolStatus;
   citations: Citation[];
 };
 
 export type EquationBlock = {
+  type: "equation";
   label: string;
-  expression: string;
+  latex: string;
+  explanation: string;
+};
+
+export type ParagraphBlock = {
+  type: "paragraph";
+  markdown: string;
+};
+
+export type DerivationStepBlock = {
+  type: "derivation_step";
+  title: string;
+  learningGoal: string;
+  operation: string;
+  whyValid: string;
+  latexAfter: string;
+  latexBefore?: string;
+  explanation: string;
+};
+
+export type ModelMapBlock = {
+  type: "model_map";
+  title: string;
+  items: {
+    label: string;
+    description: string;
+  }[];
+};
+
+export type ShockTraceBlock = {
+  type: "shock_trace";
+  title: string;
+  shock: string;
+  steps: {
+    variable: string;
+    direction: string;
+    explanation: string;
+  }[];
+};
+
+export type WorkedExampleBlock = {
+  type: "worked_example";
+  title: string;
+  prompt: string;
+  steps: {
+    title: string;
+    markdown: string;
+  }[];
+};
+
+export type FigureBlock = {
+  type: "figure";
+  title: string;
+  caption: string;
+  status: "ready" | "source_pending";
+  note?: string;
+};
+
+export type ChecklistBlock = {
+  type: "checklist";
+  title?: string;
+  items: string[];
+};
+
+export type ExamTrapBlock = {
+  type: "exam_trap";
+  title: string;
+  trap: string;
+  correction: string;
+};
+
+export type ContentBlock =
+  | ParagraphBlock
+  | EquationBlock
+  | DerivationStepBlock
+  | ModelMapBlock
+  | ShockTraceBlock
+  | WorkedExampleBlock
+  | FigureBlock
+  | ChecklistBlock
+  | ExamTrapBlock;
+
+export type PracticeSupportEquation = {
+  id: string;
+  label: string;
+  latex: string;
   explanation: string;
 };
 
@@ -44,8 +141,9 @@ export type ModuleSection = {
   slug: string;
   title: string;
   summary: string;
-  body: string[];
-  equations?: EquationBlock[];
+  contentBlocks: ContentBlock[];
+  body?: string[];
+  equations?: Array<Omit<EquationBlock, "type"> & { expression?: string }>;
   checkpoints?: string[];
   citations: Citation[];
 };
@@ -84,7 +182,7 @@ export type PracticeProblem = {
   title: string;
   moduleSlug: string;
   prompt: string[];
-  equations: string[];
+  supportingEquations: PracticeSupportEquation[];
   hints: string[];
   nextSteps: string[];
   solutionOutline: string[];
@@ -108,10 +206,18 @@ export type TutorSource = {
   tags: string[];
 };
 
-export type TutorResult = {
-  answer: string;
+export type TutorSourceSnippet = {
+  title: string;
+  excerpt: string;
   citations: Citation[];
+};
+
+export type TutorResult = {
+  answerMarkdown: string;
+  citations: Citation[];
+  sourceSnippets: TutorSourceSnippet[];
   confidenceLabel: "grounded" | "partial" | "insufficient_evidence";
+  error?: string;
 };
 
 export type InvitePreview = {

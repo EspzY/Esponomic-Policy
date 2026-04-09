@@ -65,6 +65,51 @@ textarea {
   gap: 1rem;
 }
 
+.policy-markdown {
+  color: inherit;
+}
+
+.policy-markdown > * + * {
+  margin-top: 0.85rem;
+}
+
+.policy-markdown p,
+.policy-markdown li,
+.policy-markdown blockquote {
+  line-height: 1.85;
+}
+
+.policy-markdown ul,
+.policy-markdown ol {
+  padding-left: 1.4rem;
+}
+
+.policy-markdown ul {
+  list-style: disc;
+}
+
+.policy-markdown ol {
+  list-style: decimal;
+}
+
+.policy-markdown blockquote {
+  border-left: 3px solid rgba(15, 118, 110, 0.24);
+  padding-left: 1rem;
+  color: var(--color-slate);
+}
+
+.policy-markdown .katex-display {
+  margin: 0.8rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.25rem;
+}
+
+.policy-markdown .katex {
+  color: inherit;
+  font-size: 1.02em;
+}
+
 @media (min-width: 768px) {
   .section-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

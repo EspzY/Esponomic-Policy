@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 
+import { MathMarkdown } from "@/components/math-markdown";
+import { buttonClasses } from "@/components/ui/button";
 import type { QuizItem } from "@/lib/types";
 
 type QuizResponse = {
@@ -48,6 +50,17 @@ export function QuizClient({
       });
 
       const payload = (await response.json()) as QuizResponse;
+
+      if (!response.ok) {
+        setResult({
+          scorePct: 0,
+          weakTags: [],
+          answers: [],
+          error: payload.error ?? "Quiz submission failed.",
+        });
+        return;
+      }
+
       setResult(payload);
     } finally {
       setLoading(false);
@@ -86,7 +99,7 @@ export function QuizClient({
           <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-rust)]">
             Question {index + 1}
           </p>
-          <h3 className="text-lg font-semibold">{item.prompt}</h3>
+          <MathMarkdown content={item.prompt} className="text-lg font-semibold text-[var(--color-ink)]" />
           <div className="mt-4 space-y-3">
             {item.choices.map((choice, choiceIndex) => {
               const active = answers[item.id] === choiceIndex;
@@ -109,7 +122,7 @@ export function QuizClient({
                     }
                     className="mt-1"
                   />
-                  <span>{choice}</span>
+                  <MathMarkdown content={choice} className="text-[var(--color-ink)]" />
                 </label>
               );
             })}
@@ -121,7 +134,7 @@ export function QuizClient({
         <button
           onClick={handleSubmit}
           disabled={completedCount !== items.length || loading}
-          className="rounded-full bg-[var(--color-ink)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--color-teal)] disabled:cursor-not-allowed disabled:opacity-50"
+          className={buttonClasses("primary", "md")}
         >
           {loading ? "Scoring..." : "Submit quiz"}
         </button>
@@ -152,9 +165,10 @@ export function QuizClient({
                     <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-rust)]">
                       Question {index + 1}: {answer.correct ? "correct" : "review needed"}
                     </p>
-                    <p className="text-sm leading-7 text-[var(--color-slate)]">
-                      {answer.explanation}
-                    </p>
+                    <MathMarkdown
+                      content={answer.explanation}
+                      className="text-sm leading-7 text-[var(--color-slate)]"
+                    />
                   </div>
                 ))}
               </div>

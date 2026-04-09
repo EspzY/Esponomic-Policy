@@ -3,9 +3,16 @@ import { notFound } from "next/navigation";
 
 import { markSectionCompleteAction } from "@/app/actions";
 import { CitationList } from "@/components/citation-list";
+import { ContentBlocks } from "@/components/content-blocks";
+import { NotationCollection } from "@/components/notation-collection";
 import { TutorPanel } from "@/components/tutor-panel";
+import { buttonClasses } from "@/components/ui/button";
 import { requireViewer } from "@/lib/auth";
-import { getModuleBySlug, getProgressSnapshots } from "@/lib/repository";
+import {
+  getModuleBySlug,
+  getNotationEntries,
+  getProgressSnapshots,
+} from "@/lib/repository";
 
 export default async function ModulePage({
   params,
@@ -14,9 +21,10 @@ export default async function ModulePage({
 }) {
   const viewer = await requireViewer();
   const { slug } = await params;
-  const [module, progress] = await Promise.all([
+  const [module, progress, notation] = await Promise.all([
     getModuleBySlug(slug),
     getProgressSnapshots(viewer.demoMode ? undefined : viewer.id),
+    getNotationEntries(slug),
   ]);
 
   if (!module || module.kind !== "lecture") {
@@ -60,12 +68,20 @@ export default async function ModulePage({
           </p>
           <Link
             href={`/modules/${module.slug}/quiz`}
-            className="mt-5 inline-flex rounded-full bg-[var(--color-ink)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--color-teal)]"
+            className={buttonClasses("primary", "sm", "mt-5")}
           >
             Open module quiz
           </Link>
         </div>
       </section>
+
+      {notation.length ? (
+        <NotationCollection
+          entries={notation}
+          title="Lecture 2 glossary"
+          subtitle="This glossary stays in the same teaching format throughout the module: what the notation is, why it matters, where it appears, and what students commonly mix up."
+        />
+      ) : null}
 
       <section className="space-y-4">
         {module.sections.map((section) => {
@@ -86,53 +102,15 @@ export default async function ModulePage({
                 <form action={markSectionCompleteAction}>
                   <input type="hidden" name="moduleSlug" value={module.slug} />
                   <input type="hidden" name="sectionSlug" value={section.slug} />
-                  <button className="rounded-full border border-[var(--color-line)] px-4 py-2 text-sm font-semibold text-[var(--color-ink)] transition hover:border-[var(--color-teal)] hover:text-[var(--color-teal)]">
+                  <button className={buttonClasses("outline", "sm")}>
                     {done ? "Section completed" : "Mark section complete"}
                   </button>
                 </form>
               </div>
 
-              <div className="mt-6 space-y-4">
-                {section.body.map((paragraph) => (
-                  <p key={paragraph} className="text-sm leading-8 text-[var(--color-ink)]">
-                    {paragraph}
-                  </p>
-                ))}
+              <div className="mt-6">
+                <ContentBlocks blocks={section.contentBlocks} />
               </div>
-
-              {section.equations?.length ? (
-                <div className="mt-6 grid gap-4">
-                  {section.equations.map((equation) => (
-                    <div
-                      key={equation.label}
-                      className="rounded-[1.5rem] border border-[var(--color-line)] bg-white p-5"
-                    >
-                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-teal)]">
-                        {equation.label}
-                      </p>
-                      <pre className="mt-3 overflow-x-auto text-sm leading-7 text-[var(--color-ink)]">
-                        {equation.expression}
-                      </pre>
-                      <p className="mt-3 text-sm leading-7 text-[var(--color-slate)]">
-                        {equation.explanation}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              ) : null}
-
-              {section.checkpoints?.length ? (
-                <ul className="mt-6 space-y-2 text-sm text-[var(--color-slate)]">
-                  {section.checkpoints.map((checkpoint) => (
-                    <li
-                      key={checkpoint}
-                      className="rounded-2xl bg-[rgba(24,33,45,0.04)] px-4 py-3"
-                    >
-                      {checkpoint}
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
 
               <div className="mt-6">
                 <CitationList citations={section.citations} />

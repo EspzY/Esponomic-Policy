@@ -2,22 +2,13 @@
 
 import { useState } from "react";
 
-import type { PracticeProblem } from "@/lib/types";
-
-type TutorPayload = {
-  answer: string;
-  confidenceLabel: string;
-  citations: {
-    documentTitle: string;
-    page: string;
-    note: string;
-  }[];
-  error?: string;
-};
+import { TutorResponse } from "@/components/tutor-response";
+import { buttonClasses } from "@/components/ui/button";
+import type { PracticeProblem, TutorResult } from "@/lib/types";
 
 export function ProblemWorkspace({ problem }: { problem: PracticeProblem }) {
   const [studentWork, setStudentWork] = useState("");
-  const [result, setResult] = useState<TutorPayload | null>(null);
+  const [result, setResult] = useState<TutorResult | null>(null);
   const [loadingMode, setLoadingMode] = useState<string | null>(null);
 
   async function ask(mode: "hint" | "next_step" | "solution_check" | "full_solution") {
@@ -38,8 +29,28 @@ export function ProblemWorkspace({ problem }: { problem: PracticeProblem }) {
         }),
       });
 
-      const payload = (await response.json()) as TutorPayload;
+      const payload = (await response.json()) as TutorResult;
+
+      if (!response.ok) {
+        setResult({
+          answerMarkdown: "",
+          confidenceLabel: "insufficient_evidence",
+          citations: [],
+          sourceSnippets: [],
+          error: payload.error ?? "The tutor request failed.",
+        });
+        return;
+      }
+
       setResult(payload);
+    } catch {
+      setResult({
+        answerMarkdown: "",
+        confidenceLabel: "insufficient_evidence",
+        citations: [],
+        sourceSnippets: [],
+        error: "The tutor request failed before feedback could be returned.",
+      });
     } finally {
       setLoadingMode(null);
     }
@@ -64,25 +75,25 @@ export function ProblemWorkspace({ problem }: { problem: PracticeProblem }) {
         <div className="mt-4 flex flex-wrap gap-3">
           <button
             onClick={() => ask("hint")}
-            className="rounded-full border border-[var(--color-line)] px-4 py-2 text-sm font-semibold text-[var(--color-ink)] transition hover:border-[var(--color-teal)] hover:text-[var(--color-teal)]"
+            className={buttonClasses("outline", "sm")}
           >
             {loadingMode === "hint" ? "Loading..." : "Hint first"}
           </button>
           <button
             onClick={() => ask("next_step")}
-            className="rounded-full border border-[var(--color-line)] px-4 py-2 text-sm font-semibold text-[var(--color-ink)] transition hover:border-[var(--color-teal)] hover:text-[var(--color-teal)]"
+            className={buttonClasses("outline", "sm")}
           >
             {loadingMode === "next_step" ? "Loading..." : "Next step"}
           </button>
           <button
             onClick={() => ask("solution_check")}
-            className="rounded-full bg-[var(--color-ink)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--color-teal)]"
+            className={buttonClasses("primary", "sm")}
           >
             {loadingMode === "solution_check" ? "Checking..." : "Check my solution"}
           </button>
           <button
             onClick={() => ask("full_solution")}
-            className="rounded-full bg-[var(--color-rust)] px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
+            className={buttonClasses("danger", "sm")}
           >
             {loadingMode === "full_solution" ? "Revealing..." : "Reveal full outline"}
           </button>
@@ -91,34 +102,7 @@ export function ProblemWorkspace({ problem }: { problem: PracticeProblem }) {
 
       {result ? (
         <section className="surface-card rounded-[2rem] p-6">
-          {result.error ? (
-            <p className="text-sm text-[var(--color-rust)]">{result.error}</p>
-          ) : (
-            <>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-rust)]">
-                Confidence: {result.confidenceLabel.replaceAll("_", " ")}
-              </p>
-              <div className="whitespace-pre-wrap text-sm leading-7 text-[var(--color-ink)]">
-                {result.answer}
-              </div>
-              {result.citations.length ? (
-                <ul className="mt-4 space-y-2 text-sm text-[var(--color-slate)]">
-                  {result.citations.map((citation) => (
-                    <li
-                      key={`${citation.documentTitle}-${citation.page}-${citation.note}`}
-                      className="rounded-2xl bg-white px-3 py-2"
-                    >
-                      <span className="font-medium text-[var(--color-ink)]">
-                        {citation.documentTitle}
-                      </span>{" "}
-                      {citation.page}
-                      <div>{citation.note}</div>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-            </>
-          )}
+          <TutorResponse result={result} />
         </section>
       ) : null}
     </section>

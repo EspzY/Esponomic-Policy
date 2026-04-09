@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { buttonClasses } from "@/components/ui/button";
 import type { ModuleSummary } from "@/lib/types";
 
 export function AdminModulesClient({
@@ -57,7 +58,7 @@ export function AdminModulesClient({
               </div>
               <button
                 onClick={() => publish(module.slug)}
-                className="rounded-full bg-[var(--color-ink)] px-4 py-2 text-sm font-semibold text-white"
+                className={buttonClasses("primary", "sm")}
               >
                 Publish {module.slug}
               </button>

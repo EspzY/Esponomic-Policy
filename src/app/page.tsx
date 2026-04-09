@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { loginAction } from "@/app/actions";
 import { ModuleCard } from "@/components/module-card";
+import { buttonClasses } from "@/components/ui/button";
 import { getViewer } from "@/lib/auth";
 import { getCourseModules } from "@/lib/repository";
 
@@ -32,38 +33,38 @@ export default async function Home({
             Learn Economic Policy without skipping the reasoning.
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-8 text-[var(--color-slate)]">
-            This v1 is built around verified lecture material, stepwise tutoring, and progress you can actually use. The first release focuses on the global symbol register, Lecture 2, a source-grounded tutor, and a concept quiz that favors understanding over rote recall.
+            This v1.1 rescue pass is built around verified lecture material, proper formula rendering, stepwise tutoring, and progress you can actually use. The current release focuses on a real notation hub, a rebuilt Lecture 2, a source-grounded tutor, and quiz feedback that explains the logic instead of rewarding rote recall.
           </p>
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
             <div className="rounded-[1.5rem] border border-[var(--color-line)] bg-white px-4 py-4">
-              <p className="text-2xl font-semibold">1</p>
+              <p className="text-2xl font-semibold">2</p>
               <p className="mt-2 text-sm text-[var(--color-slate)]">
-                verified symbol register
+                notation collections in consistent teaching format
               </p>
             </div>
             <div className="rounded-[1.5rem] border border-[var(--color-line)] bg-white px-4 py-4">
-              <p className="text-2xl font-semibold">1</p>
+              <p className="text-2xl font-semibold">10</p>
               <p className="mt-2 text-sm text-[var(--color-slate)]">
-                full lecture module with tutor
+                Lecture 2 sections with derivations, shocks, and guided examples
               </p>
             </div>
             <div className="rounded-[1.5rem] border border-[var(--color-line)] bg-white px-4 py-4">
-              <p className="text-2xl font-semibold">3</p>
+              <p className="text-2xl font-semibold">4</p>
               <p className="mt-2 text-sm text-[var(--color-slate)]">
-                concept questions in the first quiz
+                concept questions in the rebuilt Lecture 2 quiz
               </p>
             </div>
           </div>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href="/dashboard"
-              className="rounded-full bg-[var(--color-ink)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--color-teal)]"
+              className={buttonClasses("primary")}
             >
               Explore the v1 demo
             </Link>
             <Link
               href="/modules/symbols"
-              className="rounded-full border border-[var(--color-line)] px-5 py-3 text-sm font-semibold text-[var(--color-ink)] transition hover:border-[var(--color-teal)] hover:text-[var(--color-teal)]"
+              className={buttonClasses("outline")}
             >
               Open Module 1
             </Link>
@@ -91,7 +92,7 @@ export default async function Home({
               placeholder="Your password"
               className="w-full rounded-[1.5rem] border border-[var(--color-line)] bg-white px-4 py-3"
             />
-            <button className="w-full rounded-full bg-[var(--color-ink)] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[var(--color-teal)]">
+            <button className={buttonClasses("primary", "md", "w-full")}>
               Continue to dashboard
             </button>
           </form>

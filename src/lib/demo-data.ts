@@ -1,3 +1,15 @@
+export {
+  demoGlobalNotation as demoSymbols,
+  demoLecture2Notation,
+  demoModules,
+  demoNotation,
+  demoPracticeProblem,
+  demoProgress,
+  demoQuizItems,
+  demoTutorSources,
+  demoViewer,
+} from "@/lib/course-content";
+/*
 import type {
   ModuleDetail,
   PracticeProblem,
@@ -541,3 +553,4 @@ export const demoProgress: ProgressSnapshot[] = [
     weakTags: ["nkpc", "derivation"],
   },
 ];
+*/

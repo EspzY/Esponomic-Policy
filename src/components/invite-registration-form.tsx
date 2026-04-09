@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { buttonClasses } from "@/components/ui/button";
+
 export function InviteRegistrationForm({
   token,
   email,
@@ -79,7 +81,7 @@ export function InviteRegistrationForm({
       <button
         onClick={submit}
         disabled={password.length < 8 || loading}
-        className="mt-4 rounded-full bg-[var(--color-ink)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--color-teal)] disabled:cursor-not-allowed disabled:opacity-50"
+        className={buttonClasses("primary", "md", "mt-4")}
       >
         {loading ? "Creating account..." : "Create account"}
       </button>

@@ -1,51 +1,35 @@
 import {
+  demoGlobalNotation,
+  demoLecture2Notation,
   demoModules,
+  demoNotation,
   demoPracticeProblem,
   demoProgress,
   demoQuizItems,
-  demoSymbols,
   demoTutorSources,
-} from "@/lib/demo-content";
+} from "@/lib/course-content";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import type {
+  ContentBlock,
   ModuleDetail,
+  ModuleSection,
   ModuleSummary,
+  NotationEntry,
   PracticeProblem,
+  PracticeSupportEquation,
   ProgressSnapshot,
   QuizItem,
-  SymbolEntry,
   TutorSource,
 } from "@/lib/types";
 
-function mapModuleSummary(row: Record<string, unknown>): ModuleSummary {
-  return {
-    id: String(row.id),
-    slug: String(row.slug),
-    title: String(row.title),
-    kind: row.kind === "symbol_register" ? "symbol_register" : "lecture",
-    summary: String(row.summary ?? ""),
-    description: String(row.description ?? ""),
-    estimatedMinutes: Number(row.estimated_minutes ?? 0),
-    tags: Array.isArray(row.tags) ? (row.tags as string[]) : [],
-    publicationStatus:
-      row.publication_status === "draft" ? "draft" : "published",
-  };
+const curatedModulesBySlug = new Map(demoModules.map((module) => [module.slug, module]));
+
+function isArrayOfObjects(value: unknown): value is Record<string, unknown>[] {
+  return Array.isArray(value) && value.every((item) => item !== null && typeof item === "object");
 }
 
-function mapModuleDetail(
-  summary: ModuleSummary,
-  row: Record<string, unknown>,
-): ModuleDetail {
-  return {
-    ...summary,
-    objectives: Array.isArray(row.objectives) ? (row.objectives as string[]) : [],
-    sections: Array.isArray(row.sections)
-      ? (row.sections as ModuleDetail["sections"])
-      : [],
-    citations: Array.isArray(row.citations)
-      ? (row.citations as ModuleDetail["citations"])
-      : [],
-  };
+function stringArray(value: unknown) {
+  return Array.isArray(value) ? value.map((item) => String(item)) : [];
 }
 
 function toSummary(module: ModuleDetail): ModuleSummary {
@@ -62,6 +46,213 @@ function toSummary(module: ModuleDetail): ModuleSummary {
   };
 }
 
+function mapModuleSummary(row: Record<string, unknown>): ModuleSummary {
+  return {
+    id: String(row.id),
+    slug: String(row.slug),
+    title: String(row.title),
+    kind: row.kind === "symbol_register" ? "symbol_register" : "lecture",
+    summary: String(row.summary ?? ""),
+    description: String(row.description ?? ""),
+    estimatedMinutes: Number(row.estimated_minutes ?? 0),
+    tags: stringArray(row.tags),
+    publicationStatus: row.publication_status === "draft" ? "draft" : "published",
+  };
+}
+
+function legacyContentBlocks(row: Record<string, unknown>): ContentBlock[] {
+  const blocks: ContentBlock[] = [];
+
+  for (const paragraph of stringArray(row.body)) {
+    blocks.push({
+      type: "paragraph",
+      markdown: paragraph,
+    });
+  }
+
+  if (isArrayOfObjects(row.equations)) {
+    for (const equation of row.equations) {
+      blocks.push({
+        type: "equation",
+        label: String(equation.label ?? "Equation"),
+        latex: String(equation.latex ?? equation.expression ?? ""),
+        explanation: String(equation.explanation ?? ""),
+      });
+    }
+  }
+
+  const checkpoints = stringArray(row.checkpoints);
+
+  if (checkpoints.length) {
+    blocks.push({
+      type: "checklist",
+      title: "Legacy checkpoints",
+      items: checkpoints,
+    });
+  }
+
+  return blocks;
+}
+
+function mapModuleSection(row: Record<string, unknown>): ModuleSection {
+  const contentBlocks = isArrayOfObjects(row.content_blocks)
+    ? (row.content_blocks as ContentBlock[])
+    : legacyContentBlocks(row);
+
+  return {
+    id: String(row.id),
+    slug: String(row.slug),
+    title: String(row.title),
+    summary: String(row.summary ?? ""),
+    contentBlocks,
+    body: stringArray(row.body),
+    equations: isArrayOfObjects(row.equations)
+      ? (row.equations as ModuleSection["equations"])
+      : [],
+    checkpoints: stringArray(row.checkpoints),
+    citations: isArrayOfObjects(row.citations)
+      ? (row.citations as ModuleSection["citations"])
+      : [],
+  };
+}
+
+function filterLocalNotation(moduleSlug?: string | null) {
+  if (moduleSlug === null) {
+    return demoGlobalNotation;
+  }
+
+  if (moduleSlug) {
+    return demoNotation.filter((entry) => entry.moduleSlug === moduleSlug);
+  }
+
+  return demoNotation;
+}
+
+function mapNotationEntry(row: Record<string, unknown>): NotationEntry {
+  return {
+    id: String(row.id),
+    moduleSlug: row.module_slug ? String(row.module_slug) : null,
+    kind:
+      row.kind === "parameter" ||
+      row.kind === "abbreviation" ||
+      row.kind === "shock" ||
+      row.kind === "operator"
+        ? row.kind
+        : "symbol",
+    displayLatex: String(row.display_latex ?? ""),
+    spokenName: String(row.spoken_name ?? ""),
+    plainMeaning: String(row.plain_meaning ?? ""),
+    whyItMatters: String(row.why_it_matters ?? ""),
+    whereItAppears: stringArray(row.where_it_appears),
+    commonConfusions: stringArray(row.common_confusions),
+    relatedTerms: stringArray(row.related_terms),
+    status: row.status === "not_found_in_material" ? "not_found_in_material" : "verified",
+    citations: isArrayOfObjects(row.citations)
+      ? (row.citations as NotationEntry["citations"])
+      : [],
+  };
+}
+
+function mapPracticeSupportEquations(row: Record<string, unknown>): PracticeSupportEquation[] {
+  if (isArrayOfObjects(row.supporting_equations)) {
+    return row.supporting_equations.map((equation, index) => ({
+      id: String(equation.id ?? `support-${index + 1}`),
+      label: String(equation.label ?? `Equation ${index + 1}`),
+      latex: String(equation.latex ?? equation.expression ?? ""),
+      explanation: String(equation.explanation ?? ""),
+    }));
+  }
+
+  return stringArray(row.equations).map((equation, index) => ({
+    id: `legacy-equation-${index + 1}`,
+    label: `Equation ${index + 1}`,
+    latex: equation,
+    explanation: "Legacy seeded equation migrated into the math-first practice layout.",
+  }));
+}
+
+function flattenBlockText(block: ContentBlock): string {
+  if (block.type === "paragraph") {
+    return block.markdown;
+  }
+
+  if (block.type === "equation") {
+    return `${block.label}. ${block.explanation} Latex: ${block.latex}`;
+  }
+
+  if (block.type === "derivation_step") {
+    return [
+      block.title,
+      block.learningGoal,
+      block.operation,
+      block.whyValid,
+      block.explanation,
+      block.latexBefore ?? "",
+      block.latexAfter,
+    ].join(" ");
+  }
+
+  if (block.type === "model_map") {
+    return `${block.title} ${block.items
+      .map((item) => `${item.label}: ${item.description}`)
+      .join(" ")}`;
+  }
+
+  if (block.type === "shock_trace") {
+    return `${block.title} ${block.shock} ${block.steps
+      .map((step) => `${step.variable} ${step.direction}. ${step.explanation}`)
+      .join(" ")}`;
+  }
+
+  if (block.type === "worked_example") {
+    return `${block.title} ${block.prompt} ${block.steps
+      .map((step) => `${step.title}. ${step.markdown}`)
+      .join(" ")}`;
+  }
+
+  if (block.type === "figure") {
+    return `${block.title}. ${block.caption}. ${block.note ?? ""}`;
+  }
+
+  if (block.type === "checklist") {
+    return `${block.title ?? "Checklist"} ${block.items.join(" ")}`;
+  }
+
+  return `${block.title}. Trap: ${block.trap}. Fix: ${block.correction}`;
+}
+
+async function moduleHasRichContent(moduleSlug: string) {
+  const admin = createAdminSupabaseClient();
+
+  if (!admin) {
+    return false;
+  }
+
+  const { data: module, error: moduleError } = await admin
+    .from("modules")
+    .select("id")
+    .eq("slug", moduleSlug)
+    .eq("publication_status", "published")
+    .maybeSingle();
+
+  if (moduleError || !module) {
+    return false;
+  }
+
+  const { data: sections, error: sectionError } = await admin
+    .from("module_sections")
+    .select("content_blocks")
+    .eq("module_id", module.id);
+
+  if (sectionError || !sections?.length) {
+    return false;
+  }
+
+  return sections.some(
+    (section) => Array.isArray(section.content_blocks) && section.content_blocks.length > 0,
+  );
+}
+
 export async function getCourseModules() {
   const admin = createAdminSupabaseClient();
 
@@ -69,98 +260,90 @@ export async function getCourseModules() {
     return demoModules.map(toSummary);
   }
 
-  const { data } = await admin
+  const { data, error } = await admin
     .from("modules")
     .select("*")
     .eq("publication_status", "published")
     .order("release_order", { ascending: true });
 
-  if (!data?.length) {
+  if (error || !data?.length) {
     return demoModules.map(toSummary);
   }
 
-  return data.map((row) => mapModuleSummary(row));
+  const curatedSlugs = new Set(demoModules.map((module) => module.slug));
+  const remoteExtras = data
+    .filter((row) => !curatedSlugs.has(String(row.slug)))
+    .map((row) => mapModuleSummary(row));
+
+  return [...demoModules.map(toSummary), ...remoteExtras];
 }
 
 export async function getModuleBySlug(slug: string) {
+  const curated = curatedModulesBySlug.get(slug) ?? null;
   const admin = createAdminSupabaseClient();
 
   if (!admin) {
-    return demoModules.find((module) => module.slug === slug) ?? null;
+    return curated;
   }
 
-  const { data: module } = await admin
+  const { data: module, error: moduleError } = await admin
     .from("modules")
     .select("*")
     .eq("slug", slug)
     .eq("publication_status", "published")
     .maybeSingle();
 
-  if (!module) {
-    return demoModules.find((item) => item.slug === slug) ?? null;
+  if (moduleError || !module) {
+    return curated;
   }
 
-  const { data: sections } = await admin
+  const { data: sections, error: sectionError } = await admin
     .from("module_sections")
     .select("*")
     .eq("module_id", module.id)
     .order("sort_order", { ascending: true });
 
+  const mappedSections = sectionError ? [] : (sections ?? []).map((section) => mapModuleSection(section));
+  const hasRichBlocks = mappedSections.some((section) => section.contentBlocks.length > 0);
+
+  if (curated && !hasRichBlocks) {
+    return curated;
+  }
+
   const summary = mapModuleSummary(module);
 
-  return mapModuleDetail(summary, {
-    ...module,
-    sections:
-      sections?.map((section) => ({
-        id: String(section.id),
-        slug: String(section.slug),
-        title: String(section.title),
-        summary: String(section.summary ?? ""),
-        body: Array.isArray(section.body) ? (section.body as string[]) : [],
-        equations: Array.isArray(section.equations)
-          ? (section.equations as ModuleDetail["sections"][number]["equations"])
-          : [],
-        checkpoints: Array.isArray(section.checkpoints)
-          ? (section.checkpoints as string[])
-          : [],
-        citations: Array.isArray(section.citations)
-          ? (section.citations as ModuleDetail["sections"][number]["citations"])
-          : [],
-      })) ?? [],
-    objectives: module.objectives,
-    citations: module.citations,
-  });
+  return {
+    ...summary,
+    objectives: stringArray(module.objectives),
+    sections: mappedSections,
+    citations: isArrayOfObjects(module.citations)
+      ? (module.citations as ModuleDetail["citations"])
+      : [],
+  } satisfies ModuleDetail;
 }
 
-export async function getSymbolRegister() {
+export async function getNotationEntries(moduleSlug?: string | null) {
   const admin = createAdminSupabaseClient();
 
   if (!admin) {
-    return demoSymbols;
+    return filterLocalNotation(moduleSlug);
   }
 
-  const { data } = await admin.from("symbols").select("*").order("symbol");
+  let query = admin.from("notation_entries").select("*").order("kind").order("spoken_name");
 
-  if (!data?.length) {
-    return demoSymbols;
+  if (moduleSlug === null) {
+    query = query.is("module_slug", null);
+  } else if (moduleSlug) {
+    query = query.eq("module_slug", moduleSlug);
   }
 
-  return data.map(
-    (row): SymbolEntry => ({
-      id: String(row.id),
-      symbol: String(row.symbol),
-      spokenName: String(row.spoken_name ?? ""),
-      definition: String(row.definition ?? ""),
-      context: String(row.context_note ?? ""),
-      status:
-        row.status === "not_found_in_material"
-          ? "not_found_in_material"
-          : "verified",
-      citations: Array.isArray(row.citations)
-        ? (row.citations as SymbolEntry["citations"])
-        : [],
-    }),
-  );
+  const { data, error } = await query;
+
+  if (error || !data?.length) {
+    return filterLocalNotation(moduleSlug);
+  }
+
+  return data.map((row) => mapNotationEntry(row));
 }
 
 export async function getQuizItems(moduleSlug: string) {
@@ -170,24 +353,30 @@ export async function getQuizItems(moduleSlug: string) {
     return moduleSlug === "lecture-2" ? demoQuizItems : [];
   }
 
-  const { data: module } = await admin
+  const richModule = await moduleHasRichContent(moduleSlug);
+
+  if (!richModule && moduleSlug === "lecture-2") {
+    return demoQuizItems;
+  }
+
+  const { data: module, error: moduleError } = await admin
     .from("modules")
     .select("id")
     .eq("slug", moduleSlug)
     .maybeSingle();
 
-  if (!module) {
+  if (moduleError || !module) {
     return moduleSlug === "lecture-2" ? demoQuizItems : [];
   }
 
-  const { data } = await admin
+  const { data, error } = await admin
     .from("quiz_items")
     .select("*")
     .eq("module_id", module.id)
     .eq("is_published", true)
     .order("sort_order", { ascending: true });
 
-  if (!data?.length) {
+  if (error || !data?.length) {
     return moduleSlug === "lecture-2" ? demoQuizItems : [];
   }
 
@@ -195,11 +384,11 @@ export async function getQuizItems(moduleSlug: string) {
     (row): QuizItem => ({
       id: String(row.id),
       prompt: String(row.prompt),
-      choices: Array.isArray(row.choices) ? (row.choices as string[]) : [],
+      choices: stringArray(row.choices),
       correctIndex: Number(row.correct_index ?? 0),
       explanation: String(row.explanation ?? ""),
-      tags: Array.isArray(row.tags) ? (row.tags as string[]) : [],
-      citations: Array.isArray(row.citations)
+      tags: stringArray(row.tags),
+      citations: isArrayOfObjects(row.citations)
         ? (row.citations as QuizItem["citations"])
         : [],
     }),
@@ -213,14 +402,20 @@ export async function getPracticeProblemBySlug(slug: string) {
     return slug === demoPracticeProblem.slug ? demoPracticeProblem : null;
   }
 
-  const { data } = await admin
+  const richLecture2 = await moduleHasRichContent("lecture-2");
+
+  if (!richLecture2 && slug === demoPracticeProblem.slug) {
+    return demoPracticeProblem;
+  }
+
+  const { data, error } = await admin
     .from("problems")
     .select("*, problem_steps(*)")
     .eq("slug", slug)
     .eq("is_published", true)
     .maybeSingle();
 
-  if (!data) {
+  if (error || !data) {
     return slug === demoPracticeProblem.slug ? demoPracticeProblem : null;
   }
 
@@ -252,14 +447,12 @@ export async function getPracticeProblemBySlug(slug: string) {
     slug: String(data.slug),
     title: String(data.title),
     moduleSlug: String(data.module_slug ?? "lecture-2"),
-    prompt: Array.isArray(data.prompt_lines)
-      ? (data.prompt_lines as string[])
-      : [String(data.prompt_markdown ?? "")],
-    equations: Array.isArray(data.equations) ? (data.equations as string[]) : [],
+    prompt: stringArray(data.prompt_lines),
+    supportingEquations: mapPracticeSupportEquations(data),
     hints: grouped.hints,
     nextSteps: grouped.nextSteps,
     solutionOutline: grouped.solutionOutline,
-    citations: Array.isArray(data.citations)
+    citations: isArrayOfObjects(data.citations)
       ? (data.citations as PracticeProblem["citations"])
       : [],
   } satisfies PracticeProblem;
@@ -272,42 +465,80 @@ export async function getTutorSources(moduleSlug: string) {
     return demoTutorSources.filter((entry) => entry.moduleSlug === moduleSlug);
   }
 
-  const { data: module } = await admin
+  const richModule = await moduleHasRichContent(moduleSlug);
+
+  if (!richModule) {
+    return demoTutorSources.filter((entry) => entry.moduleSlug === moduleSlug);
+  }
+
+  const { data: module, error: moduleError } = await admin
     .from("modules")
     .select("id")
     .eq("slug", moduleSlug)
     .maybeSingle();
 
-  if (!module) {
+  if (moduleError || !module) {
     return demoTutorSources.filter((entry) => entry.moduleSlug === moduleSlug);
   }
 
-  const { data: sections } = await admin
-    .from("module_sections")
-    .select("*")
-    .eq("module_id", module.id);
+  const [{ data: sections, error: sectionsError }, { data: notation, error: notationError }] =
+    await Promise.all([
+      admin.from("module_sections").select("*").eq("module_id", module.id),
+      admin
+        .from("notation_entries")
+        .select("*")
+        .or(`module_slug.eq.${moduleSlug},module_slug.is.null`),
+    ]);
 
   const sectionSources =
-    sections?.map(
-      (section): TutorSource => ({
-        id: String(section.id),
-        moduleSlug,
-        title: String(section.title),
-        text: [
-          String(section.summary ?? ""),
-          ...(Array.isArray(section.body) ? (section.body as string[]) : []),
-        ]
-          .join(" ")
-          .trim(),
-        citations: Array.isArray(section.citations)
-          ? (section.citations as TutorSource["citations"])
-          : [],
-        tags: Array.isArray(section.tags) ? (section.tags as string[]) : [],
-      }),
-    ) ?? [];
+    sectionsError || !sections
+      ? []
+      : sections.map(
+          (section): TutorSource => ({
+            id: String(section.id),
+            moduleSlug,
+            title: String(section.title),
+            text: [
+              String(section.summary ?? ""),
+              ...mapModuleSection(section).contentBlocks.map((block) => flattenBlockText(block)),
+            ]
+              .join(" ")
+              .trim(),
+            citations: isArrayOfObjects(section.citations)
+              ? (section.citations as TutorSource["citations"])
+              : [],
+            tags: [moduleSlug, String(section.slug)],
+          }),
+        );
 
-  return sectionSources.length
-    ? sectionSources
+  const notationSources =
+    notationError || !notation
+      ? []
+      : notation.map(
+          (entry): TutorSource => ({
+            id: `notation-${entry.id}`,
+            moduleSlug,
+            title: `${String(entry.spoken_name ?? entry.id)} notation`,
+            text: [
+              String(entry.display_latex ?? ""),
+              String(entry.plain_meaning ?? ""),
+              String(entry.why_it_matters ?? ""),
+              ...stringArray(entry.where_it_appears),
+              ...stringArray(entry.common_confusions),
+            ]
+              .join(" ")
+              .trim(),
+            citations: isArrayOfObjects(entry.citations)
+              ? (entry.citations as TutorSource["citations"])
+              : [],
+            tags: [String(entry.kind ?? "symbol"), String(entry.spoken_name ?? entry.id)],
+          }),
+        );
+
+  const combined = [...sectionSources, ...notationSources];
+
+  return combined.length
+    ? combined
     : demoTutorSources.filter((entry) => entry.moduleSlug === moduleSlug);
 }
 
@@ -318,12 +549,12 @@ export async function getProgressSnapshots(userId?: string) {
     return demoProgress;
   }
 
-  const { data } = await admin
+  const { data, error } = await admin
     .from("user_module_progress")
     .select("*")
     .eq("user_id", userId);
 
-  if (!data?.length) {
+  if (error || !data?.length) {
     return demoProgress;
   }
 
@@ -336,11 +567,17 @@ export async function getProgressSnapshots(userId?: string) {
           : row.status === "in_progress"
             ? "in_progress"
             : "not_started",
-      completedSections: Array.isArray(row.completed_sections)
-        ? (row.completed_sections as string[])
-        : [],
+      completedSections: stringArray(row.completed_sections),
       bestQuizScore: Number(row.best_quiz_score ?? 0),
-      weakTags: Array.isArray(row.weak_tags) ? (row.weak_tags as string[]) : [],
+      weakTags: stringArray(row.weak_tags),
     }),
   );
+}
+
+export function getLocalModuleNotation(moduleSlug: string) {
+  if (moduleSlug === "lecture-2") {
+    return demoLecture2Notation;
+  }
+
+  return filterLocalNotation(moduleSlug);
 }

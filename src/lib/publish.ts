@@ -1,9 +1,9 @@
 import {
   demoModules,
+  demoNotation,
   demoPracticeProblem,
   demoQuizItems,
-  demoSymbols,
-} from "@/lib/demo-content";
+} from "@/lib/course-content";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 
 export async function publishDemoModule(moduleSlug: string) {
@@ -49,37 +49,43 @@ export async function publishDemoModule(moduleSlug: string) {
     throw new Error(moduleError?.message ?? "Failed to upsert module.");
   }
 
-  if (courseModule.kind === "symbol_register") {
-    await admin.from("symbols").delete().eq("module_slug", courseModule.slug);
-    await admin.from("symbols").insert(
-      demoSymbols.map((symbol) => ({
-        symbol: symbol.symbol,
-        spoken_name: symbol.spokenName,
-        definition: symbol.definition,
-        context_note: symbol.context,
-        status: symbol.status,
-        module_slug: courseModule.slug,
-        citations: symbol.citations,
-      })),
-    );
-  }
+  await admin.from("notation_entries").upsert(
+    demoNotation.map((entry) => ({
+      id: entry.id,
+      module_slug: entry.moduleSlug,
+      kind: entry.kind,
+      display_latex: entry.displayLatex,
+      spoken_name: entry.spokenName,
+      plain_meaning: entry.plainMeaning,
+      why_it_matters: entry.whyItMatters,
+      where_it_appears: entry.whereItAppears,
+      common_confusions: entry.commonConfusions,
+      related_terms: entry.relatedTerms,
+      status: entry.status,
+      citations: entry.citations,
+    })),
+    {
+      onConflict: "id",
+    },
+  );
+
+  await admin.from("module_sections").delete().eq("module_id", moduleRow.id);
+  await admin.from("module_sections").insert(
+    courseModule.sections.map((section, index) => ({
+      module_id: moduleRow.id,
+      slug: section.slug,
+      title: section.title,
+      summary: section.summary,
+      body: section.body ?? [],
+      equations: section.equations ?? [],
+      checkpoints: section.checkpoints ?? [],
+      content_blocks: section.contentBlocks,
+      citations: section.citations,
+      sort_order: index + 1,
+    })),
+  );
 
   if (courseModule.kind === "lecture") {
-    await admin.from("module_sections").delete().eq("module_id", moduleRow.id);
-    await admin.from("module_sections").insert(
-      courseModule.sections.map((section, index) => ({
-        module_id: moduleRow.id,
-        slug: section.slug,
-        title: section.title,
-        summary: section.summary,
-        body: section.body,
-        equations: section.equations ?? [],
-        checkpoints: section.checkpoints ?? [],
-        citations: section.citations,
-        sort_order: index + 1,
-      })),
-    );
-
     await admin.from("quiz_items").delete().eq("module_id", moduleRow.id);
     await admin.from("quiz_items").insert(
       demoQuizItems.map((item, index) => ({
@@ -103,7 +109,8 @@ export async function publishDemoModule(moduleSlug: string) {
         slug: demoPracticeProblem.slug,
         title: demoPracticeProblem.title,
         prompt_lines: demoPracticeProblem.prompt,
-        equations: demoPracticeProblem.equations,
+        equations: [],
+        supporting_equations: demoPracticeProblem.supportingEquations,
         citations: demoPracticeProblem.citations,
         is_published: true,
       })

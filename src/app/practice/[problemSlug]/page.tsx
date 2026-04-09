@@ -1,4 +1,5 @@
 import { CitationList } from "@/components/citation-list";
+import { MathMarkdown } from "@/components/math-markdown";
 import { ProblemWorkspace } from "@/components/problem-workspace";
 import { requireViewer } from "@/lib/auth";
 import { getPracticeProblemBySlug } from "@/lib/repository";
@@ -25,19 +26,31 @@ export default async function PracticeProblemPage({
         <h1 className="mt-3 text-4xl font-semibold">{problem.title}</h1>
         <div className="mt-5 space-y-4">
           {problem.prompt.map((paragraph) => (
-            <p key={paragraph} className="text-sm leading-8 text-[var(--color-ink)]">
-              {paragraph}
-            </p>
+            <MathMarkdown
+              key={paragraph}
+              content={paragraph}
+              className="text-sm leading-8 text-[var(--color-ink)]"
+            />
           ))}
         </div>
         <div className="mt-6 grid gap-4">
-          {problem.equations.map((equation) => (
-            <pre
-              key={equation}
-              className="overflow-x-auto rounded-[1.5rem] border border-[var(--color-line)] bg-white px-4 py-4 text-sm leading-7 text-[var(--color-ink)]"
+          {problem.supportingEquations.map((equation) => (
+            <div
+              key={equation.id}
+              className="rounded-[1.5rem] border border-[var(--color-line)] bg-white px-5 py-5"
             >
-              {equation}
-            </pre>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-teal)]">
+                {equation.label}
+              </p>
+              <MathMarkdown
+                content={`$$${equation.latex}$$`}
+                className="mt-3 overflow-x-auto text-[var(--color-ink)]"
+              />
+              <MathMarkdown
+                content={equation.explanation}
+                className="mt-3 text-sm leading-7 text-[var(--color-slate)]"
+              />
+            </div>
           ))}
         </div>
       </section>

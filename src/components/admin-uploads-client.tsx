@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { buttonClasses } from "@/components/ui/button";
+
 type UploadResponse = {
   document?: {
     id: string;
@@ -66,7 +68,7 @@ export function AdminUploadsClient() {
           </select>
           <input name="file" type="file" accept="application/pdf" />
         </div>
-        <button className="mt-4 rounded-full bg-[var(--color-ink)] px-4 py-2 text-sm font-semibold text-white">
+        <button className={buttonClasses("primary", "sm", "mt-4")}>
           Upload document
         </button>
         {uploadResult?.document ? (
@@ -94,7 +96,7 @@ export function AdminUploadsClient() {
           placeholder="Paste the uploaded document id"
           className="mt-4 w-full rounded-[1.5rem] border border-[var(--color-line)] bg-white px-4 py-3"
         />
-        <button className="mt-4 rounded-full bg-[var(--color-teal)] px-4 py-2 text-sm font-semibold text-white">
+        <button className={buttonClasses("secondary", "sm", "mt-4")}>
           Extract chunks and symbol candidates
         </button>
         {processResult?.document ? (

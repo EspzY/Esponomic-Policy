@@ -32,21 +32,52 @@ function lexicalScore(query: string, source: TutorSource) {
   );
 }
 
+function dedupeCitations(citations: Citation[]) {
+  const seen = new Set<string>();
+
+  return citations.filter((citation) => {
+    const key = `${citation.documentTitle}-${citation.page}-${citation.note}`;
+
+    if (seen.has(key)) {
+      return false;
+    }
+
+    seen.add(key);
+    return true;
+  });
+}
+
+function buildSourceSnippets(sources: TutorSource[]) {
+  return sources.map((source) => ({
+    title: source.title,
+    excerpt: source.text.length > 320 ? `${source.text.slice(0, 317).trimEnd()}...` : source.text,
+    citations: source.citations,
+  }));
+}
+
 export async function embedText(text: string) {
   if (!hfClient) {
     return null;
   }
 
-  const result = await hfClient.featureExtraction({
-    model: env.huggingFaceEmbeddingModel,
-    inputs: text,
-  });
+  try {
+    const result = await hfClient.featureExtraction({
+      model: env.huggingFaceEmbeddingModel,
+      inputs: text,
+    });
 
-  if (!Array.isArray(result) || !result.length) {
+    if (!Array.isArray(result) || !result.length) {
+      return null;
+    }
+
+    if (typeof result[0] === "number") {
+      return result as number[];
+    }
+
+    return null;
+  } catch {
     return null;
   }
-
-  return result as number[];
 }
 
 export async function retrieveTutorSources(query: string, sources: TutorSource[]) {
@@ -66,21 +97,28 @@ export async function retrieveTutorSources(query: string, sources: TutorSource[]
 
   const scored = await Promise.all(
     sources.map(async (source) => {
-      const embedding = await embedText(source.text);
+      try {
+        const embedding = await embedText(source.text);
 
-      return {
-        source,
-        score:
-          embedding?.length === queryEmbedding.length
-            ? cosineSimilarity(queryEmbedding, embedding)
-            : lexicalScore(query, source),
-      };
+        return {
+          source,
+          score:
+            embedding?.length === queryEmbedding.length
+              ? cosineSimilarity(queryEmbedding, embedding)
+              : lexicalScore(query, source),
+        };
+      } catch {
+        return {
+          source,
+          score: lexicalScore(query, source),
+        };
+      }
     }),
   );
 
   return scored
     .sort((left, right) => right.score - left.score)
-    .slice(0, 3)
+    .slice(0, 4)
     .map(({ source }) => source);
 }
 
@@ -88,46 +126,43 @@ function fallbackTutorAnswer(
   mode: TutorMode,
   question: string,
   sources: TutorSource[],
+  error?: string,
 ): TutorResult {
   if (!sources.length) {
     return {
-      answer:
-        "I could not find enough supporting material for a reliable answer yet. Upload or process the relevant lecture PDF before treating any explanation as authoritative.",
+      answerMarkdown:
+        "I could not find enough indexed evidence for a reliable answer yet. That means I should **not guess**. Please upload or publish the relevant lecture material before treating any explanation as authoritative.",
       citations: [],
+      sourceSnippets: [],
       confidenceLabel: "insufficient_evidence",
+      error,
     };
   }
 
-  const lead = sources[0];
   const modeLead =
     mode === "hint"
-      ? "Start from the model block that moves first."
+      ? "Start from the model block that moves first, and do **not** jump to the final sign pattern yet."
       : mode === "next_step"
-        ? "A good next step is to translate the question into one equation and one sign prediction."
+        ? "A good next step is to translate the question into **one equation** and **one benchmark comparison**."
         : mode === "full_solution"
           ? "Here is a grounded outline based on the currently indexed material."
           : "Based on the indexed material, the safest answer is:";
 
   return {
-    answer: `${modeLead}\n\n${lead.text}\n\nQuestion received: ${question}`,
-    citations: sources.flatMap((source) => source.citations),
+    answerMarkdown: [
+      modeLead,
+      "",
+      `**Question received:** ${question}`,
+      "",
+      "I am falling back to retrieved course evidence because the language-model step is unavailable or failed.",
+      "",
+      sources.map((source, index) => `${index + 1}. **${source.title}**: ${source.text}`).join("\n"),
+    ].join("\n"),
+    citations: dedupeCitations(sources.flatMap((source) => source.citations)),
+    sourceSnippets: buildSourceSnippets(sources),
     confidenceLabel: sources.length >= 2 ? "grounded" : "partial",
+    error,
   };
-}
-
-function dedupeCitations(citations: Citation[]) {
-  const seen = new Set<string>();
-
-  return citations.filter((citation) => {
-    const key = `${citation.documentTitle}-${citation.page}-${citation.note}`;
-
-    if (seen.has(key)) {
-      return false;
-    }
-
-    seen.add(key);
-    return true;
-  });
 }
 
 export async function buildTutorAnswer(
@@ -168,42 +203,73 @@ Evidence:
 ${evidenceBlock}
 
 Return valid JSON with keys:
-- answer
+- answerMarkdown
 - confidenceLabel (grounded | partial | insufficient_evidence)
 `;
 
-  const response = await openaiClient.responses.create({
-    model: env.openAiRuntimeModel,
-    input: prompt,
-    text: {
-      format: {
-        type: "json_schema",
-        name: "tutor_answer",
-        schema: {
-          type: "object",
-          additionalProperties: false,
-          properties: {
-            answer: {
-              type: "string",
+  try {
+    const response = await openaiClient.responses.create({
+      model: env.openAiRuntimeModel,
+      input: prompt,
+      text: {
+        format: {
+          type: "json_schema",
+          name: "tutor_answer",
+          schema: {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+              answerMarkdown: {
+                type: "string",
+              },
+              confidenceLabel: {
+                type: "string",
+                enum: ["grounded", "partial", "insufficient_evidence"],
+              },
             },
-            confidenceLabel: {
-              type: "string",
-              enum: ["grounded", "partial", "insufficient_evidence"],
-            },
+            required: ["answerMarkdown", "confidenceLabel"],
           },
-          required: ["answer", "confidenceLabel"],
         },
       },
-    },
-  });
+    });
 
-  const output = response.output_text
-    ? JSON.parse(response.output_text)
-    : { answer: "", confidenceLabel: "insufficient_evidence" };
+    const rawOutput = response.output_text?.trim();
 
-  return {
-    answer: output.answer,
-    confidenceLabel: output.confidenceLabel,
-    citations: dedupeCitations(sources.flatMap((source) => source.citations)),
-  } satisfies TutorResult;
+    if (!rawOutput) {
+      return fallbackTutorAnswer(
+        mode,
+        question,
+        sources,
+        "The tutor model returned an empty response, so I fell back to retrieved evidence.",
+      );
+    }
+
+    const output = JSON.parse(rawOutput) as {
+      answerMarkdown?: string;
+      confidenceLabel?: TutorResult["confidenceLabel"];
+    };
+
+    if (!output.answerMarkdown || !output.confidenceLabel) {
+      return fallbackTutorAnswer(
+        mode,
+        question,
+        sources,
+        "The tutor model returned an invalid payload, so I fell back to retrieved evidence.",
+      );
+    }
+
+    return {
+      answerMarkdown: output.answerMarkdown,
+      confidenceLabel: output.confidenceLabel,
+      citations: dedupeCitations(sources.flatMap((source) => source.citations)),
+      sourceSnippets: buildSourceSnippets(sources),
+    } satisfies TutorResult;
+  } catch {
+    return fallbackTutorAnswer(
+      mode,
+      question,
+      sources,
+      "The tutor model is temporarily unavailable, so this answer is a retrieval-only fallback.",
+    );
+  }
 }
