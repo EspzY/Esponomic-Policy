@@ -103,6 +103,8 @@ export type FigureBlock = {
   caption: string;
   status: "ready" | "source_pending";
   note?: string;
+  imagePath?: string;
+  altText?: string;
 };
 
 export type ChecklistBlock = {

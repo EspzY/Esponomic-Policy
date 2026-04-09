@@ -95,12 +95,16 @@ const examTrap = (
 const figureNote = (
   title: string,
   caption: string,
+  imagePath?: string,
+  altText?: string,
   note?: string,
 ): ContentBlock => ({
   type: "figure",
   title,
   caption,
-  status: "source_pending",
+  status: imagePath ? "ready" : "source_pending",
+  imagePath,
+  altText,
   note,
 });
 
@@ -622,9 +626,25 @@ export const lecture2Module: ModuleDetail = {
           "This is one of the main sign-pattern lessons of Lecture 2: a positive technology shock can give you **higher output, lower inflation, and a lower output gap at the same time**.",
         ),
         figureNote(
-          "Impulse-response figures",
-          "The complementary lecture contains impulse-response figures for the three baseline shocks. In this pass, the logic is rendered as structured sign traces, and the chart assets can be added later as curated figure uploads.",
-          "When the actual figure assets are uploaded, this block should render screenshots or redrawn charts rather than placeholder text.",
+          "Contractionary monetary policy shock: impulse responses",
+          "Screenshot from the complementary Lecture 2 deck. This figure is useful because it shows the full joint movement of the output gap, inflation, nominal and real rates, output, employment, money supply, the policy shock itself, the real wage, and the price level after a contractionary monetary policy shock.",
+          "/figures/lecture-2/monetary-policy-shock-impulse-responses.png",
+          "Complementary Lecture 2 slide showing impulse responses to a contractionary monetary policy shock.",
+          "For this pass, I chose the slide screenshot over a custom redraw so the visual stays faithful to the lecture's own sign patterns and scales.",
+        ),
+        figureNote(
+          "Contractionary discount factor shock: impulse responses",
+          "Screenshot from the complementary Lecture 2 deck. This is especially useful for seeing that the output gap, inflation, nominal rate, and real rate all move together in the demand-contraction case, while potential output stays fixed in the lecture logic.",
+          "/figures/lecture-2/discount-factor-shock-impulse-responses.png",
+          "Complementary Lecture 2 slide showing impulse responses to a contractionary discount factor shock.",
+          "This is a curated screenshot from the source PDF rather than a reconstructed figure.",
+        ),
+        figureNote(
+          "Expansionary technology shock: impulse responses",
+          "Screenshot from the complementary Lecture 2 deck. This figure helps students see the important Lecture 2 pattern visually: output rises, inflation falls, and the output gap becomes more negative because natural output rises even more strongly.",
+          "/figures/lecture-2/technology-shock-impulse-responses.png",
+          "Complementary Lecture 2 slide showing impulse responses to an expansionary technology shock.",
+          "Using the lecture screenshot keeps the chart layout and the directional comparisons consistent with the source material.",
         ),
       ],
       citations: [...shockTransmissionCitations, ...lecture2NaturalCitations],

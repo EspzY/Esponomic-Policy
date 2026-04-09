@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import type { ContentBlock } from "@/lib/types";
 
 import { MathMarkdown } from "@/components/math-markdown";
@@ -206,6 +208,17 @@ export function ContentBlocks({
                 Figure
               </p>
               <h3 className="mt-2 text-lg font-semibold">{block.title}</h3>
+              {block.imagePath ? (
+                <div className="mt-4 overflow-hidden rounded-[1.25rem] border border-[var(--color-line)] bg-[var(--color-paper)]">
+                  <Image
+                    src={block.imagePath}
+                    alt={block.altText ?? block.title}
+                    width={756}
+                    height={567}
+                    className="h-auto w-full"
+                  />
+                </div>
+              ) : null}
               <MathMarkdown
                 content={block.caption}
                 className="mt-3 text-sm leading-7 text-[var(--color-slate)]"
