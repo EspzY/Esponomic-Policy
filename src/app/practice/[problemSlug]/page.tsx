@@ -7,7 +7,7 @@ import { PracticeGuide } from "@/components/practice-guide";
 import { ProblemWorkspace } from "@/components/problem-workspace";
 import { buttonClasses } from "@/components/ui/button";
 import { requireViewer } from "@/lib/auth";
-import { getPracticeProblemBySlug } from "@/lib/repository";
+import { getPracticeCollections, getPracticeProblemBySlug, getPracticeProblems } from "@/lib/repository";
 
 export default async function PracticeProblemPage({
   params,
@@ -16,11 +16,25 @@ export default async function PracticeProblemPage({
 }) {
   await requireViewer();
   const { problemSlug } = await params;
-  const problem = await getPracticeProblemBySlug(problemSlug);
+  const [problem, practiceCollections, practiceProblems] = await Promise.all([
+    getPracticeProblemBySlug(problemSlug),
+    getPracticeCollections(),
+    getPracticeProblems(),
+  ]);
 
   if (!problem) {
     return <div>Problem not found.</div>;
   }
+
+  const collection = problem.collectionSlug
+    ? practiceCollections.find((item) => item.slug === problem.collectionSlug)
+    : null;
+  const siblingProblems = collection
+    ? collection.problemSlugs
+        .filter((slug) => slug !== problem.slug)
+        .map((slug) => practiceProblems.find((item) => item.slug === slug))
+        .filter((item) => Boolean(item))
+    : [];
 
   return (
     <main className="space-y-8">
@@ -130,6 +144,44 @@ export default async function PracticeProblemPage({
                   className="mt-3 text-sm leading-7 text-[var(--color-slate)]"
                 />
               </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {collection && siblingProblems.length ? (
+        <section className="surface-card rounded-[2rem] p-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-rust)]">
+            More from this source
+          </p>
+          <h2 className="mt-3 text-2xl font-semibold">{collection.title}</h2>
+          <p className="mt-3 text-sm leading-7 text-[var(--color-slate)]">
+            Move directly to the other questions from the same seminar set or exam, instead of backing out and starting over.
+          </p>
+          <div className="mt-6 grid gap-3">
+            {siblingProblems.map((sibling) => (
+              <Link
+                key={sibling!.slug}
+                href={`/practice/${sibling!.slug}`}
+                className="rounded-[1.5rem] border border-[var(--color-line)] bg-white px-5 py-4 transition hover:border-[rgba(15,118,110,0.3)] hover:bg-[rgba(15,118,110,0.04)]"
+              >
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-full bg-[rgba(180,83,9,0.12)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-rust)]">
+                    {sibling!.questionLabel ?? "Question"}
+                  </span>
+                  <span className="rounded-full border border-[var(--color-line)] px-3 py-1 text-xs uppercase tracking-[0.16em] text-[var(--color-slate)]">
+                    {sibling!.supportMode === "derivation" ? "Solve by hand" : "Written answer feedback"}
+                  </span>
+                </div>
+                <h3 className="mt-3 text-lg font-semibold text-[var(--color-ink)]">
+                  {sibling!.title}
+                </h3>
+                {sibling!.summary ? (
+                  <p className="mt-2 text-sm leading-7 text-[var(--color-slate)]">
+                    {sibling!.summary}
+                  </p>
+                ) : null}
+              </Link>
             ))}
           </div>
         </section>
