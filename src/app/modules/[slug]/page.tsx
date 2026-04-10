@@ -5,7 +5,6 @@ import { markSectionCompleteAction } from "@/app/actions";
 import { CitationList } from "@/components/citation-list";
 import { ContentBlocks } from "@/components/content-blocks";
 import { NotationCollection } from "@/components/notation-collection";
-import { TutorPanel } from "@/components/tutor-panel";
 import { buttonClasses } from "@/components/ui/button";
 import { requireViewer } from "@/lib/auth";
 import {
@@ -98,7 +97,12 @@ export default async function ModulePage({
           const done = progressEntry?.completedSections.includes(section.slug);
 
           return (
-            <article key={section.id} className="surface-card rounded-[2rem] p-8">
+            <article
+              key={section.id}
+              className="surface-card rounded-[2rem] p-8"
+              data-tutor-section={section.slug}
+              data-tutor-section-title={section.title}
+            >
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-rust)]">
@@ -130,7 +134,6 @@ export default async function ModulePage({
         })}
       </section>
 
-      <TutorPanel moduleSlug={module.slug} />
     </main>
   );
 }

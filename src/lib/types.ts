@@ -272,6 +272,32 @@ export type TutorResult = {
   error?: string;
 };
 
+export type TutorConversationTurn = {
+  role: "user" | "assistant";
+  content: string;
+};
+
+export type TutorPageKind =
+  | "dashboard"
+  | "module"
+  | "module_quiz"
+  | "practice_overview"
+  | "practice_problem"
+  | "symbol_register"
+  | "other";
+
+export type TutorPageContext = {
+  pageKind: TutorPageKind;
+  moduleSlug?: string;
+  moduleTitle?: string;
+  sectionSlug?: string;
+  sectionTitle?: string;
+  problemSlug?: string;
+  problemTitle?: string;
+  sourceLabel?: string;
+  sourceKind?: PracticeCollectionKind;
+};
+
 export type InvitePreview = {
   id: string;
   email: string;

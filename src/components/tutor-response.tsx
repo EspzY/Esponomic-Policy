@@ -1,18 +1,33 @@
 import type { TutorResult } from "@/lib/types";
 
 import { MathMarkdown } from "@/components/math-markdown";
+import { cn } from "@/lib/utils";
 
-export function TutorResponse({ result }: { result: TutorResult }) {
+export function TutorResponse({
+  result,
+  compact = false,
+}: {
+  result: TutorResult;
+  compact?: boolean;
+}) {
   if (result.error) {
     return (
-      <div className="rounded-[1.5rem] border border-[rgba(180,83,9,0.24)] bg-white p-5">
+      <div
+        className={cn(
+          compact ? "" : "rounded-[1.5rem] border border-[rgba(180,83,9,0.24)] bg-white p-5",
+        )}
+      >
         <p className="text-sm text-[var(--color-rust)]">{result.error}</p>
       </div>
     );
   }
 
   return (
-    <div className="rounded-[1.5rem] border border-[var(--color-line)] bg-white p-5">
+    <div
+      className={cn(
+        compact ? "" : "rounded-[1.5rem] border border-[var(--color-line)] bg-white p-5",
+      )}
+    >
       <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-rust)]">
         Confidence: {result.confidenceLabel.replaceAll("_", " ")}
       </p>
