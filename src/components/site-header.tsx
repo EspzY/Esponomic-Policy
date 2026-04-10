@@ -24,47 +24,49 @@ export async function SiteHeader() {
               <p className="text-lg font-semibold">Economic Policy</p>
             </div>
           </Link>
-          <nav className="hidden items-center gap-3 md:flex">
-            <Link
-              href="/dashboard"
-              className={buttonClasses("outline", "sm")}
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/modules/symbols"
-              className={buttonClasses("outline", "sm")}
-            >
-              Module 1
-            </Link>
-            <details className="group relative">
-              <summary
-                className={`${buttonClasses("outline", "sm")} summary-reset cursor-pointer gap-2`}
+          {viewer ? (
+            <nav className="hidden items-center gap-3 md:flex">
+              <Link
+                href="/dashboard"
+                className={buttonClasses("outline", "sm")}
               >
-                Lectures
-                <span className="text-xs transition group-open:rotate-180">▾</span>
-              </summary>
-              <div className="absolute left-0 top-[calc(100%+0.75rem)] z-30 min-w-72 rounded-[1.5rem] border border-[var(--color-line)] bg-[var(--color-paper)] p-3 shadow-[var(--shadow-card)]">
-                <div className="grid gap-2">
-                  {lectures.map((lecture) => (
-                    <Link
-                      key={lecture.id}
-                      href={`/modules/${lecture.slug}`}
-                      className="rounded-[1rem] px-4 py-3 text-sm font-medium text-[var(--color-ink)] transition hover:bg-[rgba(15,118,110,0.06)] hover:text-[var(--color-teal)]"
-                    >
-                      {lecture.title}
-                    </Link>
-                  ))}
+                Dashboard
+              </Link>
+              <Link
+                href="/modules/symbols"
+                className={buttonClasses("outline", "sm")}
+              >
+                Module 1
+              </Link>
+              <details className="group relative">
+                <summary
+                  className={`${buttonClasses("outline", "sm")} summary-reset cursor-pointer gap-2`}
+                >
+                  Lectures
+                  <span className="text-xs transition group-open:rotate-180">▾</span>
+                </summary>
+                <div className="absolute left-0 top-[calc(100%+0.75rem)] z-30 min-w-72 rounded-[1.5rem] border border-[var(--color-line)] bg-[var(--color-paper)] p-3 shadow-[var(--shadow-card)]">
+                  <div className="grid gap-2">
+                    {lectures.map((lecture) => (
+                      <Link
+                        key={lecture.id}
+                        href={`/modules/${lecture.slug}`}
+                        className="rounded-[1rem] px-4 py-3 text-sm font-medium text-[var(--color-ink)] transition hover:bg-[rgba(15,118,110,0.06)] hover:text-[var(--color-teal)]"
+                      >
+                        {lecture.title}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </details>
-            <Link
-              href="/practice/lecture-1-guided-policy-rule"
-              className={buttonClasses("outline", "sm")}
-            >
-              Practice
-            </Link>
-          </nav>
+              </details>
+              <Link
+                href="/practice/lecture-1-guided-policy-rule"
+                className={buttonClasses("outline", "sm")}
+              >
+                Practice
+              </Link>
+            </nav>
+          ) : null}
         </div>
 
         <div className="flex items-center gap-3">
@@ -97,12 +99,20 @@ export async function SiteHeader() {
               ) : null}
             </>
           ) : (
-            <Link
-              href="/#login"
-              className={buttonClasses("primary", "sm")}
-            >
-              Sign in
-            </Link>
+            <>
+              <Link
+                href="/register"
+                className={buttonClasses("outline", "sm")}
+              >
+                Register
+              </Link>
+              <Link
+                href="/"
+                className={buttonClasses("primary", "sm")}
+              >
+                Sign in
+              </Link>
+            </>
           )}
         </div>
       </div>
