@@ -6,6 +6,7 @@ import {
   derivation,
   eq,
   examTrap,
+  figureNote,
   lectureModule,
   modelMap,
   notationEntry,
@@ -82,12 +83,15 @@ export const lecture1Module: ModuleDetail = lectureModule({
     {
       id: "lecture-1-big-picture",
       slug: "big-picture-and-exam-relevance",
-      title: "Big picture and exam relevance",
+      title: "Big picture and why this lecture matters",
       summary:
         "Why the course starts with rules, objectives, and the distinction between systematic and unsystematic policy.",
       contentBlocks: [
         p(
           "Lecture 1 gives you the **language of monetary policy** before the course turns to full models. Later modules ask what the central bank should do in a New Keynesian model, under commitment, at the zero lower bound, or when inequality matters. But all of those later questions still rely on the same core habits introduced here: identify the objective, identify the instrument, and ask whether policy moves systematically with the state of the economy or only through shocks.",
+        ),
+        p(
+          "Relative to the rest of the course, this lecture is the benchmark for how to think about policy discipline before the models become more detailed. What changes in Lecture 2 and beyond is the amount of structure around the economy; what stays is the need to separate the **goal**, the **tool**, and the **reaction pattern**. Carry that distinction forward, because almost every later lecture assumes you can already do it.",
         ),
         p(
           "This is also exam-relevant because the course repeatedly distinguishes between **what a central bank wants to stabilize**, **what it actually controls**, and **what kind of rule maps the state of the economy into a rate decision**. If those three layers get mixed together, the rest of the course becomes harder than it needs to be.",
@@ -223,6 +227,9 @@ export const lecture1Module: ModuleDetail = lectureModule({
         p(
           "Lecture 1 does not claim that the Taylor rule is a complete model of central-bank behavior. The point is narrower and more useful: the rule gives a compact way to summarize **good policy discipline**. It says policy should be systematic, should respond to inflation and activity, and should satisfy the Taylor principle.",
         ),
+        p(
+          "Carry this forward into the rest of the course: later lectures will replace the simple rule with a full New Keynesian benchmark, commitment problems, forward-guidance promises, or richer distributional environments. But they still keep asking the same underlying question: **how should policy react once the state of the economy changes?**",
+        ),
         modelMap("Why the Taylor rule survives in the course", [
           {
             label: "Transparency",
@@ -289,6 +296,16 @@ export const lecture1Module: ModuleDetail = lectureModule({
         p(
           "Lecture 1 uses the **Qvigstad plot** to show how policy can be communicated in an inflation-output-gap space. The point is not that the plot is a model by itself, but that it forces the central bank's trade-offs and intended movement to be visible.",
         ),
+        figureNote({
+          title: "Taylor-rule benchmark as a policy visual",
+          caption:
+            "Screenshot from Lecture 1 showing the classic Taylor-rule comparison between the actual Fed funds rate and the rule-implied benchmark. Use it to see why the lecture treats rules as a disciplined reference point for policy, not as a decorative formula.",
+          imagePath: "/figures/lecture-1/taylor-rule-benchmark.png",
+          altText:
+            "Lecture 1 slide showing a time-series comparison between the actual Federal Funds Rate and the original Taylor Rule from 1993-present.",
+          note:
+            "What to notice: the lecture uses this figure to train the habit of comparing actual policy to a systematic benchmark before calling policy unusually loose or tight.",
+        }),
         p(
           "The lecture also uses the pre-Great Recession debate between Taylor and Bernanke to show how rules are used in practice: not as infallible commands, but as a benchmark for arguing that policy was perhaps too low for too long or, alternatively, that the economy's neutral rate had moved.",
         ),

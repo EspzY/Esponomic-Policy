@@ -11,6 +11,7 @@ import {
   cite,
   derivation,
   eq,
+  examTrap,
   figureNote,
   lectureModule,
   modelMap,
@@ -163,7 +164,7 @@ const lecture3Module: ModuleDetail = lectureModule({
     {
       id: "lecture-3-big-picture",
       slug: "big-picture-and-exam-relevance",
-      title: "Big picture and exam relevance",
+      title: "Big picture and why this lecture matters",
       summary: "Lecture 3 is the clean benchmark the course later breaks.",
       contentBlocks: [
         p(
@@ -171,6 +172,9 @@ const lecture3Module: ModuleDetail = lectureModule({
         ),
         p(
           "This lecture matters because later modules are built by breaking its result. Lecture 4 adds cost-push shocks and the trade-off returns. So if you understand Lecture 3 properly, you understand exactly what later lectures are changing.",
+        ),
+        p(
+          "Relative to Lecture 2, what changes here is not the three-equation structure itself but the policy interpretation of that structure. What stays from the benchmark is the role of the Dynamic IS equation, the Phillips curve, and the Taylor principle. What you must carry forward is the ability to ask whether inflation pressure comes only from slack or from an extra wedge as well.",
         ),
       ],
       citations: lecture3CoreCitations,
@@ -275,6 +279,9 @@ const lecture3Module: ModuleDetail = lectureModule({
         p(
           "The compact result is that **when inflation has no independent cost-push wedge, stabilizing inflation also stabilizes the output gap**. This is a benchmark result about the structure of the policy trade-off, not a claim that policy becomes irrelevant or automatic.",
         ),
+        p(
+          "Carry this benchmark forward into Lecture 4: the whole point of the next lecture is to show what breaks once inflation is hit by a disturbance that does not come only from the output gap.",
+        ),
       ],
       citations: lecture3CoreCitations,
     },
@@ -346,11 +353,14 @@ const lecture3Module: ModuleDetail = lectureModule({
           ],
         }),
         figureNote({
-          title: "Matrix-form view of the system",
+          title: "Divine coincidence in one benchmark slide",
           caption:
-            "The matrix note is the best visual support for the benchmark because it puts the three equations into one coefficient system.",
+            "Screenshot from Lecture 3 showing the clean benchmark result: strict inflation stabilization implies a closed output gap and an actual rate aligned with the natural rate. Use it as the visual summary of why Lecture 3 is the benchmark later lectures break.",
+          imagePath: "/figures/lecture-3/divine-coincidence-benchmark.png",
+          altText:
+            "Lecture 3 slide stating divine coincidence, with inflation at zero, output equal to natural output, and the policy rate aligned with the natural rate.",
           note:
-            "A screenshot from the matrix note can be attached later if you want the full system rendered visually.",
+            "What to notice: the benchmark is not saying policy is irrelevant. It is saying that, in this special setup, stabilizing inflation also stabilizes the output gap.",
         }),
       ],
       citations: lecture3CoreCitations,
@@ -397,8 +407,14 @@ const lecture3Module: ModuleDetail = lectureModule({
             "Divine coincidence requires no cost-push shock in the benchmark Phillips curve.",
             "The result removes the trade-off, not the IS block or the need for policy discipline.",
             "The Taylor principle still matters because the equilibrium must be determinate.",
+            "Carry forward: later lectures are easiest if you keep asking what exact assumption broke the benchmark.",
           ],
           "Quick recap",
+        ),
+        examTrap(
+          "Treating divine coincidence as a universal law",
+          "Students often answer later policy questions as if stabilizing inflation must always stabilize the output gap too.",
+          "State the benchmark condition explicitly: divine coincidence only holds when the Phillips curve has no independent cost-push wedge. Lecture 4 is about what happens when that assumption fails.",
         ),
       ],
       citations: lecture3CoreCitations,
@@ -426,7 +442,7 @@ const lecture4Module: ModuleDetail = lectureModule({
     {
       id: "lecture-4-big-picture",
       slug: "big-picture-and-exam-relevance",
-      title: "Big picture and exam relevance",
+      title: "Big picture and why this lecture matters",
       summary: "This is where the course turns from a benchmark to a real trade-off.",
       contentBlocks: [
         p(
@@ -434,6 +450,9 @@ const lecture4Module: ModuleDetail = lectureModule({
         ),
         p(
           "This is why the lecture introduces loss functions, targeting rules, discretion, and commitment. These are the tools the course uses from this point onward whenever policy has to manage conflicting objectives.",
+        ),
+        p(
+          "Relative to Lecture 3, what changes is that inflation now has a wedge of its own. What stays is the New Keynesian structure and the need to think systematically about policy. What you must carry forward is that the policy problem is no longer 'stabilize one thing and get the other for free' but 'choose how to trade costly margins against each other.'",
         ),
       ],
       citations: lecture4CoreCitations,
@@ -552,6 +571,9 @@ const lecture4Module: ModuleDetail = lectureModule({
         p(
           "The lecture's compact takeaway is that optimal policy can be summarized by targeting rules linking inflation and the welfare-relevant output gap. Under discretion, the central bank chooses a gap that moves against inflation rather than trying to eliminate both at once.",
         ),
+        p(
+          "Carry this forward into Lectures 5 and 6: once trade-offs exist, credibility and expectations become even more important because current outcomes depend on how private agents think policy will behave over time.",
+        ),
       ],
       citations: lecture4CoreCitations,
     },
@@ -601,11 +623,14 @@ const lecture4Module: ModuleDetail = lectureModule({
           "The safest summary is that **commitment works through expectations**. It does not remove the cost-push shock, but it changes private beliefs about future policy and therefore makes current inflation easier to stabilize with a different current gap path than under discretion.",
         ),
         figureNote({
-          title: "Impulse responses under discretion versus commitment",
+          title: "Discretionary targeting rule and trade-off geometry",
           caption:
-            "The lecture's figures are especially useful here because they show how different policy regimes distribute the adjustment over time.",
+            "Screenshot from Lecture 4 highlighting the discretionary optimality condition. This visual is useful because it makes the inflation-gap trade-off concrete instead of leaving the targeting rule as an abstract formula.",
+          imagePath: "/figures/lecture-4/discretionary-targeting-rule.png",
+          altText:
+            "Lecture 4 slide showing the discretionary optimality condition x_t = -(kappa/alpha_x) pi_t and explaining why inflation and the welfare-relevant output gap take opposite signs.",
           note:
-            "A curated screenshot from the lecture deck or commitment note can be added later without redrawing the original figure.",
+            "What to notice: once a cost-push shock exists, the policymaker is not trying to make both inflation and the gap zero. The target rule tells you how the trade-off is optimally managed under discretion.",
         }),
       ],
       citations: lecture4CoreCitations,
@@ -653,8 +678,14 @@ const lecture4Module: ModuleDetail = lectureModule({
             "$x_t$ is the welfare-relevant output gap used in the policy problem.",
             "Targeting rules summarize optimal trade-offs; they are not primitive structural equations.",
             "Commitment matters because it changes expectations.",
+            "Carry forward: later lectures on credibility and forward guidance only make sense if you already see why expectations help manage today's trade-off.",
           ],
           "Quick recap",
+        ),
+        examTrap(
+          "Thinking the central bank can still close both gaps at once",
+          "Students often keep using the Lecture 3 benchmark logic after a cost-push shock has already entered the Phillips curve.",
+          "Stop and ask whether inflation now has an independent wedge. If it does, perfect inflation stabilization and a zero welfare-relevant output gap are no longer jointly feasible in the benchmark policy problem.",
         ),
       ],
       citations: lecture4CoreCitations,
@@ -682,7 +713,7 @@ const lecture5Module: ModuleDetail = lectureModule({
     {
       id: "lecture-5-big-picture",
       slug: "big-picture-and-exam-relevance",
-      title: "Big picture and exam relevance",
+      title: "Big picture and why this lecture matters",
       summary: "Lecture 5 makes credibility into a formal incentive problem.",
       contentBlocks: [
         p(
@@ -690,6 +721,9 @@ const lecture5Module: ModuleDetail = lectureModule({
         ),
         p(
           "This lecture matters because it explains why credibility is not just a communication issue. It is an incentive problem. That is also why central bank independence is discussed here: it is meant to make short-run political pressure less able to distort long-run monetary-policy goals.",
+        ),
+        p(
+          "Relative to Lecture 4, what changes is that the focus shifts from a technical stabilization trade-off to the policymaker's own incentive problem. What stays is the importance of expectations. What you must carry forward is that policy design is not only about which rule is optimal, but also about whether private agents believe policymakers will stick to it.",
         ),
       ],
       citations: lecture5CoreCitations,
@@ -800,6 +834,9 @@ const lecture5Module: ModuleDetail = lectureModule({
         p(
           "The compact takeaway is that **if policymakers want output above the natural level and cannot commit, rational expectations generate inflation bias**. Commitment or institutions that mimic commitment can remove that bias by making low inflation credible in advance.",
         ),
+        p(
+          "Carry this forward into Lecture 6: once expectations are central to credibility, promises about future policy can become a stabilization tool in their own right when the current rate is constrained.",
+        ),
       ],
       citations: lecture5CoreCitations,
     },
@@ -851,9 +888,12 @@ const lecture5Module: ModuleDetail = lectureModule({
         figureNote({
           title: "Political pressure and monetary policy",
           caption:
-            "The Drechsel material is the natural visual complement here because it links policy outcomes to political pressure.",
+            "Screenshot from the Drechsel material showing how political pressure is associated with persistent shifts in macro and policy outcomes. It helps students see that credibility problems are not only theoretical; they also have empirical fingerprints.",
+          imagePath: "/figures/lecture-5/political-pressure-impulse-responses.png",
+          altText:
+            "Figure from the Drechsel material showing impulse-response style panels for presidential interactions, the T-bill rate, GDP deflator, real GDP, spending, deficit ratio, and newspaper coverage after political pressure shocks.",
           note:
-            "A curated screenshot from the Drechsel source can be added later if you want an evidence figure in the module.",
+            "What to notice: the figure does not prove every institutional claim on its own, but it gives the lecture's incentives story an empirical anchor.",
         }),
       ],
       citations: lecture5CoreCitations,
@@ -900,8 +940,14 @@ const lecture5Module: ModuleDetail = lectureModule({
             "Inflation bias is an equilibrium outcome under discretion and rational expectations.",
             "The bias disappears if $y^* = y^n$.",
             "Commitment and independence matter because they change credibility and incentives.",
+            "Carry forward: from here on, expectations are not just a forecasting detail but part of the policy problem itself.",
           ],
           "Quick recap",
+        ),
+        examTrap(
+          "Talking as if policymakers can fool people forever",
+          "Students sometimes explain inflation bias as if the policymaker repeatedly surprises households with inflation year after year.",
+          "Impose rational expectations. The whole point of the lecture is that private agents learn the policymaker's incentive, so equilibrium inflation rises while the output gain disappears.",
         ),
       ],
       citations: lecture5CoreCitations,
@@ -929,14 +975,14 @@ const lecture6Module: ModuleDetail = lectureModule({
     {
       id: "lecture-6-big-picture",
       slug: "big-picture-and-exam-relevance",
-      title: "Big picture and exam relevance",
+      title: "Big picture and why this lecture matters",
       summary: "Lecture 6 asks what policy can do when the current rate is constrained.",
       contentBlocks: [
         p(
           "At the zero lower bound, conventional rate cuts are limited. That does **not** make policy powerless. It means the transmission mechanism shifts toward the **expected future path** of rates. Lecture 6 is therefore where expectations management becomes a central policy tool rather than a side comment.",
         ),
         p(
-          "This is highly exam-relevant because students often memorize the labels Delphic and Odyssean without first explaining the Dynamic IS mechanism that makes forward guidance matter at all.",
+          "Relative to Lectures 4 and 5, what changes here is that credibility is no longer only about long-run inflation discipline. It becomes a direct stabilization instrument. What stays is the role of expectations. What you must carry forward is that the Dynamic IS equation is the backbone of the whole lecture: without that equation, Delphic and Odyssean labels are just words.",
         ),
       ],
       citations: lecture6CoreCitations,
@@ -1034,6 +1080,9 @@ const lecture6Module: ModuleDetail = lectureModule({
         p(
           "The compact result is that **when the current policy rate is constrained, promises about future policy become a current policy instrument**. A credible commitment to keep future rates lower can stimulate demand today by lowering the expected path of real rates.",
         ),
+        p(
+          "Carry this forward into Lecture 7: once policy increasingly works through expectations, it becomes even more important to know how strongly inflation actually reacts to slack.",
+        ),
       ],
       citations: lecture6CoreCitations,
     },
@@ -1093,9 +1142,12 @@ const lecture6Module: ModuleDetail = lectureModule({
         figureNote({
           title: "Forward-guidance experiment",
           caption:
-            "The lecture's timeline and experiment figures are ideal here because they show how a future promise changes current outcomes.",
+            "Screenshot from the complementary forward-guidance puzzle deck showing how different promise horizons move output, inflation, the policy rate, and the real rate in the standard three-equation model.",
+          imagePath: "/figures/lecture-6/forward-guidance-baseline-model.png",
+          altText:
+            "Complementary Lecture 6 figure with four panels for output, inflation, policy rate, and real interest rate under forward-guidance horizons T=0, 2, 4, and 8.",
           note:
-            "A screenshot from the lecture or complementary puzzle deck can be inserted later without redrawing the original chart.",
+            "What to notice: the whole figure is a visual version of the Dynamic IS mechanism. A future promise changes current demand because households react to the expected path of real rates, not only the current short rate.",
         }),
       ],
       citations: lecture6CoreCitations,
@@ -1142,8 +1194,14 @@ const lecture6Module: ModuleDetail = lectureModule({
             "Forward guidance works through the expected path of **real** rates.",
             "Delphic guidance is information; Odyssean guidance is commitment.",
             "The forward-guidance puzzle is about exaggerated quantitative effects, not about a nonexistent channel.",
+            "Carry forward: later lectures keep relying on the same expectations logic, even when the topic is no longer the zero lower bound itself.",
           ],
           "Quick recap",
+        ),
+        examTrap(
+          "Using the labels without the mechanism",
+          "Students often define Delphic and Odyssean guidance correctly in words but cannot explain why either matters for current demand.",
+          "Start from the Dynamic IS equation. Then explain how the announcement changes the expected path of future real rates, and only after that classify whether the announcement is information, commitment, or a mixture of both.",
         ),
       ],
       citations: lecture6CoreCitations,
@@ -1171,14 +1229,14 @@ const lecture7Module: ModuleDetail = lectureModule({
     {
       id: "lecture-7-big-picture",
       slug: "big-picture-and-exam-relevance",
-      title: "Big picture and exam relevance",
+      title: "Big picture and why this lecture matters",
       summary: "Lecture 7 asks how strongly inflation reacts to slack.",
       contentBlocks: [
         p(
           "Once you understand the New Keynesian policy problem, the next question is: **how strong is the inflation response to slack?** That is the Phillips-curve slope question. The steeper the curve, the more strongly inflation reacts to output or unemployment gaps. The flatter the curve, the harder inflation is to move with demand management alone.",
         ),
         p(
-          "This is exam-relevant because many policy debates reduce to a claim about the slope. But the lecture is also careful that identifying the slope empirically is hard: raw data correlations do not automatically reveal the structural parameter.",
+          "Relative to Lectures 3, 4, and 6, what changes here is that the course is no longer asking only *whether* policy can move inflation, but *how strongly* inflation responds once slack changes. What stays is the need to separate structural mechanisms from raw correlations. What you must carry forward is that slope debates are always partly about identification, not just about drawing a flatter line in the data.",
         ),
       ],
       citations: lecture7CoreCitations,
@@ -1266,6 +1324,9 @@ const lecture7Module: ModuleDetail = lectureModule({
         p(
           "The compact takeaway is that a flatter Phillips curve makes inflation stabilization more demanding in real terms, but the data alone do not identify that structural change cleanly.",
         ),
+        p(
+          "Carry this forward into later lectures: whenever inflation seems unusually inert, you should ask whether the slope changed structurally, whether policy expectations shifted, or whether the shock mix changed.",
+        ),
       ],
       citations: lecture7CoreCitations,
     },
@@ -1319,6 +1380,16 @@ const lecture7Module: ModuleDetail = lectureModule({
             },
           ],
         }),
+        figureNote({
+          title: "Historical Phillips-curve benchmark",
+          caption:
+            "Screenshot from Lecture 7 showing the original UK Phillips-curve relationship. It is useful because it reminds students that the modern slope debate starts from an empirical pattern, but later lectures reinterpret that pattern structurally.",
+          imagePath: "/figures/lecture-7/historical-phillips-curve.png",
+          altText:
+            "Lecture 7 slide showing inflation and unemployment in the UK with the original Phillips curve fitted to historical data.",
+          note:
+            "What to notice: the lecture does not stop at the historical scatter. It uses that intuition as a starting point before asking how the structural slope should be interpreted in modern policy problems.",
+        }),
       ],
       citations: lecture7CoreCitations,
     },
@@ -1364,8 +1435,14 @@ const lecture7Module: ModuleDetail = lectureModule({
             "A flatter curve means inflation reacts less to slack.",
             "Reduced-form evidence is not the same as the structural slope.",
             "Policy credibility and expectations can mimic flattening in the data.",
+            "Carry forward: whenever the course later talks about stubborn inflation, you should immediately ask what is happening to the slope, expectations, and identification.",
           ],
           "Quick recap",
+        ),
+        examTrap(
+          "Reading reduced-form data as if it were the structural parameter",
+          "Students often jump from a weak observed inflation-unemployment correlation to the claim that the structural Phillips curve must have flattened by the same amount.",
+          "Separate the object you observe from the object you want to identify. Policy credibility, anchored expectations, and different shocks can flatten the observed relationship even when the structural slope is harder to pin down.",
         ),
       ],
       citations: lecture7CoreCitations,
@@ -1393,7 +1470,7 @@ const lecture8Module: ModuleDetail = lectureModule({
     {
       id: "lecture-8-big-picture",
       slug: "big-picture-and-exam-relevance",
-      title: "Big picture and exam relevance",
+      title: "Big picture and why this lecture matters",
       summary: "Lecture 8 asks what changes once households are no longer identical.",
       contentBlocks: [
         p(
@@ -1401,6 +1478,9 @@ const lecture8Module: ModuleDetail = lectureModule({
         ),
         p(
           "The lecture's answer is that inequality is not just a side topic. It changes the strength and distribution of policy effects because policy affects households with different MPCs and balance-sheet positions differently.",
+        ),
+        p(
+          "Relative to the representative-agent benchmark used earlier in the course, what changes is that averages are no longer enough. What stays is the search for a transmission mechanism. What you must carry forward is that policy can move aggregates partly because it redistributes resources toward households with different spending behavior.",
         ),
       ],
       citations: lecture8CoreCitations,
@@ -1481,6 +1561,9 @@ const lecture8Module: ModuleDetail = lectureModule({
         p(
           "The compact result is that **monetary policy works partly through distribution**. Once households differ, policy transmission depends not only on the average real rate, but also on who gets income, who faces debt-service pressure, and who has the highest MPC.",
         ),
+        p(
+          "Carry this forward into later applied policy questions: when the course discusses inequality, debt, or sustainability, it is no longer enough to know the average effect if the distribution of gains and losses changes the macro response.",
+        ),
       ],
       citations: lecture8CoreCitations,
     },
@@ -1533,11 +1616,14 @@ const lecture8Module: ModuleDetail = lectureModule({
           ],
         }),
         figureNote({
-          title: "Heterogeneous-agent channels",
+          title: "Why heterogeneity changes macro transmission",
           caption:
-            "The lecture deck contains channel decompositions that would work well as screenshots in a later polish pass.",
+            "Screenshot from Lecture 8 showing a distribution of households rather than one representative agent. It supports the lecture's central point that macro theory changes once income and wealth are distributed rather than concentrated in one benchmark household.",
+          imagePath: "/figures/lecture-8/heterogeneous-agent-distribution.png",
+          altText:
+            "Lecture 8 slide titled Second Generation Macro Theories with a crowd image and a three-dimensional distribution over income and wealth.",
           note:
-            "For now, the module keeps the logic explicit in structured blocks so students can read the mechanism slowly before looking at a chart.",
+            "What to notice: the visual matters because the lecture is not just saying 'people differ' in words; it is saying the whole state of the economy becomes a distribution that moves over time.",
         }),
       ],
       citations: lecture8CoreCitations,
@@ -1584,8 +1670,14 @@ const lecture8Module: ModuleDetail = lectureModule({
             "Do not stop at the phrase 'heterogeneity matters'. Name the channel.",
             "The aggregate MPC depends on who receives income changes, not only on the average response.",
             "Redistribution is part of the transmission mechanism, not just a fairness side issue.",
+            "Carry forward: later policy reasoning is stronger if you always ask who gains, who loses, and who actually spends the gain.",
           ],
           "Quick recap",
+        ),
+        examTrap(
+          "Saying inequality matters without naming the mechanism",
+          "Students often answer heterogeneous-agent questions with a vague sentence about distribution but never explain why the aggregate response changes.",
+          "Force yourself to name the channel: MPC dispersion, borrower-lender redistribution, labor-income exposure, or another concrete mechanism. The lecture's whole purpose is to move from a slogan to a transmission story.",
         ),
       ],
       citations: lecture8CoreCitations,

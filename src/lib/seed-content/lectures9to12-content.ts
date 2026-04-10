@@ -11,6 +11,7 @@ import {
   cite,
   derivation,
   eq,
+  examTrap,
   figureNote,
   lectureModule,
   notationEntry,
@@ -142,11 +143,14 @@ const lecture9Module: ModuleDetail = lectureModule({
     {
       id: "lecture-9-big-picture",
       slug: "big-picture-and-exam-relevance",
-      title: "Big picture and exam relevance",
+      title: "Big picture and why this lecture matters",
       summary: "Lecture 9 gives the fiscal side of the stabilization story.",
       contentBlocks: [
         p(
           "Lecture 9 shifts from monetary policy to fiscal arithmetic. The central question is simple: **how can the government borrow, tax, and spend over time without violating its intertemporal budget constraint?** Once that question is clear, Ricardian equivalence and tax smoothing become much easier to interpret.",
+        ),
+        p(
+          "Relative to the earlier monetary-policy lectures, what changes is the object of discipline: instead of a reaction function for the policy rate, you now need an intertemporal accounting logic for taxes, spending, and debt. What stays is the benchmark mentality. What you must carry forward is that borrowing changes timing, not the need for financing itself.",
         ),
       ],
       citations: lecture9CoreCitations,
@@ -215,6 +219,9 @@ const lecture9Module: ModuleDetail = lectureModule({
         p(
           "The compact takeaway is that government borrowing changes the timing of financing, not the need for financing itself. Under strong benchmark assumptions, the private sector understands that and may offset debt-financed tax changes through its own saving behavior.",
         ),
+        p(
+          "Carry this forward into Lecture 10: once you understand the arithmetic of debt and fiscal promises, the next question is when those same dynamics become fragile enough to generate crisis logic.",
+        ),
       ],
       citations: lecture9CoreCitations,
     },
@@ -272,6 +279,16 @@ const lecture9Module: ModuleDetail = lectureModule({
             },
           ],
         }),
+        figureNote({
+          title: "Conventional view versus Ricardian-equivalence benchmark",
+          caption:
+            "Screenshot from Lecture 9 contrasting the standard demand-stimulus view of debt with the Ricardian benchmark. It is useful because the lecture is really training students to compare two mechanisms, not to memorize one slogan.",
+          imagePath: "/figures/lecture-9/ricardian-equivalence-alternative-view.png",
+          altText:
+            "Lecture 9 slide titled Alternative view, listing Ricardian equivalence and explaining why higher current debt implies future taxes that households anticipate.",
+          note:
+            "What to notice: the lecture's payoff comes from comparing the two views slowly and identifying exactly which assumptions make the Ricardian benchmark bite.",
+        }),
       ],
       citations: lecture9CoreCitations,
     },
@@ -317,8 +334,14 @@ const lecture9Module: ModuleDetail = lectureModule({
             "Debt shifts financing over time; it does not remove the budget constraint.",
             "Ricardian equivalence is a benchmark with strong assumptions, not a universal law.",
             "Tax smoothing is about minimizing distortion over time, not about avoiding taxes forever.",
+            "Carry forward: later debt-crisis reasoning is much easier if you already separate fiscal arithmetic from market beliefs.",
           ],
           "Quick recap",
+        ),
+        examTrap(
+          "Treating Ricardian equivalence as either obviously true or obviously absurd",
+          "Students often answer debt questions by taking a side immediately instead of identifying the benchmark assumptions and then asking which real-world frictions break them.",
+          "Start from the benchmark cleanly. Then say which assumptions fail in practice and how those failures restore demand effects, distributional effects, or crisis risks.",
         ),
       ],
       citations: lecture9CoreCitations,
@@ -346,11 +369,14 @@ const lecture10Module: ModuleDetail = lectureModule({
     {
       id: "lecture-10-big-picture",
       slug: "big-picture-and-exam-relevance",
-      title: "Big picture and exam relevance",
+      title: "Big picture and why this lecture matters",
       summary: "Lecture 10 is where fiscal arithmetic turns into crisis logic.",
       contentBlocks: [
         p(
           "Lecture 9 gave you the fiscal arithmetic. Lecture 10 asks when that arithmetic becomes dangerous. The central question is: **under what conditions can public debt be rolled over safely, and when can the same debt stock trigger a crisis?**",
+        ),
+        p(
+          "Relative to Lecture 9, what changes is that market beliefs and rollover conditions now matter alongside accounting. What stays is the debt-dynamics logic. What you must carry forward is that crises are rarely just about one equation; they emerge when arithmetic, expectations, and institutions reinforce each other.",
         ),
       ],
       citations: lecture10CoreCitations,
@@ -414,6 +440,9 @@ const lecture10Module: ModuleDetail = lectureModule({
         p(
           "The compact takeaway is that debt sustainability depends on the interaction between fiscal arithmetic and market beliefs. A bad enough $r-g$ differential or insufficient primary surplus can destabilize debt mechanically, but investor fears can also worsen those mechanics further.",
         ),
+        p(
+          "Carry this forward into the remaining course: from here on, apparently small changes in expectations or institutions should always be read as potential amplifiers of an underlying benchmark mechanism.",
+        ),
       ],
       citations: lecture10CoreCitations,
     },
@@ -474,9 +503,12 @@ const lecture10Module: ModuleDetail = lectureModule({
         figureNote({
           title: "Debt paths and crisis scenarios",
           caption:
-            "This lecture benefits a lot from the debt-path figures in the source material because they show how small changes in $r-g$ or $s$ compound over time.",
+            "Screenshot from the sovereign-debt survey paper showing the historical frequency of sovereign default. It is useful because it adds historical scale to the lecture's point that crisis episodes cluster and are not theoretical curiosities.",
+          imagePath: "/figures/lecture-10/frequency-of-sovereign-default.png",
+          altText:
+            "Figure from Empirical Research on Sovereign Debt and Default showing the frequency of sovereign default over time with a line for the proportion of borrowers in default and bars for the number of defaulting countries.",
           note:
-            "A screenshot from the lecture or support papers can be added later as a visual debt-path block.",
+            "What to notice: the lecture is not only about one country's arithmetic. It is also about how default risk and crisis incidence vary over time and can rise in waves.",
         }),
       ],
       citations: lecture10CoreCitations,
@@ -523,8 +555,14 @@ const lecture10Module: ModuleDetail = lectureModule({
             "The debt ratio depends on the interest-growth differential, the initial debt stock, and the primary surplus.",
             "Debt crises involve both arithmetic and expectations.",
             "A crisis can be amplified by higher yields that worsen the debt path itself.",
+            "Carry forward: whenever the course later discusses vulnerability, ask what part is fundamentals and what part is amplification through expectations.",
           ],
           "Quick recap",
+        ),
+        examTrap(
+          "Reading the debt equation as if it fully determines crisis timing",
+          "Students often write the debt-dynamics equation correctly and then act as if the crisis question is already solved.",
+          "Use the equation as the arithmetic core, then add rollover risk, investor beliefs, and institutional credibility. Lecture 10 is precisely about the interaction between those layers.",
         ),
       ],
       citations: lecture10CoreCitations,
@@ -552,11 +590,14 @@ const lecture11Module: ModuleDetail = lectureModule({
     {
       id: "lecture-11-big-picture",
       slug: "big-picture-and-exam-relevance",
-      title: "Big picture and exam relevance",
+      title: "Big picture and why this lecture matters",
       summary: "Lecture 11 organizes distribution into several different questions.",
       contentBlocks: [
         p(
           "Lecture 11 is useful because it prevents the word **inequality** from becoming too vague. The lecture separates functional distribution, personal distribution, wage-setting systems, and summary measures such as the Gini coefficient. Those are related, but they answer different questions.",
+        ),
+        p(
+          "Relative to Lecture 8, what changes is that the course now classifies distributional outcomes rather than focusing mainly on transmission. What stays is the need to ask who gets income and why. What you must carry forward is that inequality measures are only informative when you know what kind of distribution they are summarizing.",
         ),
       ],
       citations: lecture11CoreCitations,
@@ -625,6 +666,9 @@ const lecture11Module: ModuleDetail = lectureModule({
         p(
           "The compact takeaway is that inequality has multiple layers. Factor shares tell you how total income is split between labor and capital, while Lorenz curves and Gini coefficients summarize how income is distributed across people. Institutions can matter for both.",
         ),
+        p(
+          "Carry this forward into policy discussions: if the question changes from wages to personal income, or from a curve to a summary index, your interpretation must change too.",
+        ),
       ],
       citations: lecture11CoreCitations,
     },
@@ -660,9 +704,12 @@ const lecture11Module: ModuleDetail = lectureModule({
         figureNote({
           title: "Lorenz curve and Gini figures",
           caption:
-            "The lecture's inequality figures are especially useful because they show the difference between visual distribution comparisons and one-number summaries.",
+            "Screenshot from Lecture 11 showing Lorenz curves that cross. This is especially useful because it teaches a subtle but important lesson: inequality comparisons are not always fully ranked by one simple visual or one summary number.",
+          imagePath: "/figures/lecture-11/lorenz-curves-can-cross.png",
+          altText:
+            "Lecture 11 slide showing several Lorenz curves, including an example where Lorenz curves cross across countries.",
           note:
-            "A screenshot from the lecture deck can be added later to show the Lorenz-curve geometry directly.",
+            "What to notice: once Lorenz curves cross, casual statements like 'country A is clearly more unequal than country B' become much more dangerous.",
         }),
       ],
       citations: lecture11CoreCitations,
@@ -709,8 +756,14 @@ const lecture11Module: ModuleDetail = lectureModule({
             "Functional distribution and personal distribution are not the same concept.",
             "A higher capital share does not automatically tell you the full personal-inequality story.",
             "Lorenz curves and the Gini coefficient summarize distribution; they do not explain its causes by themselves.",
+            "Carry forward: when later discussions mention inequality, first ask which inequality concept is actually being used.",
           ],
           "Quick recap",
+        ),
+        examTrap(
+          "Using inequality as one undifferentiated concept",
+          "Students often move between wage shares, household income dispersion, Lorenz curves, and the Gini coefficient as if they were interchangeable.",
+          "Slow down and name the object. The lecture is teaching a classification system, and most confusion disappears once you state whether you are talking about functional shares, personal distribution, or a summary measure.",
         ),
       ],
       citations: lecture11CoreCitations,
@@ -738,11 +791,14 @@ const lecture12Module: ModuleDetail = lectureModule({
     {
       id: "lecture-12-big-picture",
       slug: "big-picture-and-exam-relevance",
-      title: "Big picture and exam relevance",
+      title: "Big picture and why this lecture matters",
       summary: "Lecture 12 asks how macroeconomics changes once nature is no longer free.",
       contentBlocks: [
         p(
           "Lecture 12 ties the course together by asking what happens when growth interacts with exhaustible resources, environmental damage, and climate externalities. The lecture's purpose is not to abandon macroeconomics, but to show how the same discipline of modeling constraints and incentives applies to sustainability questions too.",
+        ),
+        p(
+          "Relative to the earlier lectures, what changes is that the constraint set now includes nature, environmental quality, and external damage. What stays is the benchmark discipline of asking what the friction is, how private incentives differ from the social optimum, and which policy instrument closes that gap. What you must carry forward is that sustainability questions are still macroeconomic mechanism questions.",
         ),
       ],
       citations: lecture12CoreCitations,
@@ -811,6 +867,9 @@ const lecture12Module: ModuleDetail = lectureModule({
         p(
           "The compact takeaway is that sustainable growth requires both a realistic treatment of natural constraints and policy tools that price external damage. Without those prices, private decisions can overuse common resources and underweight long-run climate costs.",
         ),
+        p(
+          "Carry this forward as the course's final synthesis: the same logic of benchmarks, wedges, incentives, and policy design that governed the monetary lectures still governs environmental macroeconomics.",
+        ),
       ],
       citations: lecture12CoreCitations,
     },
@@ -866,11 +925,14 @@ const lecture12Module: ModuleDetail = lectureModule({
           ],
         }),
         figureNote({
-          title: "Resource drag and climate-policy visuals",
+          title: "Abatement costs and climate policy",
           caption:
-            "The lecture's diagrams are useful because they connect abstract sustainability definitions to explicit growth and policy mechanisms.",
+            "Screenshot from the Stern Review showing a bottom-up abatement-cost curve. It is useful because it turns the lecture's carbon-pricing discussion into an explicit policy trade-off over which emission reductions are cheap or costly.",
+          imagePath: "/figures/lecture-12/abatement-cost-curve.png",
+          altText:
+            "Figure from the Stern Review showing a McKinsey-style bottom-up abatement cost curve with emissions reductions on the horizontal axis and cost per ton on the vertical axis.",
           note:
-            "A curated screenshot from the lecture or supporting readings can be attached later as a figure block.",
+            "What to notice: the lecture is not only defining sustainability in words. It is also training students to think about how policy instruments interact with real abatement opportunities and costs.",
         }),
       ],
       citations: lecture12CoreCitations,
@@ -917,8 +979,14 @@ const lecture12Module: ModuleDetail = lectureModule({
             "Sustainability requires both a definition and a mechanism.",
             "Resource constraints can change growth dynamics directly.",
             "Externalities require pricing or quantity controls because private incentives alone are not enough.",
+            "Carry forward: the course ends here, but the benchmark method is the same one used from Lecture 1 onward.",
           ],
           "Quick recap",
+        ),
+        examTrap(
+          "Talking about sustainability only in broad moral language",
+          "Students often answer environmental questions with vague statements about 'being greener' instead of identifying the resource constraint, the externality, and the policy instrument.",
+          "Bring the answer back to economic structure. State the constraint, explain why private incentives are misaligned, and then compare how the policy instruments change behavior.",
         ),
       ],
       citations: lecture12CoreCitations,

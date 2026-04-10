@@ -129,12 +129,15 @@ export const lecture2Module: ModuleDetail = {
     {
       id: "lecture-2-big-picture",
       slug: "big-picture-and-exam-relevance",
-      title: "Big picture and exam relevance",
+      title: "Big picture and why this lecture matters",
       summary:
         "Why Lecture 2 matters for the rest of the course and for exam questions.",
       contentBlocks: [
         p(
           "Lecture 2 is the first place where the course gives you the **workhorse New Keynesian model**. From this point on, many exercises and exam questions boil down to the same habits: identify the shock, separate actual output from natural output, compare the actual real rate with the natural rate, and trace how inflation responds through the Phillips curve.",
+        ),
+        p(
+          "Relative to Lecture 1, this is the step where the course stops talking about policy rules in the abstract and places them inside a full macro model. What changes is that you now have explicit household, firm, and policy blocks. What stays is the need to ask what the policy instrument does, what benchmark it is being judged against, and how the central bank should react once the state of the economy changes.",
         ),
         p(
           "The lecture starts by contrasting a **flexible-price benchmark** with the sticky-price New Keynesian economy. Under flexible prices, monetary shocks are neutral in the standard setup. Once prices adjust only gradually, monetary disturbances gain temporary real effects and supply and demand shocks travel through different channels.",
