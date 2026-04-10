@@ -387,6 +387,21 @@ export const lecture2Module: ModuleDetail = {
             "This is the bridge from the firm's marginal-cost language to the output-gap language used in the compact NK system.",
         }),
         derivation({
+          title: "Make the substitutions one line at a time",
+          learningGoal:
+            "Remove the hidden algebra in the marginal-cost derivation so you can reproduce it under time pressure.",
+          latexBefore:
+            "\\begin{aligned} mc_t - mc &= (w_t-p_t-a_t) - (w_t^n-p_t^n-a_t) \\\\ &= (w_t-p_t) - (w_t^n-p_t^n) \\end{aligned}",
+          operation:
+            "Now substitute labor supply into each real-wage term and use market clearing plus production to replace consumption and labor by output and productivity.",
+          whyValid:
+            "The technology term cancels because the same productivity shock appears in both the sticky-price and flexible-price allocations. What remains is the gap between the two wage equations.",
+          latexAfter:
+            "\\begin{aligned} mc_t - mc &= [\\sigma c_t + \\phi n_t] - [\\sigma c_t^n + \\phi n_t^n] \\\\ &= \\sigma(y_t-y_t^n) + \\phi[(y_t-a_t)-(y_t^n-a_t)] \\\\ &= (\\sigma+\\phi)(y_t-y_t^n) \\end{aligned}",
+          explanation:
+            "This is the exact bridge students often skip. The reason the derivation collapses cleanly is that productivity affects both allocations symmetrically, so only the gap terms survive.",
+        }),
+        derivation({
           title: "Derive the Dynamic IS equation",
           learningGoal:
             "Replace the household block with a single demand equation in the output gap.",
@@ -400,6 +415,21 @@ export const lecture2Module: ModuleDetail = {
             "\\tilde{y}_t = E_t\\tilde{y}_{t+1} - \\frac{1}{\\sigma}\\bigl(i_t - E_t\\pi_{t+1} - r_t^n\\bigr)",
           explanation:
             "Demand is weak when the actual real rate is high relative to the natural rate. That statement is the economic heart of the Dynamic IS equation.",
+        }),
+        derivation({
+          title: "Show explicitly what cancels in the Dynamic IS derivation",
+          learningGoal:
+            "Make it obvious why the demand shock does not survive after you compare sticky and flexible prices.",
+          latexBefore:
+            "\\begin{aligned} y_t &= E_t y_{t+1} - \\frac{1}{\\sigma}(i_t-E_t\\pi_{t+1}-\\rho) + \\frac{1-\\rho_z}{\\sigma}z_t \\\\ y_t^n &= E_t y_{t+1}^n - \\frac{1}{\\sigma}(r_t^n-\\rho) + \\frac{1-\\rho_z}{\\sigma}z_t \\end{aligned}",
+          operation:
+            "Subtract the second line from the first term by term, then collect actual-minus-natural objects on the left-hand side.",
+          whyValid:
+            "Both equations contain the same discount-factor shock term because both the sticky-price and flexible-price households face the same intertemporal preference disturbance. That is why the $z_t$ term drops out of the gap equation instead of appearing twice.",
+          latexAfter:
+            "\\begin{aligned} y_t-y_t^n &= E_t(y_{t+1}-y_{t+1}^n) - \\frac{1}{\\sigma}\\bigl[(i_t-E_t\\pi_{t+1}-\\rho)-(r_t^n-\\rho)\\bigr] \\\\ &= E_t\\tilde{y}_{t+1} - \\frac{1}{\\sigma}(i_t-E_t\\pi_{t+1}-r_t^n) \\end{aligned}",
+          explanation:
+            "The demand gap is therefore not driven by the level of the real rate alone. It is driven by whether the actual real rate is above or below the natural benchmark implied by the flexible-price economy.",
         }),
         eq(
           "Compact three-equation system",
@@ -494,6 +524,21 @@ export const lecture2Module: ModuleDetail = {
             "The continuation part of the problem from period $t+1$ onward has the same structure as the problem solved one period later.",
           explanation:
             "Today's optimal reset price is a weighted average of current desired pricing and tomorrow's expected optimal reset price.",
+        }),
+        derivation({
+          title: "Turn the price-index identities into an inflation equation one step at a time",
+          learningGoal:
+            "Remove the hidden jump from the recursive reset-price equation to the NKPC.",
+          latexBefore:
+            "p_t = \\theta p_{t-1} + (1-\\theta)p_t^*, \\qquad p_{t+1} = \\theta p_t + (1-\\theta)p_{t+1}^*",
+          operation:
+            "First solve each price-index identity for the gap between the reset price and the aggregate price level. Then replace those gaps by inflation terms.",
+          whyValid:
+            "These are just algebraic rearrangements of the Calvo price index. No extra economic assumption is being added here; you are only changing the way the same equilibrium condition is written.",
+          latexAfter:
+            "\\begin{aligned} p_t^* - p_t &= \\frac{\\theta}{1-\\theta}(p_t-p_{t-1}) = \\frac{\\theta}{1-\\theta}\\pi_t, \\\\ E_t(p_{t+1}^*-p_t) &= \\frac{1}{1-\\theta}E_t\\pi_{t+1} \\end{aligned}",
+          explanation:
+            "This is the bridge step many students miss. Once you can rewrite reset-price gaps as inflation objects, the recursive pricing equation becomes a forward-looking inflation equation rather than a statement about unobserved reset prices.",
         }),
         derivation({
           title: "Use the aggregate price index identities to get the NKPC",

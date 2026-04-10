@@ -105,6 +105,103 @@ function toProblemTutorSource(problem: PracticeProblem): TutorSource {
   };
 }
 
+function buildHintMarkdown(problem: PracticeProblem) {
+  const sections = [
+    "## How to frame the problem",
+    `This is a **${problem.guide?.problemType ?? (problem.supportMode ?? "conceptual")}** question.`,
+    problem.guide?.whatIsBeingAsked
+      ? `Before you solve, restate the task in your own words: ${problem.guide.whatIsBeingAsked}`
+      : "",
+    problem.guide?.keyConcepts?.length
+      ? `**Concepts to keep in view:** ${problem.guide.keyConcepts.join(", ")}.`
+      : "",
+    "## Hint ladder",
+    ...problem.hints.map((hint, index) => `${index + 1}. ${hint}`),
+    problem.guide?.commonMistakes?.[0]
+      ? `## Likely confusion\n${problem.guide.commonMistakes[0]}`
+      : "",
+  ].filter(Boolean);
+
+  return sections.join("\n\n");
+}
+
+function buildNextStepMarkdown(problem: PracticeProblem) {
+  const firstStep = problem.stepGuide?.[0];
+
+  if (firstStep) {
+    return [
+      "## One concrete next step",
+      `**What to do now:** ${firstStep.whatToDo}`,
+      `**Why this is the right move now:** ${firstStep.contribution}`,
+      `**Rule or principle being used:** ${firstStep.principle}`,
+      `**Why the move is valid:** ${firstStep.whyValid}`,
+      firstStep.latex ? `$$${firstStep.latex}$$` : "",
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+  }
+
+  const nextMove =
+    problem.nextSteps[0] ??
+    problem.guide?.solutionPath[0] ??
+    "No next-step guidance is currently stored for this problem.";
+
+  return [
+    "## One concrete next step",
+    nextMove,
+    problem.guide?.solutionPath?.[1]
+      ? `After that, the next checkpoint is: ${problem.guide.solutionPath[1]}`
+      : "",
+    problem.guide?.commonMistakes?.[0]
+      ? `Common confusion to avoid while doing this step: ${problem.guide.commonMistakes[0]}`
+      : "",
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+}
+
+function buildFullSolutionMarkdown(problem: PracticeProblem) {
+  const sections = [
+    "## How to approach the problem",
+    ...(problem.guide?.solutionPath?.map((item, index) => `${index + 1}. ${item}`) ?? []),
+  ];
+
+  if (problem.stepGuide?.length) {
+    sections.push(
+      "",
+      "## Teaching solution",
+      ...problem.stepGuide.map((step, index) =>
+        [
+          `### Step ${index + 1}: ${step.title}`,
+          `**What to do:** ${step.whatToDo}`,
+          `**Why this is the right step:** ${step.contribution}`,
+          `**What rule justifies it:** ${step.principle}`,
+          `**Why the move is valid:** ${step.whyValid}`,
+          step.latex ? `$$${step.latex}$$` : "",
+        ]
+          .filter(Boolean)
+          .join("\n\n"),
+      ),
+    );
+  } else {
+    sections.push(
+      "",
+      "## Teaching answer outline",
+      ...problem.solutionOutline.map((step, index) => `${index + 1}. ${step}`),
+    );
+  }
+
+  if (problem.guide?.commonMistakes?.length) {
+    sections.push(
+      "",
+      "## Common confusion to watch for",
+      ...problem.guide.commonMistakes.map((mistake, index) => `${index + 1}. ${mistake}`),
+    );
+  }
+
+  return sections.join("\n");
+}
+
 export async function POST(request: Request) {
   try {
     const viewer = await getViewer();
@@ -162,8 +259,7 @@ export async function POST(request: Request) {
 
     if (body.mode === "hint") {
       answerPayload = {
-        answerMarkdown:
-          problem.hints[0] ?? "No hint is currently stored for this problem.",
+        answerMarkdown: buildHintMarkdown(problem),
         confidenceLabel: "grounded",
         citations: problem.citations,
         sourceSnippets: [
@@ -177,8 +273,7 @@ export async function POST(request: Request) {
       };
     } else if (body.mode === "next_step") {
       answerPayload = {
-        answerMarkdown:
-          problem.nextSteps[0] ?? "No next-step guidance is currently stored for this problem.",
+        answerMarkdown: buildNextStepMarkdown(problem),
         confidenceLabel: "grounded",
         citations: problem.citations,
         sourceSnippets: [
@@ -192,9 +287,7 @@ export async function POST(request: Request) {
       };
     } else if (body.mode === "full_solution") {
       answerPayload = {
-        answerMarkdown: problem.solutionOutline
-          .map((step, index) => `${index + 1}. ${step}`)
-          .join("\n\n"),
+        answerMarkdown: buildFullSolutionMarkdown(problem),
         confidenceLabel: "grounded",
         citations: problem.citations,
         sourceSnippets: [

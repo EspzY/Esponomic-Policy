@@ -149,9 +149,130 @@ export function examTrap(
 }
 
 export function practiceProblem(problem: PracticeProblem): PracticeProblem {
-  return problem;
+  const guide = problem.guide;
+  const stepGuide = problem.stepGuide ?? [];
+  const baseHints = [...problem.hints];
+  const baseNextSteps = [...problem.nextSteps];
+  const baseOutline = [...problem.solutionOutline];
+
+  if (guide) {
+    const framingHint = `Start by naming the problem type before you chase the answer: this is a **${guide.problemType}** task. The real question is: ${guide.whatIsBeingAsked}`;
+    const conceptHint = guide.keyConcepts.length
+      ? `Keep these objects in play while you reason: ${guide.keyConcepts.join(", ")}.`
+      : "";
+    const confusionHint = guide.commonMistakes[0]
+      ? `Likely confusion to avoid: ${guide.commonMistakes[0]}`
+      : "";
+
+    if (!baseHints.includes(framingHint)) {
+      baseHints.unshift(framingHint);
+    }
+
+    if (conceptHint && !baseHints.includes(conceptHint)) {
+      baseHints.push(conceptHint);
+    }
+
+    if (confusionHint && !baseHints.includes(confusionHint)) {
+      baseHints.push(confusionHint);
+    }
+
+    const pathScaffold = guide.solutionPath.length
+      ? `Do not jump to the conclusion yet. A safer route is: ${guide.solutionPath.join(" Then ")}`
+      : "";
+
+    if (pathScaffold && !baseNextSteps.includes(pathScaffold)) {
+      baseNextSteps.unshift(pathScaffold);
+    }
+  }
+
+  if ((problem.supportMode ?? "conceptual") === "derivation" && stepGuide.length) {
+    const derivationHints = [
+      "Treat this as a by-hand derivation. Do not try to type the whole proof first; isolate the exact line where your algebra or logic stopped making sense.",
+      `Your first explicit move should be: ${stepGuide[0].whatToDo}`,
+    ];
+
+    for (const hint of derivationHints.reverse()) {
+      if (!baseHints.includes(hint)) {
+        baseHints.unshift(hint);
+      }
+    }
+
+    const derivationNextStep = stepGuide[0]
+      ? `Concrete next move: ${stepGuide[0].whatToDo} This is the right move now because ${stepGuide[0].contribution.toLowerCase()}`
+      : "";
+
+    if (derivationNextStep && !baseNextSteps.includes(derivationNextStep)) {
+      baseNextSteps.unshift(derivationNextStep);
+    }
+
+    const teachingOutline = stepGuide.map((step, index) => {
+      const ruleLead = step.principle ? `Rule used: ${step.principle}. ` : "";
+      const helpLead = step.contribution
+        ? `How you should know this is the right move: ${step.contribution} `
+        : "";
+
+      return `Step ${index + 1} - ${step.title}: ${step.whatToDo} ${ruleLead}Why it is valid: ${step.whyValid} ${helpLead}`.trim();
+    });
+
+    for (const item of baseOutline) {
+      if (!teachingOutline.includes(item)) {
+        teachingOutline.push(item);
+      }
+    }
+
+    return {
+      ...problem,
+      hints: [...new Set(baseHints)],
+      nextSteps: [...new Set(baseNextSteps)],
+      solutionOutline: teachingOutline,
+    };
+  }
+
+  return {
+    ...problem,
+    hints: [...new Set(baseHints)],
+    nextSteps: [...new Set(baseNextSteps)],
+    solutionOutline: [...new Set(baseOutline)],
+  };
+}
+
+function hashString(value: string) {
+  let hash = 0;
+
+  for (const char of value) {
+    hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+  }
+
+  return hash;
 }
 
 export function quizBank(items: QuizItem[]): QuizItem[] {
-  return items;
+  return items.map((item, index) => {
+    if (
+      !Array.isArray(item.choices) ||
+      item.choices.length < 2 ||
+      item.correctIndex < 0 ||
+      item.correctIndex >= item.choices.length
+    ) {
+      return item;
+    }
+
+    const targetIndex = (hashString(item.id) + index) % item.choices.length;
+
+    if (targetIndex === item.correctIndex) {
+      return item;
+    }
+
+    const offset =
+      (item.correctIndex - targetIndex + item.choices.length) % item.choices.length;
+    const rotatedChoices = item.choices.map(
+      (_, position) => item.choices[(position + offset) % item.choices.length],
+    );
+
+    return {
+      ...item,
+      choices: rotatedChoices,
+      correctIndex: targetIndex,
+    };
+  });
 }

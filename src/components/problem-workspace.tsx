@@ -164,7 +164,7 @@ export function ProblemWorkspace({ problem }: { problem: PracticeProblem }) {
                     <div className="mt-4 grid gap-3 md:grid-cols-2">
                       <div className="rounded-[1.25rem] bg-[rgba(24,33,45,0.04)] p-4">
                         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-teal)]">
-                          What to do
+                          What to do next
                         </p>
                         <p className="mt-2 text-sm leading-7 text-[var(--color-slate)]">
                           {step.whatToDo}
@@ -172,7 +172,7 @@ export function ProblemWorkspace({ problem }: { problem: PracticeProblem }) {
                       </div>
                       <div className="rounded-[1.25rem] bg-[rgba(24,33,45,0.04)] p-4">
                         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-teal)]">
-                          Why it is valid
+                          Why the move is valid
                         </p>
                         <p className="mt-2 text-sm leading-7 text-[var(--color-slate)]">
                           {step.whyValid}
@@ -182,7 +182,7 @@ export function ProblemWorkspace({ problem }: { problem: PracticeProblem }) {
                     <div className="mt-3 grid gap-3 md:grid-cols-2">
                       <div className="rounded-[1.25rem] bg-[rgba(24,33,45,0.04)] p-4">
                         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-rust)]">
-                          Principle
+                          Rule or principle used
                         </p>
                         <p className="mt-2 text-sm leading-7 text-[var(--color-slate)]">
                           {step.principle}
@@ -190,7 +190,7 @@ export function ProblemWorkspace({ problem }: { problem: PracticeProblem }) {
                       </div>
                       <div className="rounded-[1.25rem] bg-[rgba(24,33,45,0.04)] p-4">
                         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-rust)]">
-                          How it helps
+                          Why this is the right move now
                         </p>
                         <p className="mt-2 text-sm leading-7 text-[var(--color-slate)]">
                           {step.contribution}

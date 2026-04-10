@@ -8,8 +8,9 @@ import {
   seminarCitations,
   shockTransmissionCitations,
 } from "@/lib/seed-content/notation-content";
+import { quizBank } from "@/lib/seed-content/builders";
 
-export const demoQuizItems: QuizItem[] = [
+export const demoQuizItems: QuizItem[] = quizBank([
   {
     id: "lecture2-quiz-1",
     prompt:
@@ -74,7 +75,7 @@ export const demoQuizItems: QuizItem[] = [
     tags: ["technology-shock", "shock-analysis"],
     citations: shockTransmissionCitations,
   },
-];
+]);
 
 export const demoPracticeProblem: PracticeProblem = {
   id: "seminar-1-question-1",

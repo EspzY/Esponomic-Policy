@@ -257,6 +257,20 @@ const lecture9Module: ModuleDetail = lectureModule({
             "This is the fiscal version of 'there is no free lunch'. Borrowing today means future fiscal adjustment somewhere in the system.",
         }),
         derivation({
+          title: "Write the flow budget in present-value form before summing forward",
+          learningGoal:
+            "Show the mathematical bridge from a one-period differential equation to an intertemporal solvency condition.",
+          latexBefore: "\\dot D(t) - r(t)D(t) = G(t) - T(t)",
+          operation:
+            "Multiply by the integrating factor that discounts debt at the interest rate, then integrate forward over time.",
+          whyValid:
+            "This is the continuous-time analogue of solving a first-order linear difference equation. The integrating factor turns the left-hand side into the time derivative of discounted debt.",
+          latexAfter:
+            "\\frac{d}{dt}\\left[e^{-\\int_0^t r(s)ds}D(t)\\right] = e^{-\\int_0^t r(s)ds}\\,[G(t)-T(t)]",
+          explanation:
+            "This is the step many students skip. Once the debt stock is written in discounted form, the intertemporal budget constraint is just the integral of today's discounted financing need plus the no-Ponzi boundary condition.",
+        }),
+        derivation({
           title: "Where Ricardian equivalence comes from",
           learningGoal:
             "See why the benchmark wealth effect disappears only after the household and government budgets are combined.",
@@ -270,6 +284,21 @@ const lecture9Module: ModuleDetail = lectureModule({
             "That is the clean Ricardian result. The tax cut feels expansionary only if some part of the benchmark fails, for example liquidity constraints, myopia, distortionary taxation, or unequal incidence.",
         }),
         derivation({
+          title: "Show the cancellation that kills the benchmark wealth effect",
+          learningGoal:
+            "Make the logic of Ricardian equivalence explicit instead of leaving the crucial cancellation hidden.",
+          latexBefore:
+            "\\text{PV consumption resources} = \\text{PV income} - \\text{PV taxes} + \\text{initial bond holdings}",
+          operation:
+            "Replace lower current taxes plus higher public debt by the equal-present-value increase in future taxes implied by the government budget constraint.",
+          whyValid:
+            "Under lump-sum taxation and forward-looking households, government debt is not net wealth. Households internalize that the bonds they hold are matched by future taxes they or their descendants must pay.",
+          latexAfter:
+            "\\Delta\\bigl[-\\text{PV}(T) + D_0\\bigr] = 0 \\quad \\Rightarrow \\quad \\Delta\\text{consumption resources} = 0",
+          explanation:
+            "The benchmark result is therefore a cancellation argument, not magic. A debt-financed tax cut fails to create net wealth because the bond asset and the tax liability are two sides of the same intertemporal government position.",
+        }),
+        derivation({
           title: "Why tax smoothing equalizes marginal distortion over time",
           learningGoal:
             "Understand why the lecture treats stable tax rates as a benchmark when taxes are costly.",
@@ -281,6 +310,19 @@ const lecture9Module: ModuleDetail = lectureModule({
             "f'\\!\\left(\\frac{T_t}{Y_t}\\right) = \\lambda \\quad \\text{across periods in the benchmark optimum}",
           explanation:
             "The exact message is that the marginal deadweight cost of taxation should be smoothed over time. That is the economic core behind the lecture's tax-smoothing benchmark.",
+        }),
+        derivation({
+          title: "Turn equal marginal distortion into a constant tax share",
+          learningGoal:
+            "Bridge the first-order condition to the exam-style claim that taxes should be a constant fraction of income in the benchmark optimum.",
+          operation:
+            "Use the fact that the marginal distortion is a function of the tax share alone. If the same multiplier applies in every period and $f'$ is monotone under convexity, the tax share must be the same in every period.",
+          whyValid:
+            "Convexity implies $f''(\\cdot)>0$, so $f'(\\cdot)$ is one-to-one. Equal values of $f'$ therefore imply equal arguments, which here means equal values of $T_t/Y_t$.",
+          latexAfter:
+            "f'\\!\\left(\\frac{T_t}{Y_t}\\right)=\\lambda \\ \\forall t \\quad \\Rightarrow \\quad \\frac{T_t}{Y_t}=\\tau \\ \\forall t",
+          explanation:
+            "This is the missing bridge students often hand-wave. The planner is not smoothing nominal tax revenue itself, but the tax share that governs marginal distortion in the objective.",
         }),
       ],
       citations: lecture9CoreCitations,
@@ -1031,6 +1073,20 @@ const lecture12Module: ModuleDetail = lectureModule({
             "The lesson is not that growth stops mechanically, but that the economy's long-run path depends on how important constrained natural inputs are.",
         }),
         derivation({
+          title: "Log-differentiate the production function term by term",
+          learningGoal:
+            "Show the exact mathematical bridge from the level equation to the growth-rate equation.",
+          latexBefore: "Y = K^{\\alpha} R^{\\beta} T^{\\gamma} (AL)^{1-\\alpha-\\beta-\\gamma}",
+          operation:
+            "Take logs first, then differentiate with respect to time so each exponent becomes a weight on the corresponding growth rate.",
+          whyValid:
+            "For a Cobb-Douglas function, log differentiation converts products into sums and exponents into coefficients on growth rates. This is the standard growth-accounting step used both in the lecture and in the exam question.",
+          latexAfter:
+            "\\frac{\\dot Y}{Y} = \\alpha \\frac{\\dot K}{K} + \\beta \\frac{\\dot R}{R} + \\gamma \\frac{\\dot T}{T} + (1-\\alpha-\\beta-\\gamma)\\left(\\frac{\\dot A}{A}+\\frac{\\dot L}{L}\\right)",
+          explanation:
+            "This is the line students need on paper. Until you write the growth-rate decomposition explicitly, the later resource-drag result looks like a jump rather than a derivation.",
+        }),
+        derivation({
           title: "Derive the growth-rate decomposition and the resource-drag term",
           learningGoal:
             "Make the lecture's resource-drag result slow enough to reproduce on an exam.",
@@ -1042,6 +1098,21 @@ const lecture12Module: ModuleDetail = lectureModule({
             "g_Y = \\alpha g_K + \\beta g_R + (1-\\alpha-\\beta) (g + n), \\qquad g_Y^L = g + \\frac{\\beta}{1-\\alpha} g_R",
           explanation:
             "Because $g_R$ is negative when resources deplete, the resource term drags down growth. The drag gets larger the more important resources are in production. If $\\beta=0$, the extra drag term disappears and you recover the standard benchmark logic.",
+        }),
+        derivation({
+          title: "Show the steady-state substitution and the per-worker conversion",
+          learningGoal:
+            "Make explicit how you move from the general growth-accounting identity to the exam's final benchmark formulas.",
+          latexBefore:
+            "g_Y = \\alpha g_K + \\beta g_R + (1-\\alpha-\\beta)(g+n), \\qquad g_K = g_Y \\text{ in steady state}",
+          operation:
+            "Substitute the steady-state condition $g_K=g_Y$, collect the $g_Y$ terms on the left-hand side, and then subtract population growth to move from total output growth to per-worker growth.",
+          whyValid:
+            "Balanced growth requires capital and output to grow at the same rate. Per-worker growth is then just total output growth minus labor-force growth.",
+          latexAfter:
+            "\\begin{aligned} (1-\\alpha)g_Y &= \\beta g_R + (1-\\alpha-\\beta)(g+n) \\\\ g_Y &= \\frac{\\beta}{1-\\alpha}g_R + \\frac{1-\\alpha-\\beta}{1-\\alpha}(g+n) \\\\ g_{Y/L} &= g_Y - n = g + \\frac{\\beta}{1-\\alpha}g_R \\end{aligned}",
+          explanation:
+            "This is where the resource-drag term becomes exam-usable. The negative growth of the resource input lowers per-worker growth in direct proportion to how important the resource share $\\beta$ is. Setting $\\beta=0$ removes the entire drag channel and sends you back to the textbook benchmark.",
         }),
       ],
       citations: lecture12CoreCitations,

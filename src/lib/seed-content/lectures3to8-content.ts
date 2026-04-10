@@ -243,6 +243,21 @@ const lecture3Module: ModuleDetail = lectureModule({
           explanation:
             "The lecture's point is that there is no separate inflation-output-gap trade-off in this benchmark. If inflation is stabilized, the output gap is stabilized too.",
         }),
+        derivation({
+          title: "Show the implication in both directions",
+          learningGoal:
+            "Make clear that divine coincidence is a benchmark equivalence, not a one-way slogan.",
+          latexBefore:
+            "\\pi_t = \\beta E_t\\pi_{t+1} + \\kappa \\tilde{y}_t, \\qquad u_t^{\\pi}=0",
+          operation:
+            "First set inflation and expected inflation to zero and solve for the gap. Then reverse the logic and ask what the Phillips curve implies when the gap is zero and inflation expectations are anchored.",
+          whyValid:
+            "With no cost-push wedge, the Phillips curve contains only two moving parts: expected inflation and the output gap. That is why stabilizing one pins down the other once expectations are anchored.",
+          latexAfter:
+            "\\tilde{y}_t=0 \\Rightarrow \\pi_t = \\beta E_t\\pi_{t+1}, \\qquad \\pi_t=E_t\\pi_{t+1}=0 \\Rightarrow \\tilde{y}_t=0",
+          explanation:
+            "This is the exact benchmark logic later lectures break. Divine coincidence is not saying policy is trivial; it is saying the benchmark removes the extra wedge that would otherwise make inflation stabilization and real stabilization conflict.",
+        }),
       ],
       citations: lecture3CoreCitations,
     },
@@ -317,6 +332,21 @@ const lecture3Module: ModuleDetail = lectureModule({
             "\\kappa(\\phi_\\pi - 1) + (1-\\beta)\\phi_y > 0",
           explanation:
             "The policy lesson is that divine coincidence still needs a determinate equilibrium. A weak inflation response can still destabilize the benchmark system.",
+        }),
+        derivation({
+          title: "Explain the determinacy inequality before memorizing it",
+          learningGoal:
+            "Show how the condition tells you which coefficient is doing the stabilizing work.",
+          latexBefore:
+            "\\kappa(\\phi_\\pi - 1) + (1-\\beta)\\phi_y > 0",
+          operation:
+            "Read the inequality term by term. The first term asks whether inflation feedback is strong enough to make a rise in inflation trigger a real-rate tightening. The second term says output-gap feedback can help, but it is multiplied by $1-\\beta$, which is small in a forward-looking model.",
+          whyValid:
+            "This is exactly how the lecture and matrix note interpret the condition: inflation feedback is the main anchor, while output-gap feedback is supportive but usually not enough by itself.",
+          latexAfter:
+            "\\phi_\\pi > 1 \\text{ is the core anchor; } \\phi_y \\text{ helps but rarely rescues a weak inflation response on its own.}",
+          explanation:
+            "Students often memorize the inequality and miss the economics. The benchmark lesson is that a forward-looking system needs a strong enough policy reaction to inflation so that expectations do not explode away from target.",
         }),
       ],
       citations: lecture3CoreCitations,
@@ -626,6 +656,36 @@ const lecture4Module: ModuleDetail = lectureModule({
             "The loss function tells you what the policymaker dislikes; the Phillips curve tells you what trade-off the economy allows.",
         }),
         derivation({
+          title: "Substitute the Phillips curve directly into the period loss",
+          learningGoal:
+            "See what the policymaker is really minimizing once inflation and the gap are linked by the cost-push shock.",
+          latexBefore:
+            "L_t = \\pi_t^2 + \\alpha_x x_t^2, \\qquad \\pi_t = \\beta E_t\\pi_{t+1} + \\kappa x_t + u_t^{\\pi}",
+          operation:
+            "Treat expected future inflation and the cost-push shock as given in the discretionary current-period problem, then replace $\\pi_t$ inside the loss.",
+          whyValid:
+            "Under discretion, the policymaker cannot change inherited expectations in period $t$. The only current control is how much slack $x_t$ to create given today's Phillips curve.",
+          latexAfter:
+            "L_t = \\bigl(\\beta E_t\\pi_{t+1} + \\kappa x_t + u_t^{\\pi}\\bigr)^2 + \\alpha_x x_t^2",
+          explanation:
+            "This line tells you what is being traded off. Tightening policy lowers the inflation term through $\\kappa x_t$, but it raises the direct stabilization cost attached to the welfare-relevant gap.",
+        }),
+        derivation({
+          title: "Differentiate carefully with respect to the welfare-relevant gap",
+          learningGoal:
+            "Show exactly where the discretionary targeting rule comes from instead of jumping from the setup to the answer.",
+          latexBefore:
+            "L_t = \\bigl(\\beta E_t\\pi_{t+1} + \\kappa x_t + u_t^{\\pi}\\bigr)^2 + \\alpha_x x_t^2",
+          operation:
+            "Take the derivative with respect to $x_t$, use the chain rule on the squared inflation term, and then recognize the bracket as current inflation.",
+          whyValid:
+            "The derivative of $(a+\\kappa x_t)^2$ is $2\\kappa(a+\\kappa x_t)$. Since $a = \\beta E_t\\pi_{t+1}+u_t^{\\pi}$ is taken as given under discretion, this is ordinary single-variable differentiation.",
+          latexAfter:
+            "\\frac{\\partial L_t}{\\partial x_t} = 2\\kappa\\bigl(\\beta E_t\\pi_{t+1} + \\kappa x_t + u_t^{\\pi}\\bigr) + 2\\alpha_x x_t = 2\\kappa\\pi_t + 2\\alpha_x x_t = 0",
+          explanation:
+            "This is the missing mathematical bridge. The policymaker chooses $x_t$ until the marginal inflation benefit from extra slack is exactly offset by the marginal welfare cost of that slack.",
+        }),
+        derivation({
           title: "Read the discretionary first-order condition economically",
           learningGoal:
             "Understand why the optimal gap moves against inflation after a cost-push shock.",
@@ -636,6 +696,21 @@ const lecture4Module: ModuleDetail = lectureModule({
           latexAfter: "x_t = -\\frac{\\kappa}{\\alpha_x}\\pi_t",
           explanation:
             "The targeting rule says inflation and the welfare-relevant gap move in opposite directions. The stronger inflation responds to slack, or the less costly slack is in the loss function, the more the central bank is willing to contract activity.",
+        }),
+        derivation({
+          title: "Show how commitment changes the first-order condition",
+          learningGoal:
+            "Make the commitment result feel less like a slogan and more like a modified optimization problem.",
+          latexBefore:
+            "\\mathcal{L} = \\sum_{t=0}^{\\infty} \\beta^t\\left[\\pi_t^2 + \\alpha_x x_t^2 + 2\\lambda_t\\bigl(\\pi_t - \\beta E_t\\pi_{t+1} - \\kappa x_t - u_t^{\\pi}\\bigr)\\right]",
+          operation:
+            "Under commitment, the policymaker internalizes that today's promise changes future expectations. The multiplier on the Phillips curve therefore survives across periods instead of being chosen one period at a time and forgotten.",
+          whyValid:
+            "This is the formal reason commitment is different from discretion. The optimization is over an entire path, so tomorrow's expectations are endogenous to today's promise instead of fixed data.",
+          latexAfter:
+            "\\pi_t + \\frac{\\alpha_x}{\\kappa}(x_t-x_{t-1}) = 0 \\quad \\Rightarrow \\quad \\text{history dependence / price-level targeting logic}",
+          explanation:
+            "You do not need to memorize the full Lagrangian. What you need is the bridge: commitment adds lagged policy history to the targeting condition because current policy is chosen together with promised future policy.",
         }),
         derivation({
           title: "Why commitment to a simple rule is tougher than discretion",
@@ -1152,17 +1227,47 @@ const lecture6Module: ModuleDetail = lectureModule({
       summary: "Why the benchmark model can produce unrealistically strong effects.",
       contentBlocks: [
         derivation({
+          title: "Start from the one-period Dynamic IS equation",
+          learningGoal:
+            "Make clear what object is being iterated before the infinite-horizon logic appears.",
+          latexBefore:
+            "\\tilde{y}_t = E_t\\tilde{y}_{t+1} - \\frac{1}{\\sigma}\\bigl(i_t - E_t\\pi_{t+1} - r_t^n\\bigr)",
+          operation:
+            "Rewrite the bracket as the real-rate gap and isolate the fact that current demand depends on expected future demand plus one real-rate wedge.",
+          whyValid:
+            "This is just a relabeling step, but it matters pedagogically because the puzzle comes from repeatedly substituting this same one-period wedge forward.",
+          latexAfter:
+            "\\tilde{y}_t = E_t\\tilde{y}_{t+1} - \\frac{1}{\\sigma}(r_t-r_t^n)",
+          explanation:
+            "If you do not first isolate the real-rate gap, the forward-guidance puzzle can sound mysterious. This line shows the whole mechanism in one period: demand is strong when the actual real rate is expected to stay below the natural rate.",
+        }),
+        derivation({
           title: "Why distant promises matter in the benchmark model",
           learningGoal:
             "Understand the source of the puzzle before criticizing the model.",
+          latexBefore:
+            "\\tilde{y}_t = E_t\\tilde{y}_{t+1} - \\frac{1}{\\sigma}(r_t-r_t^n)",
           operation:
             "Iterate the Dynamic IS logic forward. Current demand depends on an expected sequence of future real rates, not only the current one.",
           whyValid:
             "The representative-agent, forward-looking benchmark gives a strong role to intertemporal substitution.",
           latexAfter:
-            "\\tilde{y}_t \\text{ depends on an expected path of future real rates.}",
+            "\\tilde{y}_t = -\\frac{1}{\\sigma}E_t\\sum_{j=0}^{\\infty}(r_{t+j}-r_{t+j}^n)",
           explanation:
             "The puzzle is not that forward guidance works. The puzzle is that the simplest textbook model can make it work *too much*, especially for promises far in the future.",
+        }),
+        derivation({
+          title: "Explain why the infinite sum creates the puzzle",
+          learningGoal:
+            "Bridge the algebra to the economic intuition students are expected to carry into Seminar 2 and exam questions.",
+          operation:
+            "Interpret each term in the forward sum as one expected future real-rate wedge. Then ask what happens if the model discounts those wedges too weakly.",
+          whyValid:
+            "Once the Dynamic IS equation is iterated forward, every promised future easing enters current demand through the same intertemporal-substitution channel.",
+          latexAfter:
+            "\\text{A promise } T \\text{ periods ahead still moves } \\tilde{y}_t \\text{ today if it changes } E_t(r_{t+T}-r_{t+T}^n)",
+          explanation:
+            "The model is not saying distant promises are irrelevant until they arrive. It is saying forward-looking households care about the whole expected path. The puzzle is that the benchmark makes this effect quantitatively too strong, not directionally wrong.",
         }),
       ],
       citations: lecture6CoreCitations,

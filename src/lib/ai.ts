@@ -183,6 +183,17 @@ export async function buildTutorAnswer(
     )
     .join("\n\n");
 
+  const modeSpecificRule =
+    mode === "solution_check"
+      ? [
+          '- For "solution_check" mode, behave like a teaching evaluator, not a grading stamp.',
+          "- Explicitly say what in the student's answer is already correct.",
+          "- Explicitly say what is incomplete, unclear, or based on a misunderstanding.",
+          "- Name the theory, equation, or benchmark comparison the student should return to.",
+          "- Give the student one concrete improvement step so they can revise the answer themselves.",
+        ].join("\n")
+      : "";
+
   const prompt = `
 You are a careful course tutor for Economic Policy.
 Mode: ${mode}
@@ -195,6 +206,7 @@ Rules:
 - For "hint" mode, do not reveal the full answer.
 - For "next_step" mode, reveal exactly one next step.
 - For "full_solution" mode, provide a concise, source-grounded outline.
+${modeSpecificRule}
 
 Student question:
 ${question}
