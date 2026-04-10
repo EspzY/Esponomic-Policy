@@ -464,6 +464,16 @@ const lecture4Module: ModuleDetail = lectureModule({
       summary: "The objects that organize the optimal-policy problem.",
       contentBlocks: [
         eq(
+          "Welfare-relevant output gap",
+          "x_t = y_t - y_t^e",
+          "Lecture 4 is careful that the policy problem is written in terms of the gap between actual output and the efficient level of output, not just any empirical output-gap measure.",
+        ),
+        eq(
+          "Gap decomposition",
+          "\\tilde{y}_t = y_t - y_t^n = x_t + (y_t^e - y_t^n)",
+          "This decomposition explains why the welfare-relevant gap and the flexible-price natural-output gap are not always the same object once distortions matter.",
+        ),
+        eq(
           "Phillips curve with cost-push shock",
           "\\pi_t = \\beta E_t\\pi_{t+1} + \\kappa x_t + u_t^{\\pi}",
           "Inflation now contains an extra wedge, so zero inflation no longer implies a zero gap.",
@@ -489,6 +499,12 @@ const lecture4Module: ModuleDetail = lectureModule({
       contentBlocks: [
         p(
           "The lecture keeps the New Keynesian structure but adds a disturbance that moves inflation independently of the gap. That means the central bank must minimize a quadratic loss function subject to a Phillips-curve trade-off rather than simply stabilizing one variable and getting the other for free.",
+        ),
+        p(
+          "A key conceptual upgrade relative to Lecture 3 is that output now comes in **three versions**. $y_t$ is actual output. $y_t^n$ is the natural output level in the flexible-price benchmark. $y_t^e$ is the efficient output level relevant for welfare. Lecture 4's policy problem is about $x_t = y_t - y_t^e$, because the welfare loss should be measured against the efficient benchmark, not against a benchmark that may still contain distortions.",
+        ),
+        p(
+          "The lecture also links the slope of the Phillips curve to price flexibility. A smaller Calvo parameter $\\theta$ means prices are more flexible, which raises $\\kappa$. When $\\kappa$ is larger, a given movement in the welfare-relevant output gap has a bigger effect on inflation, so the trade-off becomes less painful for the policymaker.",
         ),
         checklist(
           [
@@ -547,6 +563,12 @@ const lecture4Module: ModuleDetail = lectureModule({
         p(
           "Under discretion, the central bank reoptimizes each period and cannot commit future policymakers to a promised path. Under commitment, credible promises about future policy shape private expectations today, which improves the current inflation-output trade-off because the Phillips curve is forward looking.",
         ),
+        p(
+          "The lecture distinguishes **three policy frameworks**. Under **discretion**, the central bank takes future expectations as given and solves period by period. Under **commitment to a simple targeting rule**, the central bank chooses a rule that is tougher on inflation than discretion because private agents internalize the promised future response. Under **full state-contingent commitment**, policy is not restricted to one simple rule; instead, the central bank chooses the entire contingent path and exploits history dependence much more fully.",
+        ),
+        p(
+          "That is why the lecture keeps coming back to credibility. Commitment is valuable precisely because current inflation depends on expected future output gaps. A credible promise to keep demand weak in the future lowers inflation today, so the central bank can improve today's trade-off without engineering as large an immediate contraction as under discretion.",
+        ),
         modelMap("Why commitment helps", [
           {
             label: "Expectations",
@@ -557,6 +579,11 @@ const lecture4Module: ModuleDetail = lectureModule({
             label: "Intertemporal smoothing",
             description:
               "Commitment lets the central bank spread adjustment over time rather than doing everything today.",
+          },
+          {
+            label: "History dependence",
+            description:
+              "Under full commitment, the central bank deliberately lets today's promises affect tomorrow's policy path, which is exactly the opposite of discretion's period-by-period reset.",
           },
         ]),
       ],
@@ -610,6 +637,19 @@ const lecture4Module: ModuleDetail = lectureModule({
           explanation:
             "The targeting rule says inflation and the welfare-relevant gap move in opposite directions. The stronger inflation responds to slack, or the less costly slack is in the loss function, the more the central bank is willing to contract activity.",
         }),
+        derivation({
+          title: "Why commitment to a simple rule is tougher than discretion",
+          learningGoal:
+            "Understand the lecture's result that credibility changes the effective trade-off parameter rather than merely changing rhetoric.",
+          operation:
+            "Keep the same functional form as under discretion, but allow the central bank to commit before expectations are formed. The future path of policy is now part of the optimization problem.",
+          whyValid:
+            "The commitment note shows that the optimal simple-rule commitment behaves as if the policymaker places a smaller effective weight on the output gap because future promises help reduce current inflation.",
+          latexAfter:
+            "x_t = -\\frac{\\kappa}{\\alpha_x^c}\\pi_t, \\qquad \\alpha_x^c = \\alpha_x(1-\\beta\\rho_\\pi) < \\alpha_x",
+          explanation:
+            "The rule keeps the same sign pattern as under discretion, but commitment fights inflation more aggressively. The important intuition is not the algebra alone; it is that credibility makes current inflation easier to stabilize because the private sector believes the future policy path.",
+        }),
       ],
       citations: lecture4CoreCitations,
     },
@@ -622,6 +662,9 @@ const lecture4Module: ModuleDetail = lectureModule({
         p(
           "The safest summary is that **commitment works through expectations**. It does not remove the cost-push shock, but it changes private beliefs about future policy and therefore makes current inflation easier to stabilize with a different current gap path than under discretion.",
         ),
+        p(
+          "The full state-contingent commitment result is even more specific. After a transitory cost-push shock, the optimal plan keeps the output gap negative **until the price level returns to its pre-shock path**. That means inflation first rises, then undershoots, and the output gap stays mildly negative for longer than under discretion. The lecture interprets this as a form of **history dependence** or price-level targeting.",
+        ),
         figureNote({
           title: "Discretionary targeting rule and trade-off geometry",
           caption:
@@ -632,6 +675,9 @@ const lecture4Module: ModuleDetail = lectureModule({
           note:
             "What to notice: once a cost-push shock exists, the policymaker is not trying to make both inflation and the gap zero. The target rule tells you how the trade-off is optimally managed under discretion.",
         }),
+        p(
+          "A good oral or written interpretation is therefore: discretion gives a sharp initial contraction because each period is solved in isolation; commitment gives a milder but more persistent contraction because the central bank can promise to stay tough in the future and thereby lower current inflation pressure already today.",
+        ),
       ],
       citations: lecture4CoreCitations,
     },
@@ -661,6 +707,11 @@ const lecture4Module: ModuleDetail = lectureModule({
               markdown:
                 "Inflation and real stabilization cannot both be perfect because the cost-push shock drives a wedge between them.",
             },
+            {
+              title: "Step 4: add the commitment comparison",
+              markdown:
+                "Under commitment, the central bank can promise future tightness and thereby lower current inflation more cheaply. So the same shock does not imply the same path under discretion and commitment.",
+            },
           ],
         }),
       ],
@@ -676,8 +727,10 @@ const lecture4Module: ModuleDetail = lectureModule({
           [
             "Once $u_t^{\\pi}$ appears, divine coincidence is gone.",
             "$x_t$ is the welfare-relevant output gap used in the policy problem.",
+            "$x_t$ need not be the same thing as $y_t-y_t^n$; Lecture 4 distinguishes the efficient level of output from the natural one.",
             "Targeting rules summarize optimal trade-offs; they are not primitive structural equations.",
             "Commitment matters because it changes expectations.",
+            "A larger $\\kappa$ means policy can move inflation more with less output-gap sacrifice, so more flexible prices improve the trade-off.",
             "Carry forward: later lectures on credibility and forward guidance only make sense if you already see why expectations help manage today's trade-off.",
           ],
           "Quick recap",
@@ -1068,6 +1121,12 @@ const lecture6Module: ModuleDetail = lectureModule({
         p(
           "Delphic guidance tells markets something about the outlook: rates will be low because the economy will be weak. Odyssean guidance tells markets something about policy commitment: rates will be kept lower for longer to support the economy. The same sentence about future low rates can therefore mean bad news, good stabilization news, or some mix of both.",
         ),
+        p(
+          "The lecture is explicit that **Delphic guidance is forecast without commitment**, while **Odyssean guidance is commitment**. That distinction matters because only Odyssean guidance is the clean continuation of Lecture 4's commitment logic: a credible promise about future policy changes private expectations today.",
+        ),
+        p(
+          "The lower bound is what makes the distinction central. In normal times the central bank can cut the current rate directly. At the lower bound it cannot cut enough, so it tries to stabilize the economy by changing the expected future path of policy instead. This is why the lecture says there is **no divine coincidence once the lower bound binds**.",
+        ),
       ],
       citations: lecture6CoreCitations,
     },
@@ -1139,6 +1198,9 @@ const lecture6Module: ModuleDetail = lectureModule({
             },
           ],
         }),
+        p(
+          "The safe interpretation is therefore two-step. First, forward guidance uses the same expectations channel as optimal policy under commitment. Second, the lower bound is what makes the channel quantitatively central, because the current instrument can no longer do all the stabilization work by itself.",
+        ),
         figureNote({
           title: "Forward-guidance experiment",
           caption:
@@ -1149,6 +1211,9 @@ const lecture6Module: ModuleDetail = lectureModule({
           note:
             "What to notice: the whole figure is a visual version of the Dynamic IS mechanism. A future promise changes current demand because households react to the expected path of real rates, not only the current short rate.",
         }),
+        p(
+          "The complementary puzzle deck adds the crucial caveat: the benchmark model gets the **direction** right but often exaggerates the **magnitude**. Without discounting, distant future promises can move current output implausibly strongly. Discounting, cognitive inattention, and incomplete markets are all presented as ways to push the model toward more realistic quantitative effects.",
+        ),
       ],
       citations: lecture6CoreCitations,
     },
@@ -1178,6 +1243,11 @@ const lecture6Module: ModuleDetail = lectureModule({
               markdown:
                 "Both types affect expectations, but only Odyssean guidance is straightforwardly expansionary policy by design.",
             },
+            {
+              title: "Step 4: add the lower-bound logic",
+              markdown:
+                "At the lower bound, this distinction becomes the whole point: if the announcement is genuine commitment, the central bank is using future policy to compensate for the inability to cut the current rate enough.",
+            },
           ],
         }),
       ],
@@ -1194,6 +1264,7 @@ const lecture6Module: ModuleDetail = lectureModule({
             "Forward guidance works through the expected path of **real** rates.",
             "Delphic guidance is information; Odyssean guidance is commitment.",
             "The forward-guidance puzzle is about exaggerated quantitative effects, not about a nonexistent channel.",
+            "Once the lower bound binds, there is no divine coincidence: current stabilization is limited unless expectations about future policy move in the right direction.",
             "Carry forward: later lectures keep relying on the same expectations logic, even when the topic is no longer the zero lower bound itself.",
           ],
           "Quick recap",
@@ -1312,6 +1383,9 @@ const lecture7Module: ModuleDetail = lectureModule({
         p(
           "The lecture warns against reading raw data too literally. Aggressive stabilization policy, anchored expectations, and changing shock composition can all flatten observed inflation-slack correlations even if the structural slope has not changed very much.",
         ),
+        p(
+          "That is the whole point of the course's red-line-versus-targeting-rule comparison. A flatter reduced-form relation in the data does not automatically mean the central bank's structural trade-off changed by the same amount. Better credibility, better policy, or a different shock mix can all compress the red line while leaving the underlying targeting logic much closer to the old benchmark.",
+        ),
       ],
       citations: lecture7CoreCitations,
     },
@@ -1378,6 +1452,11 @@ const lecture7Module: ModuleDetail = lectureModule({
               markdown:
                 "This does **not** automatically prove the observed data relationship should flatten for purely structural reasons. Identification is part of the problem.",
             },
+            {
+              title: "Step 4: connect to the unchanged targeting rule",
+              markdown:
+                "This is why an exam can show a flatter red line in the scatter while leaving the targeting-rule figure unchanged. The observable correlation and the structural policy trade-off are not the same object.",
+            },
           ],
         }),
         figureNote({
@@ -1390,6 +1469,9 @@ const lecture7Module: ModuleDetail = lectureModule({
           note:
             "What to notice: the lecture does not stop at the historical scatter. It uses that intuition as a starting point before asking how the structural slope should be interpreted in modern policy problems.",
         }),
+        p(
+          "So the careful answer is two-layered. If the structural slope really is smaller, disinflation becomes more costly because slack moves inflation less. But if the flatter pattern mainly reflects anchored expectations or more systematic stabilization policy, the observed relation can flatten a lot even while the structural targeting rule changes much less.",
+        ),
       ],
       citations: lecture7CoreCitations,
     },
@@ -1418,6 +1500,11 @@ const lecture7Module: ModuleDetail = lectureModule({
               title: "Non-structural reason",
               markdown:
                 "Policy credibility or anchored expectations can compress observed inflation changes even if the deeper slope is similar.",
+            },
+            {
+              title: "Exam takeaway",
+              markdown:
+                "Good answers separate the reduced-form evidence from the structural slope. That distinction is the lecture's main safeguard against vague claims that the Phillips curve has 'disappeared'.",
             },
           ],
         }),
@@ -1501,6 +1588,11 @@ const lecture8Module: ModuleDetail = lectureModule({
           "\\Delta C = \\sum_i \\text{MPC}_i \\cdot \\Delta Y_i",
           "Aggregate demand depends not only on total income changes but also on who receives them.",
         ),
+        eq(
+          "Matching-multiplier logic",
+          "\\text{Aggregate MPC} = \\text{average MPC} + \\text{covariance term}",
+          "Patterson's point is that aggregate amplification rises when high-MPC households are also the households whose earnings move most over the cycle.",
+        ),
         modelMap("The lecture's core labels", [
           {
             label: "$\\text{HANK}$",
@@ -1511,6 +1603,11 @@ const lecture8Module: ModuleDetail = lectureModule({
             label: "Redistribution channel",
             description:
               "Policy changes shift resources across households with different MPCs and balance-sheet exposures.",
+          },
+          {
+            label: "Direct versus indirect effects",
+            description:
+              "RANK leans heavily on direct intertemporal substitution, while HANK emphasizes indirect income and redistribution channels.",
           },
         ]),
       ],
@@ -1525,6 +1622,9 @@ const lecture8Module: ModuleDetail = lectureModule({
         p(
           "In the representative-agent benchmark, one household stands in for everyone. Lecture 8 argues that this misses important macroeconomically relevant differences: some households are constrained, some are savers, some are borrowers, and their incomes respond differently to the business cycle.",
         ),
+        p(
+          "The lecture is also very explicit about why the representative-agent benchmark is empirically uncomfortable. In the data, average MPCs are around **0.25 at the quarterly horizon** and **0.5 at the annual horizon**, while the representative-agent benchmark implies an MPC much closer to the interest rate itself. That gap is one of the lecture's main reasons for moving from RANK to HANK.",
+        ),
       ],
       citations: lecture8CoreCitations,
     },
@@ -1537,6 +1637,9 @@ const lecture8Module: ModuleDetail = lectureModule({
         p(
           "If all households had the same MPC, distribution would matter much less. But the lecture emphasizes that this is not realistic. Some households spend most of an extra krone quickly, while others save a large fraction. Therefore, the macro effect of a policy-induced income change depends crucially on where it lands.",
         ),
+        p(
+          "This is why the course likes comparing economies with different shares of hand-to-mouth households. The lesson is not only that 'more high-MPC households means more spending'. The deeper lesson is that aggregate demand depends on the interaction between the **distribution of MPCs** and the **distribution of income changes**.",
+        ),
       ],
       citations: lecture8CoreCitations,
     },
@@ -1548,6 +1651,18 @@ const lecture8Module: ModuleDetail = lectureModule({
       contentBlocks: [
         p(
           "The lecture discusses several heterogeneous-agent channels: earnings heterogeneity, Fisher-style redistribution between borrowers and lenders, and differences in interest-rate exposure. In all of them, the key idea is the same: policy affects aggregates partly because it reallocates resources across households with different spending responses.",
+        ),
+        checklist(
+          [
+            "Earnings heterogeneity channel: monetary policy changes labor income differently across households.",
+            "Fisher channel: inflation redistributes between nominal borrowers and lenders.",
+            "Interest-rate-exposure channel: balance sheets are differently exposed to changes in real rates.",
+            "Lecture 8's bottom line: redistribution is part of transmission, not a side story added after the macro analysis.",
+          ],
+          "Channels you should be able to name explicitly",
+        ),
+        p(
+          "The lecture also contrasts RANK and HANK directly. In RANK, the direct intertemporal-substitution channel does most of the work. In HANK, the direct effect is much smaller, while indirect effects through labor income, balance sheets, and redistribution become much more important.",
         ),
       ],
       citations: lecture8CoreCitations,
@@ -1587,6 +1702,19 @@ const lecture8Module: ModuleDetail = lectureModule({
           explanation:
             "Aggregate demand depends on both the size of income changes and where they land. That is the cleanest way to see why heterogeneity matters for macro outcomes.",
         }),
+        derivation({
+          title: "Why the matching multiplier amplifies downturns",
+          learningGoal:
+            "Understand Patterson's covariance result without getting lost in notation.",
+          operation:
+            "Start from the idea that aggregate demand reacts more when shocks hit households with high MPCs. Then add the empirical fact that exposure to the business cycle is not randomly distributed across households.",
+          whyValid:
+            "The lecture emphasizes a positive covariance between MPCs and earnings cyclicality: workers whose incomes move more over the cycle also tend to have high MPCs.",
+          latexAfter:
+            "\\text{Aggregate MPC} = \\text{average MPC} + \\text{covariance between MPC and cyclical earnings exposure}",
+          explanation:
+            "This is the amplification logic. Even a relatively small group of high-MPC households can become disproportionately important if their incomes are the ones that move most in recessions and recoveries.",
+        }),
       ],
       citations: lecture8CoreCitations,
     },
@@ -1612,9 +1740,18 @@ const lecture8Module: ModuleDetail = lectureModule({
               direction: "up by more than the representative-agent benchmark may predict",
               explanation:
                 "Distribution amplifies the aggregate response when gains go to constrained or high-MPC households.",
+              },
+            {
+              variable: "Direct intertemporal-substitution channel",
+              direction: "often smaller than in RANK",
+              explanation:
+                "Lecture 8 stresses that the benchmark direct effect of lower real rates is not enough on its own; indirect income and redistribution channels do much of the work in HANK.",
             },
           ],
         }),
+        p(
+          "Patterson's matching-multiplier logic sharpens this further. Aggregate amplification is especially strong when high-MPC households are also the households whose earnings are most cyclical. Then a downturn does not hit a random worker; it hits the workers most likely to cut spending sharply.",
+        ),
         figureNote({
           title: "Why heterogeneity changes macro transmission",
           caption:
@@ -1635,24 +1772,29 @@ const lecture8Module: ModuleDetail = lectureModule({
       summary: "A concept-heavy HANK practice problem.",
       contentBlocks: [
         workedExample({
-          title: "Why does redistribution matter for aggregate demand?",
+          title: "Which economy reacts more when the share of hand-to-mouth households differs?",
           prompt:
-            "Suppose two policy interventions generate the same average increase in household income, but one mainly benefits high-MPC households and the other mainly benefits low-MPC households. Explain which one should produce the larger demand response and why.",
+            "Suppose two otherwise similar economies differ only in the share of hand-to-mouth households with MPCs close to one. Explain why the economy with more high-MPC households should react more strongly to the same positive productivity or policy shock.",
           steps: [
             {
-              title: "Step 1: compare the MPC profiles",
+              title: "Step 1: compare the MPC distributions",
               markdown:
-                "High-MPC households spend a larger share of extra income than low-MPC households.",
+                "The economy with more hand-to-mouth households has more agents who spend a large fraction of any extra income quickly.",
             },
             {
-              title: "Step 2: trace the distributional consequence",
+              title: "Step 2: trace the income incidence",
               markdown:
-                "If more of the gain goes to high-MPC households, more of the policy stimulus shows up as immediate consumption.",
+                "If the shock raises incomes or reduces debt-service pressure, more of the gain lands on households likely to spend it rather than save it.",
             },
             {
               title: "Step 3: state the macro result",
               markdown:
-                "The demand effect is stronger when gains land on households that are more likely to spend them quickly.",
+                "The demand effect is stronger, because the same average shock translates into a larger aggregate MPC when more of the population is high-MPC.",
+            },
+            {
+              title: "Step 4: add the Patterson-style amplification logic",
+              markdown:
+                "If those same households are also the ones whose earnings are most cyclical, the aggregate response can be even stronger than the simple average-MPC comparison suggests.",
             },
           ],
         }),
@@ -1670,6 +1812,7 @@ const lecture8Module: ModuleDetail = lectureModule({
             "Do not stop at the phrase 'heterogeneity matters'. Name the channel.",
             "The aggregate MPC depends on who receives income changes, not only on the average response.",
             "Redistribution is part of the transmission mechanism, not just a fairness side issue.",
+            "In HANK, indirect income and redistribution channels can dominate the direct intertemporal-substitution channel familiar from RANK.",
             "Carry forward: later policy reasoning is stronger if you always ask who gains, who loses, and who actually spends the gain.",
           ],
           "Quick recap",
@@ -1755,6 +1898,23 @@ const lecture4NotationEntries: NotationEntry[] = [
       "It is not automatically identical to every empirical gap measure used elsewhere in the course.",
     ],
     relatedTerms: ["$u_t^{\\pi}$", "$\\alpha_x$"],
+    citations: lecture4CoreCitations,
+  }),
+  notationEntry({
+    id: "lecture4-efficient-output",
+    moduleSlug: "lecture-4",
+    kind: "symbol",
+    displayLatex: "y_t^e",
+    spokenName: "y e t, efficient output",
+    plainMeaning:
+      "The output level that is relevant for welfare in the Lecture 4 policy problem.",
+    whyItMatters:
+      "The lecture's real stabilization target is defined relative to this efficient benchmark, not just relative to flexible-price output.",
+    whereItAppears: ["Definition of the welfare-relevant output gap $x_t = y_t - y_t^e$."],
+    commonConfusions: [
+      "It is not automatically the same object as natural output $y_t^n$. Lecture 4 uses the distinction to explain why the welfare-relevant gap must be handled carefully.",
+    ],
+    relatedTerms: ["$x_t$", "$y_t^n$"],
     citations: lecture4CoreCitations,
   }),
   notationEntry({
@@ -2005,6 +2165,40 @@ const lecture8NotationEntries: NotationEntry[] = [
     relatedTerms: ["$\\text{MPC}_i$", "redistribution channel"],
     citations: lecture8CoreCitations,
   }),
+  notationEntry({
+    id: "lecture8-redistribution",
+    moduleSlug: "lecture-8",
+    kind: "abbreviation",
+    displayLatex: "\\text{redistribution channel}",
+    spokenName: "redistribution channel",
+    plainMeaning:
+      "The channel through which monetary policy changes aggregate demand by reallocating resources across households with different MPCs or balance-sheet exposure.",
+    whyItMatters:
+      "It is one of the lecture's main reasons why HANK transmission differs from the representative-agent benchmark.",
+    whereItAppears: ["Auclert discussion.", "HANK versus RANK comparison."],
+    commonConfusions: [
+      "It is not an after-the-fact fairness comment. The lecture treats redistribution as part of the macro transmission mechanism itself.",
+    ],
+    relatedTerms: ["$\\text{MPC}_i$", "HANK"],
+    citations: lecture8CoreCitations,
+  }),
+  notationEntry({
+    id: "lecture8-matching-multiplier",
+    moduleSlug: "lecture-8",
+    kind: "abbreviation",
+    displayLatex: "\\text{matching multiplier}",
+    spokenName: "matching multiplier",
+    plainMeaning:
+      "Patterson's amplification effect coming from the covariance between MPCs and how strongly different households' earnings move with aggregate activity.",
+    whyItMatters:
+      "It explains why shocks can be especially powerful when they hit the incomes of high-MPC households.",
+    whereItAppears: ["Patterson section in Lecture 8."],
+    commonConfusions: [
+      "The key object is the covariance term, not just the average MPC. Small groups can still matter a lot if they are highly exposed to cyclical income risk.",
+    ],
+    relatedTerms: ["aggregate MPC", "redistribution channel"],
+    citations: lecture8CoreCitations,
+  }),
 ];
 
 const lecture3PracticeProblem: PracticeProblem = practiceProblem({
@@ -2199,7 +2393,7 @@ const lecture8PracticeProblem: PracticeProblem = practiceProblem({
   title: "Lecture 8: Why Distribution Changes Transmission",
   moduleSlug: "lecture-8",
   prompt: [
-    "Suppose two policy interventions generate the same average increase in household income, but one mainly benefits high-MPC households and the other mainly benefits low-MPC households. Explain which intervention should have the stronger aggregate-demand effect and why the representative-agent benchmark misses that difference.",
+    "Suppose two otherwise similar economies experience the same positive policy or productivity shock, but one economy has a much larger share of hand-to-mouth households with MPCs close to one. Explain which economy should have the stronger aggregate-demand response and why the representative-agent benchmark misses that difference.",
   ],
   supportingEquations: [
     {
@@ -2218,17 +2412,18 @@ const lecture8PracticeProblem: PracticeProblem = practiceProblem({
     },
   ],
   hints: [
-    "Hold total income gains fixed and change only who receives them.",
-    "Think about what the representative-agent benchmark loses when everyone is forced to have the same MPC.",
+    "Hold the average shock fixed and change only the distribution of MPCs and the incidence of the income gain.",
+    "Think about what the representative-agent benchmark loses when everyone is forced to have the same MPC and the same cyclical exposure.",
   ],
   nextSteps: [
     "High-MPC households spend more of an extra unit of income, so gains landing on them create a bigger demand response.",
-    "The representative-agent benchmark misses the covariance between MPCs and income changes.",
+    "Patterson's logic says amplification is even stronger if the shock hits households whose earnings are both highly cyclical and associated with high MPCs.",
   ],
   solutionOutline: [
-    "If the gains accrue mainly to high-MPC households, more of the extra income is spent quickly rather than saved.",
-    "Aggregate demand therefore rises more strongly, even though the average income gain is the same.",
-    "A representative-agent model cannot capture this because it assigns one common spending response to everyone.",
+    "If the economy has more hand-to-mouth or otherwise high-MPC households, more of the extra income generated by the same average shock is converted into spending quickly rather than saving.",
+    "Aggregate demand therefore rises more strongly, even though the average shock is the same.",
+    "The amplification is even larger when the same households are also the ones whose earnings move most with the business cycle.",
+    "A representative-agent model cannot capture this because it assigns one common spending response and one common exposure profile to everyone.",
   ],
   citations: lecture8CoreCitations,
 });

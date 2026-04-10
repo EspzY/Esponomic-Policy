@@ -3,6 +3,8 @@
 :root {
   --background: #f7f2e8;
   --foreground: #18212d;
+  --font-sans-stack: "Aptos", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-mono-stack: "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   --color-cream: #f7f2e8;
   --color-paper: #fffdf9;
   --color-ink: #18212d;
@@ -18,8 +20,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans-stack);
+  --font-mono: var(--font-mono-stack);
 }
 
 * {

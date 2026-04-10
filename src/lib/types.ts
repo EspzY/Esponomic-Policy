@@ -14,6 +14,11 @@ export type TutorMode =
   | "next_step"
   | "solution_check"
   | "full_solution";
+export type PracticeCollectionKind =
+  | "seminar_problem_set"
+  | "past_exam"
+  | "lecture_linked";
+export type PracticeSupportMode = "conceptual" | "derivation";
 export type SourceType =
   | "lecture"
   | "complementary_lecture"
@@ -140,6 +145,36 @@ export type PracticeSupportEquation = {
   explanation: string;
 };
 
+export type PracticeGuide = {
+  problemType: string;
+  whatIsBeingAsked: string;
+  keyConcepts: string[];
+  solutionPath: string[];
+  commonMistakes: string[];
+};
+
+export type PracticeStepGuide = {
+  title: string;
+  whatToDo: string;
+  whyValid: string;
+  principle: string;
+  contribution: string;
+  latex?: string;
+};
+
+export type PracticeCollection = {
+  id: string;
+  slug: string;
+  kind: PracticeCollectionKind;
+  title: string;
+  sourceLabel: string;
+  summary: string;
+  description: string;
+  relatedModuleSlugs: string[];
+  problemSlugs: string[];
+  estimatedMinutes: number;
+};
+
 export type ModuleSection = {
   id: string;
   slug: string;
@@ -185,11 +220,24 @@ export type PracticeProblem = {
   slug: string;
   title: string;
   moduleSlug: string;
+  sourceKind?: PracticeCollectionKind;
+  collectionSlug?: string;
+  sourceLabel?: string;
+  sourceDetail?: string;
+  questionLabel?: string;
+  summary?: string;
+  supportMode?: PracticeSupportMode;
+  relatedModuleSlugs?: string[];
   prompt: string[];
+  questionBlocks?: ContentBlock[];
+  guide?: PracticeGuide;
   supportingEquations: PracticeSupportEquation[];
+  stepGuide?: PracticeStepGuide[];
   hints: string[];
   nextSteps: string[];
   solutionOutline: string[];
+  handSolveNote?: string;
+  answerPlaceholder?: string;
   citations: Citation[];
 };
 

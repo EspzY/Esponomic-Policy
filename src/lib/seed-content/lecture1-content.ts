@@ -215,6 +215,17 @@ export const lecture1Module: ModuleDetail = lectureModule({
         p(
           "The complementary lecture's empirical message is strong: the unsystematic component explains only a **minor fraction** of output and even interest-rate fluctuations in more recent periods. That is why the course cares so much about rules, credibility, and expectations.",
         ),
+        p(
+          "This is exactly where the Clarida-Gali-Gertler result fits. Their pre-Volcker versus post-Volcker Taylor-rule estimates are used in the course to show that the **systematic response to inflation increased over time**. The core lesson is not just historical. It is that a stronger inflation response is part of what made policy more stabilizing and less erratic.",
+        ),
+        checklist(
+          [
+            "Systematic policy is the state-contingent part of the rule.",
+            "The residual shock is what is left after conditioning on inflation and the output gap.",
+            "The course uses the post-Volcker evidence to motivate why stronger inflation responses matter for determinacy later on.",
+          ],
+          "How this lecture feeds later model lectures",
+        ),
       ],
       citations: lecture1SystematicCitations,
     },
@@ -284,8 +295,21 @@ export const lecture1Module: ModuleDetail = lectureModule({
           explanation:
             "The policy rate has to move aggressively enough to change the real rate. This simple idea becomes essential in later lectures when the course studies uniqueness, commitment, and zero-lower-bound problems.",
         }),
+        derivation({
+          title: "Bridge the empirical Lecture 1 result to the New Keynesian model",
+          learningGoal:
+            "Connect the Clarida-Gali-Gertler evidence to the Taylor principle and the Blanchard-Kahn logic used later in the course.",
+          operation:
+            "Take the empirical finding first: the systematic response to inflation became stronger over time. Then reinterpret that statement inside the New Keynesian model.",
+          whyValid:
+            "The exam-style bridge is exactly this: a stronger inflation response means policy is more likely to satisfy the Taylor principle and therefore more likely to anchor expectations in the forward-looking model.",
+          latexAfter:
+            "\\phi_\\pi \\uparrow \\quad \\Rightarrow \\quad \\text{Taylor principle more likely to hold} \\quad \\Rightarrow \\quad \\text{determinacy is easier to obtain}",
+          explanation:
+            "This is the clean bridge from Lecture 1 to Lecture 3. Clarida-Gali-Gertler is not just a historical fact. In course logic, it helps explain why moving from a weak inflation response to a stronger one changes macro stability in a forward-looking equilibrium.",
+        }),
       ],
-      citations: lecture1PolicyCitations,
+      citations: [...lecture1PolicyCitations, ...lecture1SystematicCitations],
     },
     {
       id: "lecture-1-analysis",
@@ -311,6 +335,9 @@ export const lecture1Module: ModuleDetail = lectureModule({
         ),
         p(
           "The complementary lecture then closes the loop empirically. Identifying pure monetary-policy shocks is difficult, the results vary across samples and methods, and more recent policy appears less erratic and more systematic. That empirical message supports the course's emphasis on rules and expectations rather than on shock hunting alone.",
+        ),
+        p(
+          "A good course-style reading is therefore: the rule is a benchmark, the Qvigstad plot is a communication device, and the empirical evidence says central banks became more systematic partly by responding more strongly to inflation. That is the bridge you need when later modules ask why a stronger policy reaction can stabilize a forward-looking model instead of letting expectations drift.",
         ),
       ],
       citations: [...lecture1PolicyCitations, ...lecture1SystematicCitations],
@@ -341,6 +368,11 @@ export const lecture1Module: ModuleDetail = lectureModule({
               markdown:
                 "That is why monetary shocks are hard to identify empirically: the econometric problem is to strip out the systematic component first.",
             },
+            {
+              title: "Step 4: connect to the Taylor-principle lesson",
+              markdown:
+                "If the central bank's *systematic* response to inflation becomes stronger over time, the economy is not just seeing fewer random surprises. It is also moving toward a policy regime that is more likely to stabilize expectations in later New Keynesian lectures.",
+            },
           ],
         }),
       ],
@@ -357,14 +389,14 @@ export const lecture1Module: ModuleDetail = lectureModule({
             "Do not confuse **potential output** with actual output, or the **output gap** with output itself.",
             "Do not call every rate change a monetary shock. First ask what the rule would have implied.",
             "Do not treat the Taylor rule as a literal description of all central-bank behavior. Treat it as a benchmark reaction function.",
-            "Carry the Taylor principle forward into later lectures. It is one of the threads connecting Lecture 1 to the rest of the course.",
+            "Carry the Taylor principle forward into later lectures. It is one of the threads connecting Lecture 1 to determinacy, Blanchard-Kahn logic, and later optimal-policy analysis.",
           ],
           "Quick recap",
         ),
         examTrap(
-          "Calling the residual the whole policy story",
-          "Students sometimes talk about unsystematic policy as if it were the main channel through which central banks affect the economy.",
-          "Reverse the emphasis. The lecture's point is that the systematic reaction function is usually the dominant part of policy, while pure monetary shocks are rare and hard to identify.",
+          "Remembering Clarida-Gali-Gertler as a history fact instead of a model lesson",
+          "Students sometimes state that the response to inflation increased over time, but then stop before explaining why the course cares.",
+          "Finish the bridge. A stronger inflation response means policy is more likely to satisfy the Taylor principle, and in the forward-looking New Keynesian model that helps deliver a determinate equilibrium rather than unstable expectations.",
         ),
       ],
       citations: allLecture1Citations,

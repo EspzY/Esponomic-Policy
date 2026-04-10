@@ -171,6 +171,11 @@ const lecture9Module: ModuleDetail = lectureModule({
           "\\lim_{s \\to \\infty} e^{-R(s)}D(s) \\leq 0",
           "The present value of debt cannot explode forever without future resources to back it.",
         ),
+        eq(
+          "Household intertemporal budget logic",
+          "\\text{PV}(C) = \\text{initial wealth} + \\text{PV}(Y-T)",
+          "Ricardian equivalence works by showing that lower taxes today imply higher taxes later, so lifetime resources need not change under the benchmark assumptions.",
+        ),
       ],
       citations: lecture9CoreCitations,
     },
@@ -206,6 +211,12 @@ const lecture9Module: ModuleDetail = lectureModule({
       contentBlocks: [
         p(
           "Under strong assumptions, debt-financed tax cuts do not raise private wealth because households understand that future taxes must rise. That is the Ricardian-equivalence benchmark. The tax-smoothing logic then says governments may want to spread distortionary taxation over time rather than changing taxes sharply each period.",
+        ),
+        p(
+          "The lecture's logic is more precise than the slogan. Ricardian equivalence comes from combining the **government's intertemporal budget constraint** with the **household's intertemporal budget constraint**. When the government cuts taxes today and borrows instead, the present value of future taxes rises by the same amount under the benchmark assumptions, so lifetime household resources do not change.",
+        ),
+        p(
+          "Tax smoothing is a second layer. Even if the government must eventually finance spending, it need not do so with a wildly varying tax path. If taxes are distortionary, the lecture's benchmark says it is optimal to keep the **marginal distortion of taxation** as even as possible across periods instead of making tax rates jump around sharply.",
         ),
       ],
       citations: lecture9CoreCitations,
@@ -245,6 +256,32 @@ const lecture9Module: ModuleDetail = lectureModule({
           explanation:
             "This is the fiscal version of 'there is no free lunch'. Borrowing today means future fiscal adjustment somewhere in the system.",
         }),
+        derivation({
+          title: "Where Ricardian equivalence comes from",
+          learningGoal:
+            "See why the benchmark wealth effect disappears only after the household and government budgets are combined.",
+          operation:
+            "Start from the household present-value budget and substitute in the government's intertemporal budget implication that lower current taxes must be offset by higher future taxes of equal present value.",
+          whyValid:
+            "The lecture's point is that debt changes the timing of taxes, not their present value, under the benchmark assumptions of forward-looking households and lump-sum taxation.",
+          latexAfter:
+            "\\Delta \\text{PV}(Y-T) = 0 \\quad \\Rightarrow \\quad \\Delta \\text{private wealth} = 0",
+          explanation:
+            "That is the clean Ricardian result. The tax cut feels expansionary only if some part of the benchmark fails, for example liquidity constraints, myopia, distortionary taxation, or unequal incidence.",
+        }),
+        derivation({
+          title: "Why tax smoothing equalizes marginal distortion over time",
+          learningGoal:
+            "Understand why the lecture treats stable tax rates as a benchmark when taxes are costly.",
+          operation:
+            "Write the government's problem as minimizing the total distortion from taxation subject to the intertemporal financing requirement.",
+          whyValid:
+            "If the distortion function is convex, one very high tax rate is more costly than several moderate tax rates with the same present-value revenue.",
+          latexAfter:
+            "f'\\!\\left(\\frac{T_t}{Y_t}\\right) = \\lambda \\quad \\text{across periods in the benchmark optimum}",
+          explanation:
+            "The exact message is that the marginal deadweight cost of taxation should be smoothed over time. That is the economic core behind the lecture's tax-smoothing benchmark.",
+        }),
       ],
       citations: lecture9CoreCitations,
     },
@@ -279,6 +316,9 @@ const lecture9Module: ModuleDetail = lectureModule({
             },
           ],
         }),
+        p(
+          "Lecture 9 also warns about **measurement issues**. Inflation can mechanically raise nominal deficit measures even when the real fiscal position has not worsened in the same way, and asset sales can change gross debt figures without changing the underlying intertemporal need for resources. A careful answer therefore separates accounting labels from the real solvency logic.",
+        ),
         figureNote({
           title: "Conventional view versus Ricardian-equivalence benchmark",
           caption:
@@ -318,6 +358,11 @@ const lecture9Module: ModuleDetail = lectureModule({
               markdown:
                 "If households save the tax cut to pay for expected future taxes, current demand changes little.",
             },
+            {
+              title: "Step 4: explain why the benchmark may fail",
+              markdown:
+                "The lecture and exams expect you to go one step further: liquidity constraints, myopia, distortionary taxes, or unequal incidence can all restore real demand effects even when the Ricardian benchmark itself is internally coherent.",
+            },
           ],
         }),
       ],
@@ -334,6 +379,7 @@ const lecture9Module: ModuleDetail = lectureModule({
             "Debt shifts financing over time; it does not remove the budget constraint.",
             "Ricardian equivalence is a benchmark with strong assumptions, not a universal law.",
             "Tax smoothing is about minimizing distortion over time, not about avoiding taxes forever.",
+            "Inflation, nominal debt measures, or asset sales can change accounting numbers without changing the core intertemporal solvency question in the same way.",
             "Carry forward: later debt-crisis reasoning is much easier if you already separate fiscal arithmetic from market beliefs.",
           ],
           "Quick recap",
@@ -428,6 +474,12 @@ const lecture10Module: ModuleDetail = lectureModule({
         p(
           "The lecture then adds the market side: rollover risk, default fears, and political economy. If investors begin to doubt repayment capacity, required yields can rise, which worsens debt dynamics and can help create the crisis they feared. That is why debt crises can involve both weak fundamentals and self-reinforcing beliefs.",
         ),
+        p(
+          "The political-economy part matters too. The lecture explicitly discusses **strategic debt accumulation** and the **fiscal commons** problem: current governments may borrow more because the future costs are shared across later governments or later taxpayers, while the current political benefits are concentrated. That is why crisis vulnerability is not only a market story; it is also an institutional story.",
+        ),
+        p(
+          "So the lecture's crisis logic has three layers: arithmetic, beliefs, and institutions. A country can look safe when $g>r$, but if debt becomes high enough, markets may demand a higher return, which raises $r$, worsens the debt path, and potentially shifts the economy from a benign equilibrium to a bad one.",
+        ),
       ],
       citations: lecture10CoreCitations,
     },
@@ -466,6 +518,32 @@ const lecture10Module: ModuleDetail = lectureModule({
           explanation:
             "The snowball effect says existing debt becomes harder to carry when interest exceeds growth. The primary surplus works in the opposite direction by actively paying debt down.",
         }),
+        derivation({
+          title: "Why debt can still be sustainable when growth exceeds the interest rate",
+          learningGoal:
+            "Understand the lecture's important qualification that a high debt ratio does not automatically imply crisis.",
+          operation:
+            "Hold the debt ratio fixed and ask what sign of the primary balance is compatible with stability when the snowball term is negative.",
+          whyValid:
+            "If $g>r$, then $(r-g)d$ is negative. That means some debt stabilization can come from growth itself rather than from a large primary surplus.",
+          latexAfter:
+            "g > r \\quad \\Rightarrow \\quad (r-g)d < 0 \\quad \\Rightarrow \\quad \\text{a primary deficit can coexist with stable debt in the benchmark arithmetic}",
+          explanation:
+            "This is the logic behind the lecture's discussion of countries such as Japan. The arithmetic may be sustainable even with a very high debt ratio when financing conditions remain favorable.",
+        }),
+        derivation({
+          title: "Why a crisis can appear without a huge change in debt",
+          learningGoal:
+            "See the lecture's multiple-equilibrium logic rather than treating crises as a smooth function of fundamentals alone.",
+          operation:
+            "Imagine that default fears raise required returns. A higher required return worsens the debt path, which can validate the original fear.",
+          whyValid:
+            "The lecture's crisis slides explicitly describe an unstable equilibrium and self-fulfilling default prophecies.",
+          latexAfter:
+            "\\text{Fear of default} \\Rightarrow r \\uparrow \\Rightarrow (r-g)d \\uparrow \\Rightarrow \\text{default becomes more likely}",
+          explanation:
+            "This is why Lecture 10 cannot be reduced to a single debt-ratio formula. Crisis timing depends on the interaction between weak fundamentals and belief-driven amplification.",
+        }),
       ],
       citations: lecture10CoreCitations,
     },
@@ -500,6 +578,9 @@ const lecture10Module: ModuleDetail = lectureModule({
             },
           ],
         }),
+        p(
+          "The lecture's graphical crisis story is therefore about **multiple equilibria**. A country may have one benign equilibrium with moderate borrowing costs and another bad equilibrium with very high borrowing costs. The unstable middle case is where beliefs matter most: if investors coordinate on fear, the bad equilibrium can become self-fulfilling even without a dramatic new fiscal shock that day.",
+        ),
         figureNote({
           title: "Debt paths and crisis scenarios",
           caption:
@@ -510,6 +591,9 @@ const lecture10Module: ModuleDetail = lectureModule({
           note:
             "What to notice: the lecture is not only about one country's arithmetic. It is also about how default risk and crisis incidence vary over time and can rise in waves.",
         }),
+        p(
+          "This also explains why the Japan example is pedagogically useful. Very high debt alone does not mechanically imply crisis. What matters is the whole package: $r-g$, the expected primary balance, the investor base, institutional credibility, and whether markets see the debt path as rollover-safe.",
+        ),
       ],
       citations: lecture10CoreCitations,
     },
@@ -539,6 +623,11 @@ const lecture10Module: ModuleDetail = lectureModule({
               markdown:
                 "If markets doubt that the larger surplus will be delivered, yields may rise further and the situation can deteriorate quickly.",
             },
+            {
+              title: "Step 4: add the $g>r$ benchmark",
+              markdown:
+                "A careful exam answer also says the reverse: if growth exceeds the interest rate, even a very large debt stock can be sustainable for a long time. Crisis logic starts when that benign benchmark no longer looks credible.",
+            },
           ],
         }),
       ],
@@ -555,6 +644,7 @@ const lecture10Module: ModuleDetail = lectureModule({
             "The debt ratio depends on the interest-growth differential, the initial debt stock, and the primary surplus.",
             "Debt crises involve both arithmetic and expectations.",
             "A crisis can be amplified by higher yields that worsen the debt path itself.",
+            "A favorable $g>r$ benchmark is helpful, but it is not a free pass once beliefs, rollover risk, or political incentives start pushing yields upward.",
             "Carry forward: whenever the course later discusses vulnerability, ask what part is fundamentals and what part is amplification through expectations.",
           ],
           "Quick recap",
@@ -618,6 +708,11 @@ const lecture11Module: ModuleDetail = lectureModule({
           "\\text{capital share} = \\alpha, \\quad \\text{labor share} = 1-\\alpha",
           "Under Cobb-Douglas technology, the exponents line up with factor-income shares.",
         ),
+        eq(
+          "Approximate Gini from the Lorenz curve",
+          "G \\approx 1 - 2 \\times (\\text{area under the Lorenz curve})",
+          "The seminar material uses this approximation together with the trapezoid rule to turn a Lorenz curve into a computable inequality measure.",
+        ),
       ],
       citations: lecture11CoreCitations,
     },
@@ -653,6 +748,14 @@ const lecture11Module: ModuleDetail = lectureModule({
       contentBlocks: [
         p(
           "The Scandinavian model and other wage-setting institutions matter because they influence wage compression, bargaining outcomes, and therefore the distribution of labor income across workers. The lecture uses this to connect macro institutions to personal inequality rather than treating inequality as purely technological.",
+        ),
+        eq(
+          "Scandinavian benchmark",
+          "\\dot p_t^T = \\dot e + \\dot p_x, \\qquad \\dot w = \\dot p_t^T + \\dot a_t",
+          "The traded sector anchors wage growth, and economy-wide wage setting then transmits that anchor to the rest of the economy.",
+        ),
+        p(
+          "The lecture's mechanism is that centralized wage bargaining tends to compress wage dispersion more than a decentralized labor market. So when seminar or exam questions ask how the Scandinavian model affects inequality, the safe answer is not just 'more coordination'. It is 'more wage compression, which tends to lower personal income dispersion and therefore lower measured inequality, other things equal.'",
         ),
       ],
       citations: lecture11CoreCitations,
@@ -692,6 +795,19 @@ const lecture11Module: ModuleDetail = lectureModule({
           explanation:
             "This is one of the lecture's most useful compact results because it turns a production function directly into a distributional benchmark.",
         }),
+        derivation({
+          title: "How to move from quintile shares to an approximate Gini",
+          learningGoal:
+            "Turn the seminar-sheet procedure into a reproducible calculation rather than a memorized formula.",
+          operation:
+            "Sort households by income, compute cumulative population and cumulative income shares, draw the Lorenz curve through those points, and approximate the enclosed area with trapezoids.",
+          whyValid:
+            "The seminar and exam material explicitly use the approximation $G \\approx 1 - 2A$, where $A$ is the area under the Lorenz curve.",
+          latexAfter:
+            "G \\approx 1 - 2A, \\qquad A \\approx \\sum_j \\frac{L_j + L_{j-1}}{2}(P_j - P_{j-1})",
+          explanation:
+            "This is the mechanical procedure students are expected to carry out. The point is not only to get a number, but to understand how the Lorenz geometry is being translated into an inequality statistic.",
+        }),
       ],
       citations: lecture11CoreCitations,
     },
@@ -711,6 +827,9 @@ const lecture11Module: ModuleDetail = lectureModule({
           note:
             "What to notice: once Lorenz curves cross, casual statements like 'country A is clearly more unequal than country B' become much more dangerous.",
         }),
+        p(
+          "That is why the lecture stresses **Lorenz consistency**. If one Lorenz curve lies everywhere below another, the ranking is clear. But when curves cross, one summary number may hide important distributional differences. A good answer therefore says what the figure lets you rank confidently and where the ranking becomes ambiguous.",
+        ),
       ],
       citations: lecture11CoreCitations,
     },
@@ -721,24 +840,29 @@ const lecture11Module: ModuleDetail = lectureModule({
       summary: "A compact problem on factor shares and inequality measures.",
       contentBlocks: [
         workedExample({
-          title: "What does a rise in $\\alpha$ mean?",
+          title: "How do you compute and interpret a Gini in the course style?",
           prompt:
-            "Suppose the Cobb-Douglas capital-share parameter $\\alpha$ rises. Explain what happens to the labor share and why that does not automatically tell you the whole story about personal inequality.",
+            "Suppose income quintiles receive 5%, 10%, 15%, 25%, and 45% of total income. Explain how to approximate the Gini coefficient and then explain why centralized wage bargaining would usually be expected to lower the Gini relative to a fully decentralized labor market.",
           steps: [
             {
-              title: "Step 1: read the factor-share effect",
+              title: "Step 1: compute cumulative income shares",
               markdown:
-                "If $\\alpha$ rises, the capital share rises and the labor share $1-\\alpha$ falls.",
+                "Build the Lorenz points from the quintile shares: 5%, 15%, 30%, 55%, and 100% against cumulative population shares of 20%, 40%, 60%, 80%, and 100%.",
             },
             {
-              title: "Step 2: separate functional from personal distribution",
+              title: "Step 2: approximate the area with trapezoids",
               markdown:
-                "That tells you how total income is split between factors, but not yet how labor income or capital income is distributed across people.",
+                "Use the trapezoid rule segment by segment, then apply $G \\approx 1 - 2A$.",
             },
             {
-              title: "Step 3: add institutions and household structure",
+              title: "Step 3: interpret the policy institution",
               markdown:
-                "Personal inequality also depends on wage-setting institutions, ownership patterns, and household composition.",
+                "Centralized wage bargaining usually compresses wages more than decentralized bargaining, so labor-income dispersion is lower and the Lorenz curve tends to move closer to equality.",
+            },
+            {
+              title: "Step 4: keep the concepts separate",
+              markdown:
+                "Notice how this question mixes inequality *measurement* with inequality *mechanisms*. That is deliberate. The lecture wants you to distinguish the statistic from the labor-market institution generating it.",
             },
           ],
         }),
@@ -756,6 +880,7 @@ const lecture11Module: ModuleDetail = lectureModule({
             "Functional distribution and personal distribution are not the same concept.",
             "A higher capital share does not automatically tell you the full personal-inequality story.",
             "Lorenz curves and the Gini coefficient summarize distribution; they do not explain its causes by themselves.",
+            "If Lorenz curves cross, ranking inequality is harder than students often assume.",
             "Carry forward: when later discussions mention inequality, first ask which inequality concept is actually being used.",
           ],
           "Quick recap",
@@ -831,6 +956,9 @@ const lecture12Module: ModuleDetail = lectureModule({
         p(
           "The lecture begins with the Brundtland definition of sustainable development and then asks how growth theory changes when resources and environmental quality are no longer ignored. The benchmark is that production may depend not only on capital and labor, but also on natural inputs and environmental stocks.",
         ),
+        p(
+          "A good way to read the lecture is as an extension of the textbook Solow benchmark. First recall how long-run growth works when production depends on capital, productivity, and labor. Then add resources and environmental stocks and ask what extra drag terms appear in the growth-rate decomposition. That is exactly the skill the exams and seminar sheet are training.",
+        ),
       ],
       citations: lecture12CoreCitations,
     },
@@ -843,6 +971,9 @@ const lecture12Module: ModuleDetail = lectureModule({
         p(
           "The lecture's resource-drag logic says that growth can slow when scarce natural inputs or environmental constraints become more binding. The drag depends on parameters such as the importance of resources in production and the rate at which natural stocks regenerate or deteriorate.",
         ),
+        p(
+          "The key lecture move is to compare the standard Solow growth decomposition with the extended production function. When resources deplete at rate $b$ and production depends on resources with share $\\beta$, long-run growth per worker inherits a **negative contribution from resource depletion**. The larger $\\beta$ is, the larger that drag becomes. If $\\beta = 0$, the drag disappears and the model collapses back toward the standard benchmark.",
+        ),
       ],
       citations: lecture12CoreCitations,
     },
@@ -854,6 +985,12 @@ const lecture12Module: ModuleDetail = lectureModule({
       contentBlocks: [
         p(
           "The lecture then turns to externalities. The Coase theorem is presented as a benchmark about bargaining under ideal conditions, but the lecture also emphasizes why environmental problems often fail those conditions in practice. That is where carbon pricing, cap-and-trade, and other policy tools enter.",
+        ),
+        p(
+          "The seminar and exam material use this benchmark actively. Students are expected to infer why climate change violates the Coase conditions: too many agents, international spillovers, diffuse harms, uncertain damages, and extremely high transaction costs. That is why the lecture treats bargaining as a conceptual benchmark but not as a realistic climate-policy implementation plan.",
+        ),
+        p(
+          "The lecture also wants students to compare **price instruments** and **quantity instruments**. A carbon tax fixes the emissions price; cap-and-trade fixes the emissions quantity. Under uncertainty, the preferred instrument depends on how costly price mistakes are relative to quantity mistakes. When marginal abatement costs are steep, the cost of forcing an exact quantity can become very large, which is why tax-style price instruments are often attractive in this benchmark comparison.",
         ),
       ],
       citations: lecture12CoreCitations,
@@ -893,6 +1030,19 @@ const lecture12Module: ModuleDetail = lectureModule({
           explanation:
             "The lesson is not that growth stops mechanically, but that the economy's long-run path depends on how important constrained natural inputs are.",
         }),
+        derivation({
+          title: "Derive the growth-rate decomposition and the resource-drag term",
+          learningGoal:
+            "Make the lecture's resource-drag result slow enough to reproduce on an exam.",
+          operation:
+            "Log-differentiate the extended production function and then impose the steady-state condition that output and capital grow at the same rate.",
+          whyValid:
+            "This is exactly how the lecture and exam material turn the extended production function into a growth-rate statement.",
+          latexAfter:
+            "g_Y = \\alpha g_K + \\beta g_R + (1-\\alpha-\\beta) (g + n), \\qquad g_Y^L = g + \\frac{\\beta}{1-\\alpha} g_R",
+          explanation:
+            "Because $g_R$ is negative when resources deplete, the resource term drags down growth. The drag gets larger the more important resources are in production. If $\\beta=0$, the extra drag term disappears and you recover the standard benchmark logic.",
+        }),
       ],
       citations: lecture12CoreCitations,
     },
@@ -922,6 +1072,11 @@ const lecture12Module: ModuleDetail = lectureModule({
               markdown:
                 "Institutional details, monitoring, and uncertainty matter because the real world does not satisfy the ideal conditions of textbook bargaining or perfect policy implementation.",
             },
+            {
+              title: "Step 4: add the uncertainty comparison",
+              markdown:
+                "The course-style extension is to compare price and quantity instruments under uncertainty: a tax gives price certainty, while cap-and-trade gives quantity certainty.",
+            },
           ],
         }),
         figureNote({
@@ -934,6 +1089,9 @@ const lecture12Module: ModuleDetail = lectureModule({
           note:
             "What to notice: the lecture is not only defining sustainability in words. It is also training students to think about how policy instruments interact with real abatement opportunities and costs.",
         }),
+        p(
+          "A strong interpretation of the figure therefore does two things at once: it identifies that abatement opportunities are heterogeneous across sectors, and it connects that heterogeneity to instrument choice. The lecture is training students to see policy as a problem of pricing external damage while recognizing that real-world abatement costs and uncertainty are uneven.",
+        ),
       ],
       citations: lecture12CoreCitations,
     },
@@ -963,6 +1121,11 @@ const lecture12Module: ModuleDetail = lectureModule({
               markdown:
                 "Because the ideal conditions fail badly, formal policy tools such as carbon taxes or cap-and-trade become necessary.",
             },
+            {
+              title: "Step 4: connect back to instrument choice",
+              markdown:
+                "Once formal policy is needed, the next question is whether you want certainty on the emissions price or on the emissions quantity. That is the bridge from the Coase benchmark to the carbon-tax versus cap-and-trade comparison.",
+            },
           ],
         }),
       ],
@@ -979,6 +1142,7 @@ const lecture12Module: ModuleDetail = lectureModule({
             "Sustainability requires both a definition and a mechanism.",
             "Resource constraints can change growth dynamics directly.",
             "Externalities require pricing or quantity controls because private incentives alone are not enough.",
+            "If $\\beta = 0$, the resource-drag term disappears and the model moves back toward the standard growth benchmark.",
             "Carry forward: the course ends here, but the benchmark method is the same one used from Lecture 1 onward.",
           ],
           "Quick recap",
@@ -1044,6 +1208,23 @@ const lecture9NotationEntries: NotationEntry[] = [
     relatedTerms: ["tax smoothing", "government debt"],
     citations: lecture9CoreCitations,
   }),
+  notationEntry({
+    id: "lecture9-tax-smoothing",
+    moduleSlug: "lecture-9",
+    kind: "abbreviation",
+    displayLatex: "\\text{tax smoothing}",
+    spokenName: "tax smoothing",
+    plainMeaning:
+      "The benchmark result that distortionary taxes should be spread over time so their marginal distortion is kept relatively even across periods.",
+    whyItMatters:
+      "It turns Lecture 9 from pure accounting into a policy-design lecture about the optimal timing of taxes.",
+    whereItAppears: ["Tax-smoothing section.", "Exam and seminar questions on fiscal policy."],
+    commonConfusions: [
+      "It does not mean taxes can be avoided forever. It means the path of taxes should avoid unnecessary spikes when taxation is distortionary.",
+    ],
+    relatedTerms: ["Ricardian equivalence", "government debt"],
+    citations: lecture9CoreCitations,
+  }),
 ];
 
 const lecture10NotationEntries: NotationEntry[] = [
@@ -1095,6 +1276,23 @@ const lecture10NotationEntries: NotationEntry[] = [
     relatedTerms: ["$d$", "$r-g$"],
     citations: lecture10CoreCitations,
   }),
+  notationEntry({
+    id: "lecture10-fiscal-commons",
+    moduleSlug: "lecture-10",
+    kind: "abbreviation",
+    displayLatex: "\\text{fiscal commons}",
+    spokenName: "fiscal commons problem",
+    plainMeaning:
+      "A political-economy problem in which current decision-makers borrow too much because the future costs are spread across others while the current political gains are concentrated.",
+    whyItMatters:
+      "It explains why debt vulnerability can emerge even before market panic appears.",
+    whereItAppears: ["Political economy of debt section."],
+    commonConfusions: [
+      "It is not a market-pricing concept. It is an institutional mechanism that can bias fiscal choices toward excessive debt accumulation.",
+    ],
+    relatedTerms: ["strategic debt accumulation", "$d$"],
+    citations: lecture10CoreCitations,
+  }),
 ];
 
 const lecture11NotationEntries: NotationEntry[] = [
@@ -1130,6 +1328,23 @@ const lecture11NotationEntries: NotationEntry[] = [
       "The Gini coefficient summarizes the distribution; it does not explain its causes.",
     ],
     relatedTerms: ["Lorenz curve"],
+    citations: lecture11CoreCitations,
+  }),
+  notationEntry({
+    id: "lecture11-lorenz",
+    moduleSlug: "lecture-11",
+    kind: "abbreviation",
+    displayLatex: "\\text{Lorenz curve}",
+    spokenName: "Lorenz curve",
+    plainMeaning:
+      "A curve plotting cumulative population shares against cumulative income shares after sorting households from poorest to richest.",
+    whyItMatters:
+      "It is the visual foundation for the Gini coefficient and for Lorenz-consistent inequality comparisons.",
+    whereItAppears: ["Lorenz-curve section.", "Seminar-sheet Gini exercise."],
+    commonConfusions: [
+      "Crossing Lorenz curves do not give a clean ranking. That is exactly why the lecture warns students to interpret inequality graphics carefully.",
+    ],
+    relatedTerms: ["Gini coefficient"],
     citations: lecture11CoreCitations,
   }),
 ];
@@ -1186,6 +1401,23 @@ const lecture12NotationEntries: NotationEntry[] = [
     relatedTerms: ["carbon tax", "cap-and-trade"],
     citations: lecture12CoreCitations,
   }),
+  notationEntry({
+    id: "lecture12-beta",
+    moduleSlug: "lecture-12",
+    kind: "parameter",
+    displayLatex: "\\beta",
+    spokenName: "beta, resource share",
+    plainMeaning:
+      "The output elasticity with respect to natural resources in the extended production function.",
+    whyItMatters:
+      "It governs how large the resource-drag term becomes in the lecture's growth decomposition.",
+    whereItAppears: ["Extended Solow production function.", "Resource-drag derivation."],
+    commonConfusions: [
+      "If $\\beta = 0$, the extended model loses the resource-input channel and the extra drag term disappears. That is a benchmark comparison the exams explicitly like to test.",
+    ],
+    relatedTerms: ["resource drag", "extended production function"],
+    citations: lecture12CoreCitations,
+  }),
 ];
 
 const lecture9PracticeProblem: PracticeProblem = practiceProblem({
@@ -1194,7 +1426,7 @@ const lecture9PracticeProblem: PracticeProblem = practiceProblem({
   title: "Lecture 9: Debt, Taxes, and Ricardian Equivalence",
   moduleSlug: "lecture-9",
   prompt: [
-    "Explain why a debt-financed tax cut may have little effect on aggregate demand in the Ricardian-equivalence benchmark.",
+    "Explain why a debt-financed tax cut may have little effect on aggregate demand in the Ricardian-equivalence benchmark, and then name two reasons why the benchmark may fail in practice.",
   ],
   supportingEquations: [
     {
@@ -1207,14 +1439,17 @@ const lecture9PracticeProblem: PracticeProblem = practiceProblem({
   ],
   hints: [
     "Start by asking what households expect future taxes to do after debt rises today.",
+    "Then ask which benchmark assumptions would have to fail for current demand to move more strongly.",
   ],
   nextSteps: [
     "If households internalize the future tax burden, they save more rather than spending the entire current tax cut.",
+    "Then list frictions such as liquidity constraints, myopia, or unequal incidence that break the benchmark.",
   ],
   solutionOutline: [
     "A debt-financed tax cut raises current disposable income, but government debt also rises.",
     "If households understand that future taxes must eventually increase, the tax cut does not create net wealth in the Ricardian benchmark.",
     "They therefore save more, so aggregate demand changes little under the strong benchmark assumptions.",
+    "In practice the result can fail if households are liquidity constrained, myopic, unequally affected, or if taxes are distortionary in ways the benchmark abstracts from.",
   ],
   citations: lecture9CoreCitations,
 });
@@ -1225,7 +1460,7 @@ const lecture10PracticeProblem: PracticeProblem = practiceProblem({
   title: "Lecture 10: Reading the Debt-Sustainability Equation",
   moduleSlug: "lecture-10",
   prompt: [
-    "Use $$\\Delta d \\approx (r-g)d - s$$ to explain how a rise in the interest-growth differential changes debt sustainability.",
+    "Use $$\\Delta d \\approx (r-g)d - s$$ to explain how a rise in the interest-growth differential changes debt sustainability. Then explain why a country can still avoid crisis for a long time when $g>r$, and why that benign benchmark can nevertheless break suddenly.",
   ],
   supportingEquations: [
     {
@@ -1238,14 +1473,18 @@ const lecture10PracticeProblem: PracticeProblem = practiceProblem({
   ],
   hints: [
     "Split the expression into the snowball term and the primary-surplus term.",
+    "Remember that Lecture 10 is not only arithmetic. Expectations and institutions matter too.",
   ],
   nextSteps: [
     "A larger $r-g$ makes existing debt harder to stabilize, so the required primary surplus rises.",
+    "If $g>r$, the arithmetic becomes friendlier, but a jump in yields or a loss of credibility can still move the economy toward the bad equilibrium.",
   ],
   solutionOutline: [
     "If $r-g$ rises, the existing debt stock contributes more to debt-ratio growth.",
     "The government then needs a larger primary surplus to keep debt stable.",
+    "If $g>r$, the snowball term can become negative, so even high debt can be sustainable for a while under favorable financing conditions.",
     "If markets doubt that such a surplus will appear, yields may rise further and the situation can worsen into a crisis.",
+    "That is why Lecture 10 combines arithmetic, expectations, and political economy rather than treating crises as a one-equation result.",
   ],
   citations: lecture10CoreCitations,
 });
@@ -1253,30 +1492,30 @@ const lecture10PracticeProblem: PracticeProblem = practiceProblem({
 const lecture11PracticeProblem: PracticeProblem = practiceProblem({
   id: "lecture-11-factor-shares-problem",
   slug: "lecture-11-factor-shares-problem",
-  title: "Lecture 11: Factor Shares and Personal Inequality",
+  title: "Lecture 11: Lorenz Curves, Gini, and Wage Compression",
   moduleSlug: "lecture-11",
   prompt: [
-    "Suppose the Cobb-Douglas capital-share parameter $\\alpha$ rises. Explain what happens to the labor share and why that does not automatically tell you the whole story about personal inequality.",
+    "Suppose income quintiles receive 5%, 10%, 15%, 25%, and 45% of total income. Explain how to approximate the Gini coefficient using the Lorenz curve and the trapezoid rule. Then explain why centralized wage bargaining in the Scandinavian model would typically be expected to lower the Gini relative to a decentralized labor market.",
   ],
   supportingEquations: [
     {
-      id: "lecture11-cobb-douglas",
-      label: "Cobb-Douglas benchmark",
-      latex: "Y = K^{\\alpha}L^{1-\\alpha}",
+      id: "lecture11-gini",
+      label: "Gini approximation",
+      latex: "G \\approx 1 - 2A",
       explanation:
-        "Under the benchmark, the capital share is $\\alpha$ and the labor share is $1-\\alpha$.",
+        "Here $A$ is the area under the Lorenz curve, which the seminar sheet approximates by trapezoids.",
     },
   ],
   hints: [
-    "Separate functional distribution from personal distribution.",
+    "Compute cumulative income shares first, then use those points to approximate the area under the Lorenz curve.",
   ],
   nextSteps: [
-    "A higher $\\alpha$ raises the capital share and lowers the labor share, but personal inequality also depends on ownership patterns and labor-income dispersion.",
+    "After computing the Lorenz geometry, explain how centralized bargaining compresses wages and therefore tends to compress personal income distribution too.",
   ],
   solutionOutline: [
-    "If $\\alpha$ rises, the capital share rises and the labor share falls.",
-    "That changes functional distribution between factors.",
-    "But personal inequality also depends on who owns capital, how wages are distributed, and how institutions shape labor incomes.",
+    "Turn the quintile shares into cumulative income shares and plot them against cumulative population shares.",
+    "Approximate the area under the Lorenz curve with trapezoids, then apply $G \\approx 1 - 2A$.",
+    "Centralized wage bargaining tends to compress wages, so the Lorenz curve moves closer to the 45-degree line and the Gini tends to fall relative to a more decentralized benchmark.",
   ],
   citations: lecture11CoreCitations,
 });
@@ -1284,30 +1523,32 @@ const lecture11PracticeProblem: PracticeProblem = practiceProblem({
 const lecture12PracticeProblem: PracticeProblem = practiceProblem({
   id: "lecture-12-environment-problem",
   slug: "lecture-12-environment-problem",
-  title: "Lecture 12: Why Coase Is Not Enough for Climate Policy",
+  title: "Lecture 12: Resource Drag and Climate Policy",
   moduleSlug: "lecture-12",
   prompt: [
-    "Explain why the Coase theorem is a useful benchmark in the lecture but not a complete real-world solution to climate externalities.",
+    "Consider the extended production function $$Y = K^{\\alpha}R^{\\beta}(AL)^{1-\\alpha-\\beta}.$$ Explain what resource drag means, what changes when $\\beta = 0$, and why the Coase theorem is still not enough as a practical climate-policy solution.",
   ],
   supportingEquations: [
     {
-      id: "lecture12-hotelling",
-      label: "Hotelling condition",
-      latex: "\\frac{\\dot p}{p} = r",
+      id: "lecture12-growth",
+      label: "Extended production benchmark",
+      latex: "Y = K^{\\alpha}R^{\\beta}(AL)^{1-\\alpha-\\beta}",
       explanation:
-        "The lecture uses benchmark intertemporal resource logic to motivate environmental pricing and scarcity discussions.",
+        "The lecture uses the resource share $\\beta$ to show how natural-input scarcity can lower growth relative to the textbook benchmark.",
     },
   ],
   hints: [
-    "State the ideal conditions under which Coase works before explaining why climate policy violates them.",
+    "First explain what the resource term contributes to growth accounting, then move to the externality benchmark.",
   ],
   nextSteps: [
-    "Climate externalities involve many agents, diffuse harms, and high transaction costs, so bargaining alone is not enough.",
+    "If $\\beta = 0$, the extra resource-drag channel disappears. Climate policy then returns to the externality problem rather than the growth-drag problem.",
+    "Coasian bargaining still fails as a practical solution because climate change violates the ideal bargaining conditions badly.",
   ],
   solutionOutline: [
-    "The Coase theorem is a benchmark saying bargaining can internalize externalities under ideal conditions such as clear property rights and low transaction costs.",
-    "Climate externalities do not fit those conditions well because they involve many agents, cross-border spillovers, and high coordination costs.",
-    "That is why the lecture still argues for formal policy tools such as carbon taxes or cap-and-trade.",
+    "Resource drag means that when resources enter production with share $\\beta$ and deplete over time, growth inherits a negative contribution from the resource term.",
+    "If $\\beta = 0$, that extra drag disappears and the model moves back toward the standard benchmark without the resource-input channel.",
+    "The Coase theorem remains a useful benchmark because it clarifies what ideal bargaining would require.",
+    "But climate change violates those conditions through many agents, diffuse harms, international spillovers, and high transaction costs, so formal policy tools such as carbon taxes or cap-and-trade are still needed.",
   ],
   citations: lecture12CoreCitations,
 });

@@ -1,4 +1,6 @@
 import {
+  demoPracticeCollections,
+  demoPracticeProblems,
   demoGlobalNotation,
   demoModules,
   demoProgress,
@@ -14,6 +16,7 @@ import type {
   ModuleSection,
   ModuleSummary,
   NotationEntry,
+  PracticeCollection,
   PracticeProblem,
   PracticeSupportEquation,
   ProgressSnapshot,
@@ -487,6 +490,7 @@ export async function getPracticeProblemBySlug(slug: string) {
   };
 
   return {
+    ...localProblem,
     id: String(data.id),
     slug: String(data.slug),
     title: String(data.title),
@@ -529,6 +533,14 @@ export async function getPracticeProblemForModule(moduleSlug: string) {
   }
 
   return getPracticeProblemBySlug(String(data.slug));
+}
+
+export async function getPracticeProblems() {
+  return demoPracticeProblems;
+}
+
+export async function getPracticeCollections(): Promise<PracticeCollection[]> {
+  return demoPracticeCollections;
 }
 
 export async function getTutorSources(moduleSlug: string) {

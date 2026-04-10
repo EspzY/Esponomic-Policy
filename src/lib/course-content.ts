@@ -1,5 +1,6 @@
 import type {
   ModuleDetail,
+  PracticeCollection,
   PracticeProblem,
   ProgressSnapshot,
   QuizItem,
@@ -35,6 +36,11 @@ import {
   globalNotationEntries,
   lecture2NotationEntries,
 } from "@/lib/seed-content/notation-content";
+import {
+  buildPracticeCollections,
+  curatedPracticeProblems,
+  enrichLectureLinkedPracticeProblem,
+} from "@/lib/seed-content/practice-content";
 
 export const demoViewer: Viewer = {
   id: "demo-admin",
@@ -110,12 +116,29 @@ export const demoNotation = [
   ...lectures9To12NotationEntries,
 ];
 export const demoGlobalNotation = globalNotationEntries;
-export const demoPracticeProblems: PracticeProblem[] = [
+const rawLectureLinkedPracticeProblems: PracticeProblem[] = [
   lecture1PracticeProblem,
   lecture2PracticeProblem,
   ...lectures3To8PracticeProblems,
   ...lectures9To12PracticeProblems,
 ];
+
+export const demoLectureLinkedPracticeProblems: PracticeProblem[] =
+  rawLectureLinkedPracticeProblems.map((problem) => {
+    const courseModule = demoModules.find((item) => item.slug === problem.moduleSlug);
+
+    return enrichLectureLinkedPracticeProblem(
+      problem,
+      courseModule?.title ?? problem.moduleSlug,
+    );
+  });
+
+export const demoPracticeProblems: PracticeProblem[] = [
+  ...curatedPracticeProblems,
+  ...demoLectureLinkedPracticeProblems,
+];
+export const demoPracticeCollections: PracticeCollection[] =
+  buildPracticeCollections(demoLectureLinkedPracticeProblems);
 export const demoQuizItemsByModule: Record<string, QuizItem[]> = {
   "lecture-1": lecture1QuizItems,
   "lecture-2": lecture2QuizItems,
