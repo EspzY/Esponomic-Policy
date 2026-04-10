@@ -60,7 +60,7 @@ export async function SiteHeader() {
                 </div>
               </details>
               <Link
-                href="/practice/lecture-1-guided-policy-rule"
+                href="/practice"
                 className={buttonClasses("outline", "sm")}
               >
                 Practice
