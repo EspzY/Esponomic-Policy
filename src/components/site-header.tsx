@@ -1,11 +1,13 @@
 import Link from "next/link";
 
-import { getViewer } from "@/lib/auth";
 import { logoutAction } from "@/app/actions";
 import { buttonClasses } from "@/components/ui/button";
+import { getViewer } from "@/lib/auth";
+import { getCourseModules } from "@/lib/repository";
 
 export async function SiteHeader() {
-  const viewer = await getViewer();
+  const [viewer, modules] = await Promise.all([getViewer(), getCourseModules()]);
+  const lectures = modules.filter((module) => module.kind === "lecture");
 
   return (
     <header className="border-b border-[var(--color-line)] bg-white/75 backdrop-blur">
@@ -22,12 +24,46 @@ export async function SiteHeader() {
               <p className="text-lg font-semibold">Economic Policy</p>
             </div>
           </Link>
-          <nav className="hidden items-center gap-4 text-sm text-[var(--color-slate)] md:flex">
-            <Link href="/dashboard">Dashboard</Link>
-            <Link href="/modules/symbols">Module 1</Link>
-            <Link href="/modules/lecture-1">Lecture 1</Link>
-            <Link href="/modules/lecture-2">Lecture 2</Link>
-            <Link href="/practice/lecture-1-guided-policy-rule">Practice</Link>
+          <nav className="hidden items-center gap-3 md:flex">
+            <Link
+              href="/dashboard"
+              className={buttonClasses("outline", "sm")}
+            >
+              Dashboard
+            </Link>
+            <Link
+              href="/modules/symbols"
+              className={buttonClasses("outline", "sm")}
+            >
+              Module 1
+            </Link>
+            <details className="group relative">
+              <summary
+                className={`${buttonClasses("outline", "sm")} summary-reset cursor-pointer gap-2`}
+              >
+                Lectures
+                <span className="text-xs transition group-open:rotate-180">▾</span>
+              </summary>
+              <div className="absolute left-0 top-[calc(100%+0.75rem)] z-30 min-w-72 rounded-[1.5rem] border border-[var(--color-line)] bg-[var(--color-paper)] p-3 shadow-[var(--shadow-card)]">
+                <div className="grid gap-2">
+                  {lectures.map((lecture) => (
+                    <Link
+                      key={lecture.id}
+                      href={`/modules/${lecture.slug}`}
+                      className="rounded-[1rem] px-4 py-3 text-sm font-medium text-[var(--color-ink)] transition hover:bg-[rgba(15,118,110,0.06)] hover:text-[var(--color-teal)]"
+                    >
+                      {lecture.title}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </details>
+            <Link
+              href="/practice/lecture-1-guided-policy-rule"
+              className={buttonClasses("outline", "sm")}
+            >
+              Practice
+            </Link>
           </nav>
         </div>
 
