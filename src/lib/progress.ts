@@ -43,8 +43,7 @@ export async function saveSectionProgress(
   const bestQuizScore = Number(existing?.best_quiz_score ?? 0);
   const status =
     allSectionsCompleted && bestQuizScore >= 70 ? "completed" : "in_progress";
-
-  await admin.from("user_module_progress").upsert({
+  const payload = {
     user_id: userId,
     module_slug: moduleSlug,
     status,
@@ -52,7 +51,18 @@ export async function saveSectionProgress(
     best_quiz_score: bestQuizScore,
     weak_tags: Array.isArray(existing?.weak_tags) ? existing.weak_tags : [],
     last_activity_at: new Date().toISOString(),
-  });
+  };
+
+  const result = existing?.id
+    ? await admin
+        .from("user_module_progress")
+        .update(payload)
+        .eq("id", existing.id)
+    : await admin.from("user_module_progress").insert(payload);
+
+  if (result.error) {
+    throw result.error;
+  }
 }
 
 export async function saveQuizProgress(params: {
@@ -95,8 +105,7 @@ export async function saveQuizProgress(params: {
 
   const status =
     bestQuizScore >= 70 && allSectionsCompleted ? "completed" : "in_progress";
-
-  await admin.from("user_module_progress").upsert({
+  const payload = {
     user_id: params.userId,
     module_slug: params.moduleSlug,
     status,
@@ -104,7 +113,18 @@ export async function saveQuizProgress(params: {
     best_quiz_score: bestQuizScore,
     weak_tags: params.weakTags,
     last_activity_at: new Date().toISOString(),
-  });
+  };
+
+  const result = existing?.id
+    ? await admin
+        .from("user_module_progress")
+        .update(payload)
+        .eq("id", existing.id)
+    : await admin.from("user_module_progress").insert(payload);
+
+  if (result.error) {
+    throw result.error;
+  }
 }
 
 export async function enforceAiQuota(params: {

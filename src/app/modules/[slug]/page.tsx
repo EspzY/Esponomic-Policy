@@ -116,7 +116,7 @@ export default async function ModulePage({
                 <form action={markSectionCompleteAction}>
                   <input type="hidden" name="moduleSlug" value={module.slug} />
                   <input type="hidden" name="sectionSlug" value={section.slug} />
-                  <button className={buttonClasses("outline", "sm")}>
+                  <button type="submit" className={buttonClasses("outline", "sm")}>
                     {done ? "Section completed" : "Mark section complete"}
                   </button>
                 </form>
