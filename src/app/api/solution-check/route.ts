@@ -1,108 +1,278 @@
 import { NextResponse } from "next/server";
 
-import { buildTutorAnswer, retrieveTutorSources } from "@/lib/ai";
-import { getViewer } from "@/lib/auth";
-import { enforceAiQuota, recordAiUsage } from "@/lib/progress";
-import { getPracticeProblemBySlug, getTutorSources } from "@/lib/repository";
-import { createAdminSupabaseClient } from "@/lib/supabase/admin";
-import type { ContentBlock, PracticeProblem, TutorSource } from "@/lib/types";
+import { getPracticeProblemBySlug } from "@/lib/repository";
+import type { PracticeProblem, TutorResult } from "@/lib/types";
 
-function flattenBlockText(block: ContentBlock): string {
-  if (block.type === "paragraph") {
-    return block.markdown;
-  }
+const STOP_WORDS = new Set([
+  "the",
+  "and",
+  "that",
+  "this",
+  "with",
+  "from",
+  "into",
+  "your",
+  "their",
+  "they",
+  "them",
+  "have",
+  "has",
+  "had",
+  "what",
+  "when",
+  "where",
+  "which",
+  "while",
+  "would",
+  "should",
+  "could",
+  "about",
+  "because",
+  "there",
+  "these",
+  "those",
+  "then",
+  "than",
+  "over",
+  "under",
+  "after",
+  "before",
+  "through",
+  "being",
+  "been",
+  "just",
+  "very",
+  "more",
+  "most",
+  "also",
+  "into",
+  "onto",
+  "only",
+  "must",
+  "does",
+  "doing",
+  "done",
+  "such",
+  "each",
+  "same",
+  "much",
+  "many",
+  "still",
+  "need",
+  "needs",
+  "using",
+  "used",
+  "make",
+  "made",
+  "show",
+  "shows",
+  "showing",
+  "student",
+  "answer",
+  "question",
+]);
 
-  if (block.type === "equation") {
-    return `${block.label}. ${block.explanation} Latex: ${block.latex}`;
-  }
-
-  if (block.type === "derivation_step") {
-    return [
-      block.title,
-      block.learningGoal,
-      block.operation,
-      block.whyValid,
-      block.explanation,
-      block.latexBefore ?? "",
-      block.latexAfter,
-    ].join(" ");
-  }
-
-  if (block.type === "model_map") {
-    return `${block.title} ${block.items.map((item) => `${item.label}: ${item.description}`).join(" ")}`;
-  }
-
-  if (block.type === "shock_trace") {
-    return `${block.title} ${block.shock} ${block.steps
-      .map((step) => `${step.variable} ${step.direction}. ${step.explanation}`)
-      .join(" ")}`;
-  }
-
-  if (block.type === "worked_example") {
-    return `${block.title} ${block.prompt} ${block.steps
-      .map((step) => `${step.title}. ${step.markdown}`)
-      .join(" ")}`;
-  }
-
-  if (block.type === "figure") {
-    return `${block.title}. ${block.caption}. ${block.note ?? ""}`;
-  }
-
-  if (block.type === "checklist") {
-    return `${block.title ?? "Checklist"} ${block.items.join(" ")}`;
-  }
-
-  return `${block.title}. Trap: ${block.trap}. Fix: ${block.correction}`;
+function tokenize(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/[$\\{}^_=(),.:;!?[\]"]/g, " ")
+    .split(/\s+/)
+    .map((token) => token.trim())
+    .filter((token) => token.length >= 3 && !STOP_WORDS.has(token));
 }
 
-function toProblemTutorSource(problem: PracticeProblem): TutorSource {
-  const promptText = problem.questionBlocks?.length
-    ? problem.questionBlocks.map((block) => flattenBlockText(block)).join(" ")
-    : problem.prompt.join(" ");
-  const supportEquations = problem.supportingEquations
-    .map((equation) => `${equation.label}: ${equation.explanation} Latex: ${equation.latex}`)
-    .join(" ");
-  const guideText = problem.guide
-    ? [
-        problem.guide.problemType,
-        problem.guide.whatIsBeingAsked,
-        ...problem.guide.keyConcepts,
-        ...problem.guide.solutionPath,
-        ...problem.guide.commonMistakes,
-      ].join(" ")
-    : "";
-  const stepGuideText = (problem.stepGuide ?? [])
-    .map((step) =>
-      [step.title, step.whatToDo, step.whyValid, step.principle, step.contribution, step.latex ?? ""].join(
-        " ",
-      ),
+function scorePhraseCoverage(phrase: string, studentTokens: Set<string>) {
+  const tokens = tokenize(phrase);
+
+  if (!tokens.length) {
+    return 0;
+  }
+
+  const hits = tokens.filter((token) => studentTokens.has(token)).length;
+  return hits / tokens.length;
+}
+
+function buildSourceSnippets(problem: PracticeProblem) {
+  return [
+    {
+      title: problem.title,
+      excerpt:
+        problem.guide?.whatIsBeingAsked ??
+        problem.summary ??
+        problem.prompt.join(" "),
+      citations: problem.citations,
+    },
+  ];
+}
+
+function firstNonEmpty(values: Array<string | undefined>) {
+  return values.find((value) => Boolean(value?.trim()));
+}
+
+function buildLocalConceptualFeedback(
+  problem: PracticeProblem,
+  studentWork: string,
+): TutorResult {
+  const studentTokens = new Set(tokenize(studentWork));
+  const rubricItems = [
+    ...(problem.guide?.keyConcepts ?? []),
+    ...(problem.guide?.solutionPath ?? []),
+    ...problem.solutionOutline,
+  ]
+    .filter(Boolean)
+    .slice(0, 10);
+
+  const scoredItems = rubricItems.map((item) => ({
+    item,
+    score: scorePhraseCoverage(item, studentTokens),
+  }));
+
+  const matched = scoredItems
+    .filter((entry) => entry.score >= 0.35)
+    .sort((left, right) => right.score - left.score)
+    .slice(0, 3)
+    .map((entry) => entry.item);
+  const missing = scoredItems
+    .filter((entry) => entry.score < 0.35)
+    .slice(0, 3)
+    .map((entry) => entry.item);
+
+  const strongestPoint =
+    matched[0] ??
+    firstNonEmpty(problem.guide?.keyConcepts ?? []) ??
+    problem.summary ??
+    "You are engaging with the right topic, but the answer still needs a clearer structure.";
+  const nextRevisionStep =
+    missing[0] ??
+    firstNonEmpty(problem.guide?.solutionPath ?? []) ??
+    firstNonEmpty(problem.solutionOutline) ??
+    "Rewrite the answer so it explicitly names the benchmark, the mechanism, and the conclusion.";
+
+  const markdown = [
+    "## Local feedback check",
+    "This feedback is based on the stored teaching guide and solution structure for the problem, not on a paid live model call.",
+    "",
+    "## What already looks on the right track",
+    matched.length
+      ? matched.map((item, index) => `${index + 1}. ${item}`).join("\n")
+      : `1. ${strongestPoint}`,
+    "",
+    "## What is still missing or too vague",
+    missing.length
+      ? missing.map((item, index) => `${index + 1}. Make this explicit: ${item}`).join("\n")
+      : `1. The main improvement now is to make the economic logic more explicit and less implied.`,
+    "",
+    "## Likely confusion to watch for",
+    (problem.guide?.commonMistakes?.length
+      ? problem.guide.commonMistakes
+      : [
+          "Students often jump straight to the final conclusion without naming the benchmark comparison or the mechanism that gets them there.",
+        ]
     )
-    .join(" ");
+      .slice(0, 2)
+      .map((item, index) => `${index + 1}. ${item}`)
+      .join("\n"),
+    "",
+    "## Best next revision step",
+    nextRevisionStep,
+  ].join("\n");
 
   return {
-    id: `problem-${problem.slug}`,
-    moduleSlug: problem.moduleSlug,
-    title: `${problem.questionLabel ?? "Practice question"}: ${problem.title}`,
-    text: [
-      problem.summary ?? "",
-      promptText,
-      supportEquations,
-      guideText,
-      stepGuideText,
-      ...problem.hints,
-      ...problem.nextSteps,
-      ...problem.solutionOutline,
-    ]
-      .join(" ")
-      .trim(),
+    answerMarkdown: markdown,
+    confidenceLabel: matched.length >= 2 ? "grounded" : "partial",
     citations: problem.citations,
-    tags: [
-      "practice",
-      problem.moduleSlug,
-      problem.supportMode ?? "conceptual",
-      problem.collectionSlug ?? "standalone",
-    ],
+    sourceSnippets: buildSourceSnippets(problem),
   };
+}
+
+function buildLocalDerivationFeedback(
+  problem: PracticeProblem,
+  studentWork: string,
+): TutorResult {
+  const studentTokens = new Set(tokenize(studentWork));
+  const derivationSteps = (problem.stepGuide ?? []).map((step) => ({
+    title: step.title,
+    whatToDo: step.whatToDo,
+    principle: step.principle,
+    whyValid: step.whyValid,
+    contribution: step.contribution,
+    score: scorePhraseCoverage(
+      [step.title, step.whatToDo, step.principle, step.contribution].join(" "),
+      studentTokens,
+    ),
+  }));
+
+  const matched = derivationSteps
+    .filter((step) => step.score >= 0.28)
+    .slice(0, 2);
+  const missing = derivationSteps
+    .filter((step) => step.score < 0.28)
+    .slice(0, 2);
+
+  const markdown = [
+    "## Local derivation check",
+    "This is a rule-based comparison against the stored derivation guide, so it is meant to help you line up your handwritten work with the expected path rather than fully grade every algebra line.",
+    "",
+    "## Steps you seem to have identified",
+    matched.length
+      ? matched
+          .map(
+            (step, index) =>
+              `${index + 1}. **${step.title}**: ${step.contribution}`,
+          )
+          .join("\n")
+      : "1. Your draft does not yet clearly show the benchmark equation or the intended transformation.",
+    "",
+    "## Steps you should make explicit next",
+    missing.length
+      ? missing
+          .map(
+            (step, index) =>
+              `${index + 1}. **${step.title}**\n   - What to do: ${step.whatToDo}\n   - Why it is valid: ${step.whyValid}\n   - Rule being used: ${step.principle}`,
+          )
+          .join("\n")
+      : "1. The main remaining job is to show the intermediate algebra cleanly, not just the final expression.",
+    "",
+    "## Common derivation trap",
+    (problem.guide?.commonMistakes?.[0] ??
+      "Do not skip the substitution or rearrangement that justifies the final line. Write that bridge step explicitly on paper."),
+    "",
+    "## Best next move",
+    (missing[0]?.whatToDo ??
+      problem.nextSteps[0] ??
+      "Go back to the first unrevealed step in the guide and write that line out by hand before continuing."),
+  ].join("\n");
+
+  return {
+    answerMarkdown: markdown,
+    confidenceLabel:
+      matched.length >= 2 ? "grounded" : matched.length >= 1 ? "partial" : "insufficient_evidence",
+    citations: problem.citations,
+    sourceSnippets: buildSourceSnippets(problem),
+  };
+}
+
+function buildLocalSolutionCheck(
+  problem: PracticeProblem,
+  studentWork?: string,
+): TutorResult {
+  const trimmedWork = studentWork?.trim();
+
+  if (!trimmedWork) {
+    return {
+      answerMarkdown:
+        "Add a short draft first, then run the feedback check again. The checker compares your answer against the stored teaching guide and solution outline for this problem.",
+      confidenceLabel: "insufficient_evidence",
+      citations: problem.citations,
+      sourceSnippets: buildSourceSnippets(problem),
+    };
+  }
+
+  if ((problem.supportMode ?? "conceptual") === "derivation") {
+    return buildLocalDerivationFeedback(problem, trimmedWork);
+  }
+
+  return buildLocalConceptualFeedback(problem, trimmedWork);
 }
 
 function buildHintMarkdown(problem: PracticeProblem) {
@@ -204,7 +374,6 @@ function buildFullSolutionMarkdown(problem: PracticeProblem) {
 
 export async function POST(request: Request) {
   try {
-    const viewer = await getViewer();
     const body = (await request.json()) as {
       mode?: "hint" | "next_step" | "solution_check" | "full_solution";
       moduleSlug?: string;
@@ -225,36 +394,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Problem not found." }, { status: 404 });
     }
 
-    const usageKind = body.mode === "full_solution" ? "full_solution" : "solution_check";
-    const limit = body.mode === "full_solution" ? 10 : 15;
-
-    if (viewer && !viewer.demoMode) {
-      const quota = await enforceAiQuota({
-        userId: viewer.id,
-        usageKind,
-        limit,
-      });
-
-      if (!quota.allowed) {
-        return NextResponse.json(
-          { error: `Daily quota reached for ${body.mode}.` },
-          { status: 429 },
-        );
-      }
-    }
-
     let answerPayload:
-      | {
-          answerMarkdown: string;
-          confidenceLabel: "grounded" | "partial" | "insufficient_evidence";
-          citations: typeof problem.citations;
-          sourceSnippets: {
-            title: string;
-            excerpt: string;
-            citations: typeof problem.citations;
-          }[];
-          error?: string;
-        }
+      | TutorResult
       | undefined;
 
     if (body.mode === "hint") {
@@ -300,52 +441,7 @@ export async function POST(request: Request) {
         ],
       };
     } else {
-      const problemSource = toProblemTutorSource(problem);
-      const sources = [problemSource, ...(await getTutorSources(body.moduleSlug))];
-      const selectedSources = await retrieveTutorSources(
-        `${problem.title}\n${problem.summary ?? ""}\n${body.studentWork ?? ""}`,
-        sources,
-      );
-      answerPayload = await buildTutorAnswer(
-        "solution_check",
-        [
-          `Problem: ${problem.title}`,
-          `Support mode: ${problem.supportMode ?? "conceptual"}`,
-          `What the question asks: ${problem.guide?.whatIsBeingAsked ?? problem.prompt.join(" ")}`,
-          `Student work:\n${body.studentWork ?? "(no work provided yet)"}`,
-        ].join("\n"),
-        selectedSources,
-      );
-    }
-
-    if (viewer && !viewer.demoMode) {
-      await recordAiUsage(viewer.id, usageKind);
-
-      const admin = createAdminSupabaseClient();
-      const { data: thread } = await admin!.from("qa_threads").insert({
-        user_id: viewer.id,
-        module_slug: body.moduleSlug,
-        title: problem.title,
-      }).select("id").single();
-
-      if (thread) {
-        await admin!.from("qa_messages").insert([
-          {
-            thread_id: thread.id,
-            role: "user",
-            mode: body.mode,
-            content_markdown: body.studentWork ?? body.mode,
-          },
-          {
-            thread_id: thread.id,
-            role: "assistant",
-            mode: body.mode,
-            content_markdown: answerPayload.answerMarkdown,
-            citations: answerPayload.citations,
-            confidence_label: answerPayload.confidenceLabel,
-          },
-        ]);
-      }
+      answerPayload = buildLocalSolutionCheck(problem, body.studentWork);
     }
 
     return NextResponse.json(answerPayload);

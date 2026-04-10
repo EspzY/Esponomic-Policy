@@ -76,7 +76,7 @@ export function ProblemWorkspace({ problem }: { problem: PracticeProblem }) {
           {isDerivation
             ? problem.handSolveNote ??
               "This question is meant to be worked out by hand. Use the progressive help when you get stuck; it explains what to do, why the step is valid, and how it fits the full derivation."
-            : "Draft your answer in full sentences. The tutor should comment on what is correct, what is incomplete, and what theory you may still be misunderstanding."}
+            : "Draft your answer in full sentences. The local feedback checker compares your answer against the stored teaching guide and solution structure for this problem."}
         </p>
 
         {isDerivation ? (
@@ -221,10 +221,10 @@ export function ProblemWorkspace({ problem }: { problem: PracticeProblem }) {
           <>
             <div className="mt-4 rounded-[1.5rem] border border-[rgba(15,118,110,0.16)] bg-[rgba(15,118,110,0.05)] p-5">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-teal)]">
-                Best use of the tutor
+                Best use of the feedback checker
               </p>
               <p className="mt-2 text-sm leading-7 text-[var(--color-slate)]">
-                Write the answer you would actually hand in. The feedback should tell you what is already correct, what is still incomplete, and which part of the theory needs clearer explanation.
+                Write the answer you would actually hand in. The checker should tell you what is already on the right track, what is still missing, and which part of the theory needs clearer explanation.
               </p>
             </div>
             <textarea
@@ -232,7 +232,7 @@ export function ProblemWorkspace({ problem }: { problem: PracticeProblem }) {
               onChange={(event) => setStudentWork(event.target.value)}
               placeholder={
                 problem.answerPlaceholder ??
-                "Write your answer here. The tutor should comment on what is correct, what is incomplete, and what should be clarified."
+                "Write your answer here. The checker compares it against the stored teaching guide and highlights what should be strengthened."
               }
               className="mt-4 min-h-40 w-full rounded-[1.5rem] border border-[var(--color-line)] bg-white px-4 py-3 text-sm outline-none transition focus:border-[var(--color-teal)]"
             />

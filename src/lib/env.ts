@@ -1,5 +1,6 @@
 const env = {
   appUrl: process.env.NEXT_PUBLIC_APP_URL,
+  tutorWidgetEnabled: process.env.NEXT_PUBLIC_ENABLE_TUTOR_WIDGET === "true",
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
   supabasePublishableKey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
@@ -17,6 +18,10 @@ export function isSupabaseConfigured() {
       env.supabasePublishableKey &&
       env.supabaseServiceRoleKey,
   );
+}
+
+export function isTutorWidgetEnabled() {
+  return env.tutorWidgetEnabled;
 }
 
 export function isOpenAiConfigured() {

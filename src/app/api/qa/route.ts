@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { buildTutorAnswer, retrieveTutorSources } from "@/lib/ai";
 import { getViewer } from "@/lib/auth";
+import { isTutorWidgetEnabled } from "@/lib/env";
 import { enforceAiQuota, recordAiUsage } from "@/lib/progress";
 import { getCourseModules, getPracticeProblemBySlug, getTutorSources } from "@/lib/repository";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
@@ -138,6 +139,21 @@ function buildContextPrompt(
 
 export async function POST(request: Request) {
   try {
+    if (!isTutorWidgetEnabled()) {
+      return NextResponse.json(
+        {
+          answerMarkdown:
+            "The live chat tutor is currently disabled to avoid runtime AI costs. Use the lecture modules, worked derivations, and the built-in practice guidance instead.",
+          confidenceLabel: "insufficient_evidence",
+          citations: [],
+          sourceSnippets: [],
+          error:
+            "The live tutor is disabled in this deployment.",
+        },
+        { status: 403 },
+      );
+    }
+
     const viewer = await getViewer();
     const body = (await request.json()) as {
       moduleSlug?: string;

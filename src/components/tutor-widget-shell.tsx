@@ -1,9 +1,14 @@
 import { getViewer } from "@/lib/auth";
+import { isTutorWidgetEnabled } from "@/lib/env";
 import { getCourseModules, getPracticeProblems } from "@/lib/repository";
 
 import { TutorWidget } from "@/components/tutor-widget";
 
 export async function TutorWidgetShell() {
+  if (!isTutorWidgetEnabled()) {
+    return null;
+  }
+
   const viewer = await getViewer();
 
   if (!viewer) {
