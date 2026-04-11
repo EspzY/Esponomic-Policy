@@ -133,10 +133,24 @@ export const demoLectureLinkedPracticeProblems: PracticeProblem[] =
     );
   });
 
-export const demoPracticeProblems: PracticeProblem[] = [
+function ensureUniquePracticeProblemSlugs(problems: PracticeProblem[]) {
+  const seen = new Set<string>();
+
+  for (const problem of problems) {
+    if (seen.has(problem.slug)) {
+      throw new Error(`Duplicate practice problem slug detected: ${problem.slug}`);
+    }
+
+    seen.add(problem.slug);
+  }
+
+  return problems;
+}
+
+export const demoPracticeProblems: PracticeProblem[] = ensureUniquePracticeProblemSlugs([
   ...curatedPracticeProblems,
   ...demoLectureLinkedPracticeProblems,
-];
+]);
 export const demoPracticeCollections: PracticeCollection[] =
   buildPracticeCollections(demoLectureLinkedPracticeProblems);
 export const demoQuizItemsByModule: Record<string, QuizItem[]> = {

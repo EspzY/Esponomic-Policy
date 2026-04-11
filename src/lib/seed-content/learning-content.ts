@@ -78,9 +78,9 @@ export const demoQuizItems: QuizItem[] = quizBank([
 ]);
 
 export const demoPracticeProblem: PracticeProblem = {
-  id: "seminar-1-question-1",
-  slug: "seminar-1-question-1",
-  title: "Seminar 1: NK Model Shock Analysis",
+  id: "lecture-2-guided-nk-shock-analysis",
+  slug: "lecture-2-guided-nk-shock-analysis",
+  title: "Lecture 2 Guided NK Shock Analysis",
   moduleSlug: "lecture-2",
   prompt: [
     "Consider the basic New Keynesian model used in class and summarized by the following equations.",

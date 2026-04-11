@@ -469,16 +469,22 @@ function buildFullSolutionMarkdown(problem: PracticeProblem) {
   )
     .map((paragraph) => stripMetaCoaching(paragraph))
     .filter(Boolean);
+  const fallbackAnswer = stripMetaCoaching(buildExamReadyAnswer(problem));
+  const answerParagraphs = solutionParagraphs.length
+    ? solutionParagraphs
+    : fallbackAnswer
+      ? [fallbackAnswer]
+      : ["A stored model answer is not available for this step yet."];
 
   if (problem.supportMode === "derivation" && problem.stepGuide?.length) {
     const workedSteps = buildDerivationWorkedSteps(problem);
     const examReadyAnswer = buildExamReadyAnswer(problem);
-    const storedAnswer = solutionParagraphs.join("\n\n").trim();
+    const storedAnswer = answerParagraphs.join("\n\n").trim();
 
     return [
       "## Exam answer",
       partLabel ? `### ${partLabel}` : "",
-      ...solutionParagraphs,
+      ...answerParagraphs,
       "## Worked derivation",
       ...workedSteps,
       examReadyAnswer.trim() && examReadyAnswer.trim() !== storedAnswer
@@ -490,7 +496,7 @@ function buildFullSolutionMarkdown(problem: PracticeProblem) {
   return [
     "## Exam answer",
     partLabel ? `### ${partLabel}` : "",
-    ...solutionParagraphs,
+    ...answerParagraphs,
   ].join("\n\n");
 }
 

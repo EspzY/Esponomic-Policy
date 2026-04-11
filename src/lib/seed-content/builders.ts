@@ -228,37 +228,13 @@ export function practiceProblem(problem: PracticeProblem): PracticeProblem {
       baseNextSteps.unshift(derivationNextStep);
     }
 
-    const teachingOutline = stepGuide.map((step, index) => {
-      const ruleLead = step.principle ? `Rule used: ${step.principle}. ` : "";
-      const helpLead = step.contribution
-        ? `How you should know this is the right move: ${step.contribution} `
-        : "";
-      const bridgeLead =
-        "What changes from the previous line: you make one explicit algebraic or logical move instead of jumping to the conclusion. ";
-
-      return `Step ${index + 1} - ${step.title}: ${step.whatToDo} ${bridgeLead}${ruleLead}Why it is valid: ${step.whyValid} ${helpLead}`.trim();
-    });
-
-    for (const item of baseOutline) {
-      if (!teachingOutline.includes(item)) {
-        teachingOutline.push(item);
-      }
-    }
-
     return {
       ...problem,
       hints: [...new Set(baseHints)],
       nextSteps: [...new Set(baseNextSteps)],
-      solutionOutline: teachingOutline,
+      solutionOutline: [...new Set(baseOutline)],
     };
   }
-
-  const conceptualTeachingOutline = guide
-    ? guide.solutionPath.map(
-        (item, index) =>
-          `Move ${index + 1}: ${item} Why this belongs here: it gives the answer one more piece of the benchmark-to-mechanism-to-conclusion chain instead of forcing the reader to infer the missing bridge.`,
-      )
-    : [];
 
   const conceptualNextStep =
     guide?.solutionPath?.[0]
@@ -273,7 +249,7 @@ export function practiceProblem(problem: PracticeProblem): PracticeProblem {
     ...problem,
     hints: [...new Set(baseHints)],
     nextSteps: [...new Set(baseNextSteps)],
-    solutionOutline: [...new Set([...conceptualTeachingOutline, ...baseOutline])],
+    solutionOutline: [...new Set(baseOutline)],
   };
 }
 

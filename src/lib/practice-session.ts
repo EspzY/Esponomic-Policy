@@ -309,7 +309,13 @@ export function getPracticeCollectionProblems(
   collection: PracticeCollection,
   problems: PracticeProblem[],
 ) {
-  const bySlug = new Map(problems.map((problem) => [problem.slug, problem]));
+  const bySlug = new Map<string, PracticeProblem>();
+
+  for (const problem of problems) {
+    if (!bySlug.has(problem.slug)) {
+      bySlug.set(problem.slug, problem);
+    }
+  }
 
   return collection.problemSlugs
     .map((slug) => bySlug.get(slug))
