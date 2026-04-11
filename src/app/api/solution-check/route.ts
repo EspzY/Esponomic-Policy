@@ -110,36 +110,81 @@ function firstNonEmpty(values: Array<string | undefined>) {
   return values.find((value) => Boolean(value?.trim()));
 }
 
+function uniqueNonEmpty(values: Array<string | undefined>) {
+  return values.filter((value, index, items): value is string => {
+    if (!value?.trim()) {
+      return false;
+    }
+
+    return items.findIndex((candidate) => candidate?.trim() === value.trim()) === index;
+  });
+}
+
+function ensureSentence(value: string) {
+  const trimmed = value.trim();
+
+  if (!trimmed) {
+    return "";
+  }
+
+  return /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
+}
+
+function lowercaseFirst(value: string) {
+  if (!value) {
+    return value;
+  }
+
+  return `${value.charAt(0).toLowerCase()}${value.slice(1)}`;
+}
+
+function toWorkedSentence(value: string) {
+  const trimmed = value.trim();
+
+  if (!trimmed) {
+    return "";
+  }
+
+  if (/^(we|the|this|that|under|with|because|if|once|after|in)\b/i.test(trimmed)) {
+    return ensureSentence(trimmed);
+  }
+
+  return ensureSentence(`We ${lowercaseFirst(trimmed)}`);
+}
+
 function buildConceptualRewriteTemplate(problem: PracticeProblem) {
-  const path = problem.guide?.solutionPath ?? [];
-  const outline = problem.solutionOutline;
+  const path = uniqueNonEmpty([
+    ...problem.nextSteps,
+    ...(problem.guide?.solutionPath ?? []),
+  ]);
 
   return [
     path[0] ?? "Start from the benchmark or definition the question rests on.",
-    path[1] ?? outline[0] ?? "Then explain the mechanism one link at a time.",
-    path[2] ?? outline[outline.length - 1] ?? "Finish with the economic interpretation.",
+    path[1] ?? "Then explain the mechanism one link at a time.",
+    path[2] ?? "Finish with the economic interpretation.",
   ];
 }
 
 function buildAnswerOutlineMarkdown(problem: PracticeProblem) {
-  const outline = problem.solutionOutline.length
-    ? problem.solutionOutline
-    : buildConceptualRewriteTemplate(problem);
-
   const steps =
     problem.supportMode === "derivation" && problem.stepGuide?.length
-      ? problem.stepGuide.map((step) => step.whatToDo)
-      : outline;
+      ? problem.stepGuide.map((step) => step.title)
+      : uniqueNonEmpty([
+          ...problem.nextSteps,
+          ...(problem.guide?.solutionPath ?? []),
+        ]);
+
+  const outline = steps.length ? steps : buildConceptualRewriteTemplate(problem);
 
   return [
     "## Answer outline",
-    ...steps.slice(0, 4).map((step, index) => `${index + 1}. ${step}`),
+    ...outline.slice(0, 4).map((step, index) => `${index + 1}. ${step}`),
   ].join("\n\n");
 }
 
 function buildExamReadyAnswer(problem: PracticeProblem) {
   if (problem.solutionOutline.length) {
-    return problem.solutionOutline.join(" ");
+    return problem.solutionOutline.join("\n\n");
   }
 
   if (problem.stepGuide?.length) {
@@ -322,7 +367,7 @@ function buildLocalSolutionCheck(
   if (!trimmedWork) {
     return {
       answerMarkdown:
-        "Add a short draft first, then run the feedback check again. The checker compares your answer against the stored teaching guide and solution outline for this problem.",
+        "Add a short draft first, then run the feedback check again. The checker compares your answer against the stored teaching guide and model answer for this problem.",
       confidenceLabel: "insufficient_evidence",
       citations: problem.citations,
       sourceSnippets: buildSourceSnippets(problem),
@@ -361,41 +406,44 @@ function buildNextStepMarkdown(problem: PracticeProblem) {
   return buildAnswerOutlineMarkdown(problem);
 }
 
+function buildDerivationWorkedSteps(problem: PracticeProblem) {
+  return (problem.stepGuide ?? []).map((step, index) =>
+    [
+      `### ${index + 1}. ${step.title}`,
+      toWorkedSentence(step.whatToDo),
+      ensureSentence(step.whyValid),
+      ensureSentence(step.contribution),
+      step.latex ? `$$${step.latex}$$` : "",
+    ]
+      .filter(Boolean)
+      .join("\n\n"),
+  );
+}
+
 function buildFullSolutionMarkdown(problem: PracticeProblem) {
-  const solutionLines = problem.solutionOutline.length
+  const solutionParagraphs = problem.solutionOutline.length
     ? problem.solutionOutline
-    : buildConceptualRewriteTemplate(problem);
+    : [buildExamReadyAnswer(problem)];
 
   if (problem.supportMode === "derivation" && problem.stepGuide?.length) {
-    const first = problem.stepGuide[0];
-    const finalLine = solutionLines[solutionLines.length - 1] ?? first.contribution;
+    const workedSteps = buildDerivationWorkedSteps(problem);
+    const examReadyAnswer = buildExamReadyAnswer(problem);
+    const storedAnswer = solutionParagraphs.join("\n\n").trim();
 
     return [
       "## Full solution",
-      `### Step 1: Identify what moves first\nStart from ${problem.guide?.whatIsBeingAsked?.toLowerCase() ?? "the benchmark object the question is built on"}. The first active move is: ${first.whatToDo}`,
-      `### Step 2: Connect it to the relevant equation, benchmark, or mechanism\nUse the governing rule explicitly: ${first.principle}. This matters because ${first.whyValid}`,
-      [
-        "### Step 3: Derive the implication step by step",
-        ...problem.stepGuide.map(
-          (step, index) =>
-            `${index + 1}. **${step.title}**\n   - Do this: ${step.whatToDo}\n   - Why it is valid: ${step.whyValid}\n   - Why you know this is the right move: ${step.contribution}${step.latex ? `\n   - Target line: $$${step.latex}$$` : ""}`,
-        ),
-      ].join("\n"),
-      `### Step 4: State the final answer clearly\n${finalLine}`,
-      `### Exam-ready answer\n${buildExamReadyAnswer(problem)}`,
+      ...solutionParagraphs,
+      "### Worked derivation",
+      ...workedSteps,
+      examReadyAnswer.trim() && examReadyAnswer.trim() !== storedAnswer
+        ? `### Exam-ready condensed answer\n${examReadyAnswer}`
+        : "",
     ].join("\n\n");
   }
 
   return [
     "## Full solution",
-    `### Step 1: Identify what moves first\n${problem.guide?.solutionPath?.[0] ?? "State the benchmark or starting point before you make any claim about the answer."}`,
-    `### Step 2: Connect it to the relevant equation, benchmark, or mechanism\n${problem.guide?.solutionPath?.[1] ?? solutionLines[0] ?? "Use the core mechanism that links the benchmark to the result."}`,
-    [
-      "### Step 3: Derive the implication step by step",
-      ...solutionLines.map((line, index) => `${index + 1}. ${line}`),
-    ].join("\n"),
-    `### Step 4: State the final answer clearly\n${solutionLines[solutionLines.length - 1] ?? buildExamReadyAnswer(problem)}`,
-    `### Exam-ready answer\n${buildExamReadyAnswer(problem)}`,
+    ...solutionParagraphs,
   ].join("\n\n");
 }
 

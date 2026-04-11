@@ -93,7 +93,7 @@ export function ProblemWorkspace({ problem }: { problem: PracticeProblem }) {
                   2. Reveal one help step at a time only when you know where your reasoning broke.
                 </li>
                 <li className="rounded-2xl bg-white px-4 py-3">
-                  3. Use the full outline only if you are still stuck after the stepwise guide.
+                  3. Use the full solution only if you are still stuck after the stepwise guide.
                 </li>
               </ol>
             </div>
@@ -125,7 +125,7 @@ export function ProblemWorkspace({ problem }: { problem: PracticeProblem }) {
                   onClick={() => setShowOutline(true)}
                   className={buttonClasses("danger", "sm")}
                 >
-                  Reveal full outline
+                  Reveal full solution
                 </button>
                 {(revealedSteps > 0 || showOutline) ? (
                   <button
@@ -204,16 +204,12 @@ export function ProblemWorkspace({ problem }: { problem: PracticeProblem }) {
             {showOutline ? (
               <div className="mt-5 rounded-[1.5rem] border border-[rgba(180,83,9,0.22)] bg-[rgba(180,83,9,0.06)] p-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-rust)]">
-                  Full outline
+                  Full solution
                 </p>
-                <ol className="mt-3 space-y-3 text-sm leading-7 text-[var(--color-slate)]">
-                  {problem.solutionOutline.map((step, index) => (
-                    <li key={step} className="rounded-2xl bg-white px-4 py-3">
-                      <span className="font-semibold text-[var(--color-ink)]">{index + 1}.</span>{" "}
-                      {step}
-                    </li>
-                  ))}
-                </ol>
+                <MathMarkdown
+                  content={problem.solutionOutline.join("\n\n")}
+                  className="mt-3 rounded-2xl bg-white px-4 py-4 text-sm leading-7 text-[var(--color-slate)]"
+                />
               </div>
             ) : null}
           </>
@@ -260,7 +256,7 @@ export function ProblemWorkspace({ problem }: { problem: PracticeProblem }) {
                 onClick={() => ask("full_solution")}
                 className={buttonClasses("danger", "sm")}
               >
-                {loadingMode === "full_solution" ? "Revealing..." : "Reveal answer outline"}
+                {loadingMode === "full_solution" ? "Revealing..." : "Reveal full solution"}
               </button>
             </div>
             {!hasDraft ? (
