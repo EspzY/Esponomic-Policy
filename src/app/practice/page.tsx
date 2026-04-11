@@ -7,26 +7,26 @@ function sectionCopy(kind: PracticeCollection["kind"]) {
   if (kind === "seminar_problem_set") {
     return {
       eyebrow: "Seminar / problem sets",
-      title: "Work through the course sheets with structure",
+      title: "Solve the course sheets in order",
       description:
-        "These sets are ideal when you want practice that mirrors seminar discussion and the reasoning patterns the course expects you to build before the exam.",
+        "Choose a seminar set and move through it one prompt at a time.",
     };
   }
 
   if (kind === "past_exam") {
     return {
       eyebrow: "Past exams",
-      title: "Practice with real exam-level demands",
+      title: "Work through real exam sources",
       description:
-        "These are full exam questions organized so you can see the original task, understand what kind of answer is needed, and get the right kind of help.",
+        "Open one exam source and solve it as a focused session instead of jumping between disconnected pages.",
     };
   }
 
   return {
     eyebrow: "Lecture-linked practice",
-    title: "Rehearse each lecture before you move on",
+    title: "Rehearse one lecture at a time",
     description:
-      "These shorter guided questions are attached directly to the modules and are the fastest way to lock in the benchmark logic after studying a lecture.",
+      "These are the quickest sets to run right after a lecture, while the benchmark is still fresh.",
   };
 }
 
@@ -80,11 +80,9 @@ export default async function PracticePage() {
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-rust)]">
           Practice system
         </p>
-        <h1 className="mt-3 max-w-4xl text-4xl font-semibold">
-          Practice by source, not by chaos
-        </h1>
-        <p className="mt-4 max-w-4xl text-base leading-8 text-[var(--color-slate)]">
-          Choose between seminar sheets, past exams, and lecture-linked practice. Every question is organized around the original source, the kind of reasoning it demands, and the right kind of help for learning rather than shortcut hunting.
+        <h1 className="mt-3 max-w-4xl text-4xl font-semibold">Choose a source and start solving</h1>
+        <p className="mt-4 max-w-3xl text-base leading-8 text-[var(--color-slate)]">
+          Pick one seminar set, one exam, or one lecture-linked source. Each source opens as a calm step-by-step session with one question or subquestion visible at a time.
         </p>
       </section>
 
@@ -92,19 +90,19 @@ export default async function PracticePage() {
         {categoryCard({
           title: "Seminar / problem sets",
           description:
-            "Curated from the course sheets, with the original question structure preserved and study-oriented guidance on top.",
+            "Best when you want guided repetition of the seminar reasoning patterns.",
           count: groupedCollections.seminar_problem_set.length,
         })}
         {categoryCard({
           title: "Past exams",
           description:
-            "Real exam questions with faithful wording, visuals where they matter, and support modes matched to the type of reasoning the task requires.",
+            "Best when you want to sit down with a real exam source and work through it in sequence.",
           count: groupedCollections.past_exam.length,
         })}
         {categoryCard({
           title: "Lecture-linked practice",
           description:
-            "Focused questions tied directly to the module you just studied, so you can rehearse the benchmark before stepping into seminar or exam material.",
+            "Best when you want one short source tied directly to the lecture you just studied.",
           count: groupedCollections.lecture_linked.length,
         })}
       </section>

@@ -7,6 +7,7 @@ import type {
   PracticeSupportMode,
 } from "@/lib/types";
 
+import { lectureLinkedCollectionSlug } from "@/lib/practice-session";
 import { cite, figureNote, p, practiceProblem } from "@/lib/seed-content/builders";
 
 function promptBlocks(prompt: string[]): ContentBlock[] {
@@ -342,7 +343,7 @@ export function enrichLectureLinkedPracticeProblem(
   return practiceProblem({
     ...problem,
     sourceKind: "lecture_linked",
-    collectionSlug: "lecture-linked-practice",
+    collectionSlug: lectureLinkedCollectionSlug(problem.moduleSlug),
     sourceLabel: `${moduleTitle} lecture-linked practice`,
     sourceDetail:
       "Curated practice written directly against the lecture module so students can rehearse the benchmark mechanism before moving to seminar and exam material.",
@@ -1353,6 +1354,40 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       }),
       p("Answer subparts **(a)-(e)** in the same structure as the original exam question."),
     ],
+    sessionParts: [
+      {
+        id: "a",
+        label: "Part a",
+        prompt: "Explain the present-value government budget constraint in words.",
+        solutionOutlineIndexes: [0],
+      },
+      {
+        id: "b",
+        label: "Part b",
+        prompt: "Explain the consumer budget constraint in words.",
+        solutionOutlineIndexes: [1],
+      },
+      {
+        id: "c",
+        label: "Part c",
+        prompt: "Explain the role of the no-Ponzi condition in the Ricardian benchmark.",
+        solutionOutlineIndexes: [0, 1],
+      },
+      {
+        id: "d",
+        label: "Part d",
+        prompt:
+          "Use the government and consumer budget constraints to show why debt-financed tax changes do not change private consumption in the Ricardian benchmark.",
+        nextStepIndexes: [0],
+        solutionOutlineIndexes: [2],
+      },
+      {
+        id: "e",
+        label: "Part e",
+        prompt: "Give economically grounded reasons why Ricardian equivalence may fail in practice.",
+        solutionOutlineIndexes: [3],
+      },
+    ],
     guide: guide(
       "Long-form benchmark explanation",
       "This is a structured fiscal-theory answer. You need to explain the constraints first and only then use them to reason about equivalence.",
@@ -1417,6 +1452,23 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         altText: "Original 2024 exam page for Question 6 on tax smoothing.",
       }),
       p("The exam asks **(a)** why tax costs rise with the tax share of income and **(b)** why the minimization problem implies that taxes should be a constant fraction of income over time."),
+    ],
+    sessionParts: [
+      {
+        id: "a",
+        label: "Part a",
+        prompt: "Explain why tax costs rise when taxes absorb a larger share of income.",
+        stepGuideIndexes: [0],
+        solutionOutlineIndexes: [0],
+      },
+      {
+        id: "b",
+        label: "Part b",
+        prompt:
+          "Use the minimization problem to show why optimal policy keeps taxes as a constant fraction of income over time.",
+        stepGuideIndexes: [1, 2, 3],
+        solutionOutlineIndexes: [1, 2, 3],
+      },
     ],
     guide: guide(
       "By-hand optimal-tax derivation",
@@ -2061,22 +2113,25 @@ const examCollections: PracticeCollection[] = [
 export function buildPracticeCollections(
   lectureLinkedProblems: PracticeProblem[],
 ): PracticeCollection[] {
+  const lectureLinkedCollections = lectureLinkedProblems.map((problem) => ({
+    id: `practice-collection-${problem.collectionSlug ?? lectureLinkedCollectionSlug(problem.moduleSlug)}`,
+    slug: problem.collectionSlug ?? lectureLinkedCollectionSlug(problem.moduleSlug),
+    kind: "lecture_linked" as const,
+    title: problem.sourceLabel ?? `${problem.title} practice`,
+    sourceLabel: "Lecture-linked practice",
+    summary:
+      problem.summary ??
+      "Focused practice tied directly to one lecture, designed to lock in the benchmark before you move on.",
+    description:
+      "This source opens as one short continuous session tied directly to the lecture module. It is the fastest way to rehearse the mechanism while the lecture is still fresh.",
+    relatedModuleSlugs: [problem.moduleSlug],
+    problemSlugs: [problem.slug],
+    estimatedMinutes: 20,
+  }));
+
   return [
     ...seminarCollections,
     ...examCollections,
-    {
-      id: "practice-collection-lecture-linked",
-      slug: "lecture-linked-practice",
-      kind: "lecture_linked",
-      title: "Lecture-linked practice",
-      sourceLabel: "Lecture-linked practice",
-      summary:
-        "Short guided questions attached directly to each lecture so students can rehearse the mechanism before moving into seminars and exams.",
-      description:
-        "These are the best starting points when you want focused practice tied tightly to the lecture you just studied. They are lighter than seminar sheets, but still structured to teach reasoning rather than rote recall.",
-      relatedModuleSlugs: lectureLinkedProblems.map((problem) => problem.moduleSlug),
-      problemSlugs: lectureLinkedProblems.map((problem) => problem.slug),
-      estimatedMinutes: lectureLinkedProblems.length * 20,
-    },
+    ...lectureLinkedCollections,
   ];
 }

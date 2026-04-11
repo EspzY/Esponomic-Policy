@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { focusPracticeProblemForSessionPart } from "@/lib/practice-session";
 import { getPracticeProblemBySlug } from "@/lib/repository";
 import type { PracticeProblem, TutorResult } from "@/lib/types";
 
@@ -111,48 +112,44 @@ function firstNonEmpty(values: Array<string | undefined>) {
 
 function buildConceptualRewriteTemplate(problem: PracticeProblem) {
   const path = problem.guide?.solutionPath ?? [];
+  const outline = problem.solutionOutline;
 
   return [
-    path[0]
-      ? `Open with the benchmark or definition the question rests on: ${path[0]}`
-      : "Open with the benchmark, definition, or starting point the question is built on.",
-    path[1]
-      ? `Then trace the mechanism one link at a time: ${path[1]}`
-      : "Then trace the mechanism one link at a time instead of jumping straight to the conclusion.",
-    path[2]
-      ? `Close with the interpretation the examiner cares about: ${path[2]}`
-      : "Close with the economic interpretation and say what the result means in the model.",
+    path[0] ?? "Start from the benchmark or definition the question rests on.",
+    path[1] ?? outline[0] ?? "Then explain the mechanism one link at a time.",
+    path[2] ?? outline[outline.length - 1] ?? "Finish with the economic interpretation.",
   ];
 }
 
-function buildConceptualTeachingSteps(problem: PracticeProblem) {
-  const path = problem.guide?.solutionPath ?? [];
-  const outline = problem.solutionOutline;
-  const stepCount = Math.max(path.length, outline.length, 3);
-  const roleLabels = [
-    "Benchmark or starting point",
-    "Mechanism or transmission logic",
-    "Conclusion and economic meaning",
-  ];
+function buildAnswerOutlineMarkdown(problem: PracticeProblem) {
+  const outline = problem.solutionOutline.length
+    ? problem.solutionOutline
+    : buildConceptualRewriteTemplate(problem);
 
-  return Array.from({ length: stepCount }, (_, index) => {
-    const whatToDo =
-      path[index] ??
-      (index === 0
-        ? "State the benchmark or definition first."
-        : index === 1
-          ? "Explain the mechanism before stating the conclusion."
-          : "Interpret the result economically.");
-    const whatToConclude =
-      outline[index] ??
-      outline[outline.length - 1] ??
-      "Tie the answer back to the benchmark and explain what the result means.";
-    const role =
-      roleLabels[index] ??
-      "Carry the previous result forward without skipping the bridge.";
+  const steps =
+    problem.supportMode === "derivation" && problem.stepGuide?.length
+      ? problem.stepGuide.map((step) => step.whatToDo)
+      : outline;
 
-    return { role, whatToDo, whatToConclude };
-  });
+  return [
+    "## Answer outline",
+    ...steps.slice(0, 4).map((step, index) => `${index + 1}. ${step}`),
+  ].join("\n\n");
+}
+
+function buildExamReadyAnswer(problem: PracticeProblem) {
+  if (problem.solutionOutline.length) {
+    return problem.solutionOutline.join(" ");
+  }
+
+  if (problem.stepGuide?.length) {
+    const lastStep = problem.stepGuide[problem.stepGuide.length - 1];
+    return [lastStep.contribution, lastStep.latex ? `Result: $$${lastStep.latex}$$` : ""]
+      .filter(Boolean)
+      .join("\n\n");
+  }
+
+  return problem.guide?.whatIsBeingAsked ?? problem.prompt.join(" ");
 }
 
 function buildLocalConceptualFeedback(
@@ -195,24 +192,21 @@ function buildLocalConceptualFeedback(
     "Rewrite the answer so it explicitly names the benchmark, the mechanism, and the conclusion.";
 
   const markdown = [
-    "## Local feedback check",
-    "This feedback is based on the stored teaching guide and solution structure for the problem, not on a paid live model call.",
-    "",
-    "## What this question is really testing",
-    problem.guide?.whatIsBeingAsked ??
-      "The goal is to identify the benchmark, the mechanism, and the conclusion instead of jumping straight to a slogan.",
-    "",
-    "## What already looks on the right track",
+    "## What is already working",
     matched.length
       ? matched.map((item, index) => `${index + 1}. ${item}`).join("\n")
       : `1. ${strongestPoint}`,
     "",
-    "## What is still missing or too vague",
+    "## What is still missing",
     missing.length
       ? missing.map((item, index) => `${index + 1}. Make this explicit: ${item}`).join("\n")
-      : `1. The main improvement now is to make the economic logic more explicit and less implied.`,
+      : `1. The next gain is to make the mechanism more explicit instead of leaving it implied.`,
     "",
-    "## Likely confusion to watch for",
+    "## Tighten this mechanism",
+    problem.guide?.whatIsBeingAsked ??
+      "State the benchmark first, then explain the mechanism, then give the conclusion.",
+    "",
+    "## Likely confusion",
     (problem.guide?.commonMistakes?.length
       ? problem.guide.commonMistakes
       : [
@@ -223,26 +217,12 @@ function buildLocalConceptualFeedback(
       .map((item, index) => `${index + 1}. ${item}`)
       .join("\n"),
     "",
-    "## How to rebuild the answer more safely",
-    (problem.guide?.solutionPath?.length
-      ? problem.guide.solutionPath
-      : [
-          "Start with the benchmark or definition the question is built on.",
-          "Then explain the mechanism that moves the result.",
-          "End with the economic interpretation the examiner is looking for.",
-        ]
-    )
-      .slice(0, 3)
-      .map((item, index) => `${index + 1}. ${item}`)
-      .join("\n"),
-    "",
-    "## Safer rewrite template",
+    "## Best next rewrite",
     buildConceptualRewriteTemplate(problem)
       .map((item, index) => `${index + 1}. ${item}`)
       .join("\n"),
     "",
-    "## Best next revision step",
-    nextRevisionStep,
+    `## Best next step\n${nextRevisionStep}`,
   ].join("\n");
 
   return {
@@ -279,14 +259,7 @@ function buildLocalDerivationFeedback(
     .slice(0, 2);
 
   const markdown = [
-    "## Local derivation check",
-    "This is a rule-based comparison against the stored derivation guide, so it is meant to help you line up your handwritten work with the expected path rather than fully grade every algebra line.",
-    "",
-    "## What the problem is testing",
-    problem.guide?.whatIsBeingAsked ??
-      "The goal is to show the bridge from one line to the next, not just the final formula.",
-    "",
-    "## Steps you seem to have identified",
+    "## What is already in place",
     matched.length
       ? matched
           .map(
@@ -296,7 +269,7 @@ function buildLocalDerivationFeedback(
           .join("\n")
       : "1. Your draft does not yet clearly show the benchmark equation or the intended transformation.",
     "",
-    "## Steps you should make explicit next",
+    "## Missing bridge step",
     missing.length
       ? missing
           .map(
@@ -306,14 +279,11 @@ function buildLocalDerivationFeedback(
           .join("\n")
       : "1. The main remaining job is to show the intermediate algebra cleanly, not just the final expression.",
     "",
-    "## How to keep the derivation from jumping",
-    [
-      "1. Name the exact object you are substituting, isolating, canceling, or differentiating before you write the next line.",
-      "2. Write the new line explicitly on paper instead of keeping the bridge in your head.",
-      "3. Say which rule justifies the move: substitution, algebraic rearrangement, FOC, equilibrium condition, approximation, or benchmark comparison.",
-    ].join("\n"),
+    "## Why that step matters",
+    missing[0]?.contribution ??
+      "This is the hidden bridge between the setup and the final formula.",
     "",
-    "## First missing bridge step to write on paper",
+    "## Write this next on paper",
     missing[0]
       ? [
           `**${missing[0].title}**`,
@@ -326,14 +296,12 @@ function buildLocalDerivationFeedback(
           .join("\n")
       : "1. Your next gain comes from writing the missing intermediate line explicitly instead of leaping from setup to final answer.",
     "",
-    "## Common derivation trap",
-    (problem.guide?.commonMistakes?.[0] ??
-      "Do not skip the substitution or rearrangement that justifies the final line. Write that bridge step explicitly on paper."),
+    `## Common derivation trap\n${problem.guide?.commonMistakes?.[0] ??
+      "Do not skip the substitution or rearrangement that justifies the final line. Write that bridge step explicitly on paper."}`,
     "",
-    "## Best next move",
-    (missing[0]?.whatToDo ??
+    `## Best next move\n${missing[0]?.whatToDo ??
       problem.nextSteps[0] ??
-      "Go back to the first unrevealed step in the guide and write that line out by hand before continuing."),
+      "Go back to the first unrevealed step in the guide and write that line out by hand before continuing."}`,
   ].join("\n");
 
   return {
@@ -369,141 +337,66 @@ function buildLocalSolutionCheck(
 }
 
 function buildHintMarkdown(problem: PracticeProblem) {
-  const sections = [
-    "## How to frame the problem",
-    `This is a **${problem.guide?.problemType ?? (problem.supportMode ?? "conceptual")}** question.`,
-    problem.guide?.whatIsBeingAsked
-      ? `**What the question is really asking:** ${problem.guide.whatIsBeingAsked}`
-      : "",
-    "## How to start if you feel blank",
-    problem.guide?.solutionPath?.[0]
-      ? `Start with this safe first move: ${problem.guide.solutionPath[0]}`
-      : "Start by naming the benchmark, then ask what mechanism the question wants you to trace.",
-    problem.guide?.solutionPath?.[1]
-      ? `Why we start there: it keeps you from skipping straight to the conclusion before you have shown the benchmark-to-mechanism bridge. The next layer after that is: ${problem.guide.solutionPath[1]}`
-      : "",
-    problem.guide?.keyConcepts?.length
-      ? `**Concepts to keep in view:** ${problem.guide.keyConcepts.join(", ")}.`
-      : "",
-    problem.stepGuide?.[0]
-      ? `**First bridge step:** ${problem.stepGuide[0].whatToDo}`
-      : "",
-    problem.stepGuide?.[0]?.principle
-      ? `**Rule behind that step:** ${problem.stepGuide[0].principle}`
-      : "",
-    "## Hint ladder",
-    ...problem.hints.map((hint, index) => `${index + 1}. ${hint}`),
-    problem.guide?.commonMistakes?.[0]
-      ? `## Likely confusion\n${problem.guide.commonMistakes[0]}`
-      : "",
-  ].filter(Boolean);
+  const firstHint =
+    problem.hints[0] ??
+    problem.guide?.solutionPath?.[0] ??
+    "Start with the benchmark or definition before you jump to the conclusion.";
 
-  return sections.join("\n\n");
-}
-
-function buildNextStepMarkdown(problem: PracticeProblem) {
-  const firstStep = problem.stepGuide?.[0];
-
-  if (firstStep) {
-    return [
-      "## One concrete next step",
-      `**What to do now:** ${firstStep.whatToDo}`,
-      `**Why this is the right move now:** ${firstStep.contribution}`,
-      `**Rule or principle being used:** ${firstStep.principle}`,
-      `**Why the move is valid:** ${firstStep.whyValid}`,
-      problem.guide?.commonMistakes?.[0]
-        ? `**What often goes wrong here:** ${problem.guide.commonMistakes[0]}`
-        : "",
-      firstStep.latex ? `$$${firstStep.latex}$$` : "",
-    ]
-      .filter(Boolean)
-      .join("\n\n");
-  }
-
-  const nextMove =
+  const secondHint =
+    problem.stepGuide?.[0]?.whatToDo ??
     problem.nextSteps[0] ??
-    problem.guide?.solutionPath[0] ??
-    "No next-step guidance is currently stored for this problem.";
+    problem.guide?.solutionPath?.[1] ??
+    "";
 
   return [
-    "## One concrete next step",
-    nextMove,
-    problem.guide?.solutionPath?.[1]
-      ? `After that, the next checkpoint is: ${problem.guide.solutionPath[1]}`
-      : "",
-    problem.guide?.commonMistakes?.[0]
-      ? `Common confusion to avoid while doing this step: ${problem.guide.commonMistakes[0]}`
-      : "",
+    "## Hint",
+    firstHint,
+    secondHint ? `Then do this next: ${secondHint}` : "",
   ]
     .filter(Boolean)
     .join("\n\n");
 }
 
+function buildNextStepMarkdown(problem: PracticeProblem) {
+  return buildAnswerOutlineMarkdown(problem);
+}
+
 function buildFullSolutionMarkdown(problem: PracticeProblem) {
-  const sections = [
-    "## What the problem is really testing",
-    problem.guide?.whatIsBeingAsked ??
-      "The goal is to connect the benchmark, the mechanism, and the conclusion without skipping the bridges.",
-    "",
-    "## Safe solving order",
-    ...(problem.guide?.solutionPath?.map((item, index) => `${index + 1}. ${item}`) ?? []),
-  ];
+  const solutionLines = problem.solutionOutline.length
+    ? problem.solutionOutline
+    : buildConceptualRewriteTemplate(problem);
 
-  if (problem.stepGuide?.length) {
-    sections.push(
-      "",
-      "## Teaching solution",
-      ...problem.stepGuide.map((step, index) =>
-        [
-          `### Step ${index + 1}: ${step.title}`,
-          `**What to do:** ${step.whatToDo}`,
-          `**Why this is the right step:** ${step.contribution}`,
-          `**What rule justifies it:** ${step.principle}`,
-          `**Why the move is valid:** ${step.whyValid}`,
-          problem.guide?.commonMistakes?.[index]
-            ? `**Likely confusion at this point:** ${problem.guide.commonMistakes[index]}`
-            : "",
-          `**If this step feels non-obvious:** write the new line on paper and say out loud what object you just substituted, isolated, canceled, or reinterpreted. That is usually the hidden bridge students skip.`,
-          step.latex ? `$$${step.latex}$$` : "",
-        ]
-          .filter(Boolean)
-          .join("\n\n"),
-      ),
-    );
-  } else {
-    const teachingSteps = buildConceptualTeachingSteps(problem);
+  if (problem.supportMode === "derivation" && problem.stepGuide?.length) {
+    const first = problem.stepGuide[0];
+    const finalLine = solutionLines[solutionLines.length - 1] ?? first.contribution;
 
-    sections.push(
-      "",
-      "## Teaching solution",
-      ...teachingSteps.map((step, index) =>
-        [
-          `### Step ${index + 1}: ${step.role}`,
-          `**What to do:** ${step.whatToDo}`,
-          `**Why this step belongs here:** This keeps the answer in a safe order so the benchmark, mechanism, and conclusion do not collapse into one vague paragraph.`,
-          `**What you should conclude from this step:** ${step.whatToConclude}`,
-        ].join("\n\n"),
-      ),
-    );
+    return [
+      "## Full solution",
+      `### Step 1: Identify what moves first\nStart from ${problem.guide?.whatIsBeingAsked?.toLowerCase() ?? "the benchmark object the question is built on"}. The first active move is: ${first.whatToDo}`,
+      `### Step 2: Connect it to the relevant equation, benchmark, or mechanism\nUse the governing rule explicitly: ${first.principle}. This matters because ${first.whyValid}`,
+      [
+        "### Step 3: Derive the implication step by step",
+        ...problem.stepGuide.map(
+          (step, index) =>
+            `${index + 1}. **${step.title}**\n   - Do this: ${step.whatToDo}\n   - Why it is valid: ${step.whyValid}\n   - Why you know this is the right move: ${step.contribution}${step.latex ? `\n   - Target line: $$${step.latex}$$` : ""}`,
+        ),
+      ].join("\n"),
+      `### Step 4: State the final answer clearly\n${finalLine}`,
+      `### Exam-ready answer\n${buildExamReadyAnswer(problem)}`,
+    ].join("\n\n");
   }
 
-  if (problem.guide?.commonMistakes?.length) {
-    sections.push(
-      "",
-      "## Common confusion to watch for",
-      ...problem.guide.commonMistakes.map((mistake, index) => `${index + 1}. ${mistake}`),
-    );
-  }
-
-  sections.push(
-    "",
-    "## Final self-check before you move on",
-    "1. Have you named the benchmark or starting point clearly?",
-    "2. Have you explained why each major step is taken rather than only stating the step?",
-    "3. Have you said what the final result means economically, not just algebraically?",
-  );
-
-  return sections.join("\n");
+  return [
+    "## Full solution",
+    `### Step 1: Identify what moves first\n${problem.guide?.solutionPath?.[0] ?? "State the benchmark or starting point before you make any claim about the answer."}`,
+    `### Step 2: Connect it to the relevant equation, benchmark, or mechanism\n${problem.guide?.solutionPath?.[1] ?? solutionLines[0] ?? "Use the core mechanism that links the benchmark to the result."}`,
+    [
+      "### Step 3: Derive the implication step by step",
+      ...solutionLines.map((line, index) => `${index + 1}. ${line}`),
+    ].join("\n"),
+    `### Step 4: State the final answer clearly\n${solutionLines[solutionLines.length - 1] ?? buildExamReadyAnswer(problem)}`,
+    `### Exam-ready answer\n${buildExamReadyAnswer(problem)}`,
+  ].join("\n\n");
 }
 
 export async function POST(request: Request) {
@@ -512,6 +405,7 @@ export async function POST(request: Request) {
       mode?: "hint" | "next_step" | "solution_check" | "full_solution";
       moduleSlug?: string;
       problemSlug?: string;
+      partId?: string;
       studentWork?: string;
     };
 
@@ -528,54 +422,56 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Problem not found." }, { status: 404 });
     }
 
+    const focusedProblem = focusPracticeProblemForSessionPart(problem, body.partId);
+
     let answerPayload:
       | TutorResult
       | undefined;
 
     if (body.mode === "hint") {
       answerPayload = {
-        answerMarkdown: buildHintMarkdown(problem),
+        answerMarkdown: buildHintMarkdown(focusedProblem),
         confidenceLabel: "grounded",
-        citations: problem.citations,
+        citations: focusedProblem.citations,
         sourceSnippets: [
           {
-            title: problem.title,
+            title: focusedProblem.title,
             excerpt:
               "Stored hint from the curated practice workflow for this practice question.",
-            citations: problem.citations,
+            citations: focusedProblem.citations,
           },
         ],
       };
     } else if (body.mode === "next_step") {
       answerPayload = {
-        answerMarkdown: buildNextStepMarkdown(problem),
+        answerMarkdown: buildNextStepMarkdown(focusedProblem),
         confidenceLabel: "grounded",
-        citations: problem.citations,
+        citations: focusedProblem.citations,
         sourceSnippets: [
           {
-            title: problem.title,
+            title: focusedProblem.title,
             excerpt:
-              "Stored next-step guidance from the curated practice workflow for this practice question.",
-            citations: problem.citations,
+              "Stored answer-outline guidance from the curated practice workflow for this practice question.",
+            citations: focusedProblem.citations,
           },
         ],
       };
     } else if (body.mode === "full_solution") {
       answerPayload = {
-        answerMarkdown: buildFullSolutionMarkdown(problem),
+        answerMarkdown: buildFullSolutionMarkdown(focusedProblem),
         confidenceLabel: "grounded",
-        citations: problem.citations,
+        citations: focusedProblem.citations,
         sourceSnippets: [
           {
-            title: problem.title,
+            title: focusedProblem.title,
             excerpt:
-              "Stored full-solution outline from the curated practice workflow for this practice question.",
-            citations: problem.citations,
+              "Stored worked solution from the curated practice workflow for this practice question.",
+            citations: focusedProblem.citations,
           },
         ],
       };
     } else {
-      answerPayload = buildLocalSolutionCheck(problem, body.studentWork);
+      answerPayload = buildLocalSolutionCheck(focusedProblem, body.studentWork);
     }
 
     return NextResponse.json(answerPayload);

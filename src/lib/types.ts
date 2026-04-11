@@ -162,6 +162,19 @@ export type PracticeStepGuide = {
   latex?: string;
 };
 
+export type PracticeSessionPart = {
+  id: string;
+  label: string;
+  prompt: string;
+  questionBlocks?: ContentBlock[];
+  answerPlaceholder?: string;
+  hintIndexes?: number[];
+  nextStepIndexes?: number[];
+  solutionOutlineIndexes?: number[];
+  stepGuideIndexes?: number[];
+  supportingEquationIds?: string[];
+};
+
 export type PracticeCollection = {
   id: string;
   slug: string;
@@ -238,6 +251,7 @@ export type PracticeProblem = {
   solutionOutline: string[];
   handSolveNote?: string;
   answerPlaceholder?: string;
+  sessionParts?: PracticeSessionPart[];
   citations: Citation[];
 };
 

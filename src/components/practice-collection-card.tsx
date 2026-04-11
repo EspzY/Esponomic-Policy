@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
+import { useMemo, useSyncExternalStore } from "react";
 
 import { buttonClasses } from "@/components/ui/button";
+import { buildPracticeSession, getPracticeSessionHref } from "@/lib/practice-session";
 import type { PracticeCollection, PracticeProblem } from "@/lib/types";
 
 function kindLabel(kind: PracticeCollection["kind"]) {
@@ -12,13 +16,31 @@ function kindLabel(kind: PracticeCollection["kind"]) {
     return "Past exam";
   }
 
-  return "Lecture-linked";
+  return "Lecture-linked practice";
 }
 
-function supportLabel(problem: PracticeProblem) {
-  return problem.supportMode === "derivation"
-    ? "Solve by hand"
-    : "Written answer feedback";
+function supportSummary(problems: PracticeProblem[]) {
+  const modes = new Set(problems.map((problem) => problem.supportMode ?? "conceptual"));
+
+  if (modes.size === 1 && modes.has("derivation")) {
+    return "Derivation-focused support";
+  }
+
+  if (modes.size === 1) {
+    return "Written-answer support";
+  }
+
+  return "Mixed conceptual and derivation support";
+}
+
+type StoredSessionProgress = {
+  currentStepKey?: string;
+  visitedStepKeys?: string[];
+  completedAt?: string;
+};
+
+function storageKey(collectionSlug: string) {
+  return `practice-session:${collectionSlug}`;
 }
 
 export function PracticeCollectionCard({
@@ -28,6 +50,30 @@ export function PracticeCollectionCard({
   collection: PracticeCollection;
   problems: PracticeProblem[];
 }) {
+  const session = useMemo(
+    () => buildPracticeSession(collection, problems),
+    [collection, problems],
+  );
+  const progress = useSyncExternalStore(
+    () => () => undefined,
+    () => {
+      try {
+        const raw = window.localStorage.getItem(storageKey(collection.slug));
+        return raw ? (JSON.parse(raw) as StoredSessionProgress) : null;
+      } catch {
+        return null;
+      }
+    },
+    () => null,
+  );
+
+  const visitedCount = progress?.visitedStepKeys?.length ?? 0;
+  const ctaLabel = progress?.completedAt
+    ? "Review set"
+    : visitedCount > 0
+      ? "Continue set"
+      : "Start set";
+
   return (
     <article className="surface-card rounded-[2rem] p-6">
       <div className="flex flex-wrap items-center gap-2">
@@ -35,13 +81,18 @@ export function PracticeCollectionCard({
           {kindLabel(collection.kind)}
         </span>
         <span className="rounded-full border border-[var(--color-line)] px-3 py-1 text-xs uppercase tracking-[0.16em] text-[var(--color-slate)]">
+          {session.steps.length} step{session.steps.length === 1 ? "" : "s"}
+        </span>
+        <span className="rounded-full border border-[var(--color-line)] px-3 py-1 text-xs uppercase tracking-[0.16em] text-[var(--color-slate)]">
           {collection.estimatedMinutes} min
         </span>
       </div>
+
       <h3 className="mt-4 text-2xl font-semibold">{collection.title}</h3>
       <p className="mt-3 text-sm leading-7 text-[var(--color-slate)]">
-        {collection.description}
+        {collection.summary}
       </p>
+
       <div className="mt-5 flex flex-wrap gap-2">
         {collection.relatedModuleSlugs.map((slug) => (
           <span
@@ -52,39 +103,46 @@ export function PracticeCollectionCard({
           </span>
         ))}
       </div>
-      <div className="mt-6 space-y-3">
-        {problems.map((problem) => (
-          <div
-            key={problem.slug}
-            className="rounded-[1.5rem] border border-[var(--color-line)] bg-white p-4"
-          >
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full bg-[rgba(180,83,9,0.12)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-rust)]">
-                {problem.questionLabel ?? "Question"}
-              </span>
-              <span className="rounded-full border border-[var(--color-line)] px-3 py-1 text-xs uppercase tracking-[0.16em] text-[var(--color-slate)]">
-                {supportLabel(problem)}
-              </span>
-            </div>
-            <h4 className="mt-3 text-lg font-semibold text-[var(--color-ink)]">
-              {problem.title}
-            </h4>
-            <p className="mt-2 text-sm leading-7 text-[var(--color-slate)]">
-              {problem.summary}
-            </p>
-            <div className="mt-4 flex items-center justify-between gap-3">
-              <p className="text-xs uppercase tracking-[0.14em] text-[var(--color-slate)]">
-                {problem.sourceDetail}
-              </p>
-              <Link
-                href={`/practice/${problem.slug}`}
-                className={buttonClasses("primary", "sm")}
-              >
-                Open question
-              </Link>
-            </div>
-          </div>
-        ))}
+
+      <div className="mt-5 grid gap-3 sm:grid-cols-3">
+        <div className="rounded-[1.25rem] bg-white px-4 py-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-rust)]">
+            Questions
+          </p>
+          <p className="mt-2 text-lg font-semibold text-[var(--color-ink)]">
+            {problems.length}
+          </p>
+        </div>
+        <div className="rounded-[1.25rem] bg-white px-4 py-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-rust)]">
+            Session flow
+          </p>
+          <p className="mt-2 text-sm leading-6 text-[var(--color-slate)]">
+            One prompt at a time
+          </p>
+        </div>
+        <div className="rounded-[1.25rem] bg-white px-4 py-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-rust)]">
+            Support
+          </p>
+          <p className="mt-2 text-sm leading-6 text-[var(--color-slate)]">
+            {supportSummary(problems)}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-5 flex items-center justify-between gap-4">
+        <p className="text-xs uppercase tracking-[0.14em] text-[var(--color-slate)]">
+          {visitedCount > 0 && !progress?.completedAt
+            ? `${visitedCount} of ${session.steps.length} steps visited`
+            : collection.sourceLabel}
+        </p>
+        <Link
+          href={getPracticeSessionHref(collection.slug)}
+          className={buttonClasses("primary", "sm")}
+        >
+          {ctaLabel}
+        </Link>
       </div>
     </article>
   );
