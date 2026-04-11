@@ -179,9 +179,16 @@ export function practiceProblem(problem: PracticeProblem): PracticeProblem {
     const pathScaffold = guide.solutionPath.length
       ? `Do not jump to the conclusion yet. A safer route is: ${guide.solutionPath.join(" Then ")}`
       : "";
+    const whyThisOrderMatters = guide.solutionPath.length >= 2
+      ? `Use that order on purpose. It keeps the benchmark, mechanism, and final conclusion separate so you do not accidentally skip the bridge that makes the answer understandable.`
+      : "";
 
     if (pathScaffold && !baseNextSteps.includes(pathScaffold)) {
       baseNextSteps.unshift(pathScaffold);
+    }
+
+    if (whyThisOrderMatters && !baseHints.includes(whyThisOrderMatters)) {
+      baseHints.push(whyThisOrderMatters);
     }
   }
 
@@ -189,10 +196,14 @@ export function practiceProblem(problem: PracticeProblem): PracticeProblem {
     const derivationHints = [
       "Treat this as a by-hand derivation. Do not try to type the whole proof first; isolate the exact line where your algebra or logic stopped making sense.",
       `Your first explicit move should be: ${stepGuide[0].whatToDo}`,
+      stepGuide[0]?.principle
+        ? `Recall the benchmark rule behind that step: ${stepGuide[0].principle}.`
+        : "",
+      "If the next line feels mysterious, stop and ask which object you are trying to eliminate, substitute, isolate, or compare before you touch the algebra.",
     ];
 
     for (const hint of derivationHints.reverse()) {
-      if (!baseHints.includes(hint)) {
+      if (hint && !baseHints.includes(hint)) {
         baseHints.unshift(hint);
       }
     }
@@ -210,8 +221,10 @@ export function practiceProblem(problem: PracticeProblem): PracticeProblem {
       const helpLead = step.contribution
         ? `How you should know this is the right move: ${step.contribution} `
         : "";
+      const bridgeLead =
+        "What changes from the previous line: you make one explicit algebraic or logical move instead of jumping to the conclusion. ";
 
-      return `Step ${index + 1} - ${step.title}: ${step.whatToDo} ${ruleLead}Why it is valid: ${step.whyValid} ${helpLead}`.trim();
+      return `Step ${index + 1} - ${step.title}: ${step.whatToDo} ${bridgeLead}${ruleLead}Why it is valid: ${step.whyValid} ${helpLead}`.trim();
     });
 
     for (const item of baseOutline) {
@@ -228,11 +241,18 @@ export function practiceProblem(problem: PracticeProblem): PracticeProblem {
     };
   }
 
+  const conceptualTeachingOutline = guide
+    ? guide.solutionPath.map(
+        (item, index) =>
+          `Move ${index + 1}: ${item} Why this belongs here: it gives the answer one more piece of the benchmark-to-mechanism-to-conclusion chain instead of forcing the reader to infer the missing bridge.`,
+      )
+    : [];
+
   return {
     ...problem,
     hints: [...new Set(baseHints)],
     nextSteps: [...new Set(baseNextSteps)],
-    solutionOutline: [...new Set(baseOutline)],
+    solutionOutline: [...new Set([...conceptualTeachingOutline, ...baseOutline])],
   };
 }
 

@@ -267,6 +267,9 @@ export const lecture1Module: ModuleDetail = lectureModule({
       title: "Step by step: how to read the Taylor rule like an economist",
       summary: "A mechanism chain rather than a deep algebraic derivation.",
       contentBlocks: [
+        p(
+          "Before you read the rule term by term, recall the bridge from everyday central-bank language to course language. The bank sets a **nominal** policy rate, but demand depends on the **real** rate relative to inflation expectations. So the whole point of reading the Taylor rule carefully is to see when a nominal-rate move genuinely tightens policy in real terms.",
+        ),
         derivation({
           title: "Read the rule from left to right",
           learningGoal:
@@ -281,6 +284,20 @@ export const lecture1Module: ModuleDetail = lectureModule({
             "\\text{Policy rate} = \\text{neutral nominal benchmark} + \\text{inflation response} + \\text{activity response}",
           explanation:
             "This reading prevents the common mistake of seeing each coefficient as a random constant. Each term has a job: anchor the nominal rate, lean against inflationary pressure, and react to slack.",
+        }),
+        derivation({
+          title: "Make the real-rate bridge explicit before invoking the Taylor principle",
+          learningGoal:
+            "See the exact mathematical object policy is trying to move when inflation rises.",
+          latexBefore: "r_t = i_t - E_t\\pi_{t+1}",
+          operation:
+            "Differentiate the real-rate identity with respect to the policy change you are analyzing. Then compare the nominal-rate response with the movement in expected inflation.",
+          whyValid:
+            "This is not a new model assumption. It is just the Fisher-style identity written in change form, which tells you whether a higher nominal rate is actually a tighter real rate.",
+          latexAfter:
+            "\\Delta r_t = \\Delta i_t - \\Delta E_t\\pi_{t+1}",
+          explanation:
+            "This is the bridge weaker students often need. If expected inflation rises by as much as the nominal rate, the real rate does not tighten. So the Taylor principle is really a statement about making the real rate rise enough to cool demand.",
         }),
         derivation({
           title: "Why the Taylor principle matters",

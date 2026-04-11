@@ -306,6 +306,23 @@ const lecture3Module: ModuleDetail = lectureModule({
       title: "Step by step: recursive substitution and determinacy",
       summary: "The lecture's two key mathematical add-ons.",
       contentBlocks: [
+        p(
+          "This is the first place in the course where many students lose the thread, because the lecture suddenly moves from one Phillips-curve line to an infinite forward sum. So slow down and keep two things in mind: the same NKPC holds one period ahead, and recursive substitution just means replacing tomorrow's inflation term with tomorrow's own Phillips-curve expression.",
+        ),
+        derivation({
+          title: "Write out the first two substitutions before jumping to the infinite sum",
+          learningGoal:
+            "See the recursive logic mechanically instead of treating the forward solution as magic.",
+          latexBefore: "\\pi_t = \\beta E_t\\pi_{t+1} + \\kappa \\tilde{y}_t",
+          operation:
+            "Replace $\\pi_{t+1}$ with its own Phillips-curve expression one period ahead, then collect the terms that are already known at time $t$.",
+          whyValid:
+            "The same structural NKPC holds at $t+1$: $\\pi_{t+1} = \\beta E_{t+1}\\pi_{t+2} + \\kappa \\tilde y_{t+1}$. Taking expectations at time $t$ and substituting it back is just repeated use of the same equation.",
+          latexAfter:
+            "\\pi_t = \\kappa \\tilde y_t + \\beta \\kappa E_t\\tilde y_{t+1} + \\beta^2 E_t\\pi_{t+2}",
+          explanation:
+            "That is the real bridge step. After one substitution, you can already see the pattern: today's inflation depends on today's slack, next period's expected slack, and a remaining future-inflation term that can be substituted again.",
+        }),
         derivation({
           title: "Recursive substitution turns inflation into a forward sum",
           learningGoal:
@@ -640,6 +657,9 @@ const lecture4Module: ModuleDetail = lectureModule({
       title: "Step by step: where the targeting rule comes from",
       summary: "A spoon-fed route from the loss function to the policy trade-off.",
       contentBlocks: [
+        p(
+          "Recall the red thread from Lecture 3 before starting the algebra: there we could set inflation and the gap to zero together because no extra wedge disturbed inflation. Lecture 4 changes exactly that. The cost-push shock forces the policymaker to choose how much slack to create in order to reduce inflation, so every algebra line below is really about making that trade-off explicit.",
+        ),
         derivation({
           title: "Write the objective and the constraint together",
           learningGoal:
@@ -684,6 +704,21 @@ const lecture4Module: ModuleDetail = lectureModule({
             "\\frac{\\partial L_t}{\\partial x_t} = 2\\kappa\\bigl(\\beta E_t\\pi_{t+1} + \\kappa x_t + u_t^{\\pi}\\bigr) + 2\\alpha_x x_t = 2\\kappa\\pi_t + 2\\alpha_x x_t = 0",
           explanation:
             "This is the missing mathematical bridge. The policymaker chooses $x_t$ until the marginal inflation benefit from extra slack is exactly offset by the marginal welfare cost of that slack.",
+        }),
+        derivation({
+          title: "Solve the first-order condition instead of leaving the sign logic implicit",
+          learningGoal:
+            "Make the final targeting rule feel earned rather than guessed.",
+          latexBefore:
+            "2\\kappa\\pi_t + 2\\alpha_x x_t = 0",
+          operation:
+            "Move the inflation term to the other side and divide by $2\\alpha_x$. Then read the sign of the result.",
+          whyValid:
+            "This is ordinary algebra, but it is exactly the step students often skip when they jump from the FOC to the verbal claim that policy 'leans against inflation.'",
+          latexAfter:
+            "x_t = -\\frac{\\kappa}{\\alpha_x}\\pi_t",
+          explanation:
+            "Now the negative sign is no longer mysterious. A positive inflation deviation requires a negative welfare-relevant output gap because the central bank is using slack to offset the inflationary wedge created by the cost-push shock.",
         }),
         derivation({
           title: "Read the discretionary first-order condition economically",
@@ -974,6 +1009,9 @@ const lecture5Module: ModuleDetail = lectureModule({
       title: "Step by step: deriving the inflation bias",
       summary: "The short algebra hides a deep incentives result.",
       contentBlocks: [
+        p(
+          "Students often find Lecture 5 frustrating because the result is simple but the logic is easy to blur. Keep the timing straight. First the policymaker would like to create surprise inflation to push output above the natural level. Then private agents anticipate that temptation. The algebra below is just the formal way of showing that the output gain disappears once expectations catch up, while inflation stays too high.",
+        ),
         derivation({
           title: "Combine the loss function and Phillips curve",
           learningGoal:
@@ -990,6 +1028,21 @@ const lecture5Module: ModuleDetail = lectureModule({
             "This is the point where the policymaker's short-run temptation becomes explicit.",
         }),
         derivation({
+          title: "Differentiate before imposing rational expectations",
+          learningGoal:
+            "See the exact first-order condition the discretionary policymaker solves when expectations are taken as given.",
+          latexBefore:
+            "L = (\\pi - \\pi^*)^2 + a\\bigl(y^n + b(\\pi - \\pi^e) - y^*\\bigr)^2",
+          operation:
+            "Differentiate with respect to $\\pi$. Use the chain rule on the output term, remembering that $\\pi^e$ is taken as fixed from the policymaker's point of view at the moment of choice.",
+          whyValid:
+            "The policymaker controls current inflation, but under discretion expected inflation is an inherited object when the current-period problem is solved.",
+          latexAfter:
+            "2(\\pi-\\pi^*) + 2ab\\bigl(y^n + b(\\pi-\\pi^e)-y^*\\bigr) = 0",
+          explanation:
+            "This line makes the temptation concrete. The policymaker would like to push inflation upward whenever output is below the desired target, because surprise inflation relaxes the Phillips-curve constraint in the short run.",
+        }),
+        derivation({
           title: "Impose rational expectations in equilibrium",
           learningGoal:
             "Understand why the short-run temptation becomes a long-run inflation bias instead of a lasting output gain.",
@@ -999,7 +1052,7 @@ const lecture5Module: ModuleDetail = lectureModule({
             "Rational private agents correctly anticipate the policymaker's discretionary incentive.",
           latexAfter: "\\pi = \\pi^* + ab(y^* - y^n)",
           explanation:
-            "The equilibrium contains excess inflation but no permanent output bonus. That is the inflation-bias result.",
+            "Once you set $\\pi=\\pi^e$, the surprise term disappears from output. That is the whole point of the lecture: the attempt to exploit the Phillips curve survives only as higher equilibrium inflation, not as a permanently higher level of output.",
         }),
       ],
       citations: lecture5CoreCitations,
@@ -1226,6 +1279,9 @@ const lecture6Module: ModuleDetail = lectureModule({
       title: "Step by step: the forward-guidance puzzle",
       summary: "Why the benchmark model can produce unrealistically strong effects.",
       contentBlocks: [
+        p(
+          "The hard part of this lecture is not the final intuition but the hidden iteration step. Students often hear 'future promises matter today' and feel that the conclusion came out of nowhere. So begin with the one-period Dynamic IS equation and watch what happens when you substitute it forward only one more time before you ever write an infinite sum.",
+        ),
         derivation({
           title: "Start from the one-period Dynamic IS equation",
           learningGoal:
@@ -1255,6 +1311,21 @@ const lecture6Module: ModuleDetail = lectureModule({
             "\\tilde{y}_t = -\\frac{1}{\\sigma}E_t\\sum_{j=0}^{\\infty}(r_{t+j}-r_{t+j}^n)",
           explanation:
             "The puzzle is not that forward guidance works. The puzzle is that the simplest textbook model can make it work *too much*, especially for promises far in the future.",
+        }),
+        derivation({
+          title: "Write the two-period version before accepting the infinite sum",
+          learningGoal:
+            "See exactly how one more substitution turns a one-period condition into a statement about the future path of real rates.",
+          latexBefore:
+            "\\tilde{y}_t = E_t\\tilde{y}_{t+1} - \\frac{1}{\\sigma}(r_t-r_t^n)",
+          operation:
+            "Replace $\\tilde y_{t+1}$ by its own Dynamic IS expression one period ahead, then collect the real-rate wedges that are already visible from time $t$.",
+          whyValid:
+            "The same IS equation holds at $t+1$, so you are not changing the model. You are only making the recursive structure explicit one step further.",
+          latexAfter:
+            "\\tilde y_t = E_t\\tilde y_{t+2} - \\frac{1}{\\sigma}\\Big[(r_t-r_t^n) + E_t(r_{t+1}-r_{t+1}^n)\\Big]",
+          explanation:
+            "Now the logic is visible. Current demand depends on today's real-rate gap and tomorrow's expected real-rate gap. The infinite sum is just the repeated extension of this same bridge, not a new trick pulled from outside the model.",
         }),
         derivation({
           title: "Explain why the infinite sum creates the puzzle",
@@ -1515,6 +1586,9 @@ const lecture7Module: ModuleDetail = lectureModule({
       title: "Step by step: from output-gap slack to unemployment-gap slack",
       summary: "Why the lecture writes the Phillips curve in more than one way.",
       contentBlocks: [
+        p(
+          "The risky jump in this lecture is that the Phillips curve suddenly appears with unemployment-gap language instead of output-gap language. Do not read that as a different inflation theory. It is the same pricing logic rewritten with a different slack proxy, and the whole bridge is a substitution step linking two gap measures that move inversely in the labor market.",
+        ),
         derivation({
           title: "Translate the slack measure",
           learningGoal:
@@ -1527,6 +1601,21 @@ const lecture7Module: ModuleDetail = lectureModule({
           latexAfter: "\\pi_t = \\beta E_t\\pi_{t+1} - \\kappa_u \\tilde{u}_t^e + u_t^{\\pi}",
           explanation:
             "The sign changes because more unemployment slack lowers inflation pressure. The deeper point is that the slope still measures how strongly slack feeds into inflation.",
+        }),
+        derivation({
+          title: "Make the sign flip explicit instead of memorizing it",
+          learningGoal:
+            "See why unemployment enters with a minus sign when it replaces the output gap.",
+          latexBefore:
+            "\\tilde x_t = -\\chi \\tilde u_t^e, \\qquad \\pi_t = \\beta E_t\\pi_{t+1} + \\kappa \\tilde x_t + u_t^{\\pi}",
+          operation:
+            "Substitute the unemployment-gap relation into the Phillips curve and collect the coefficient in front of unemployment slack.",
+          whyValid:
+            "If more unemployment means more slack, then the labor-market proxy must move in the opposite direction of the output-gap measure. The minus sign is therefore a mapping result, not a separate inflation mechanism.",
+          latexAfter:
+            "\\pi_t = \\beta E_t\\pi_{t+1} - (\\kappa\\chi)\\tilde u_t^e + u_t^{\\pi} \\equiv \\beta E_t\\pi_{t+1} - \\kappa_u \\tilde u_t^e + u_t^{\\pi}",
+          explanation:
+            "This is the exact bridge students need. Nothing mysterious happened to inflation. You simply replaced one slack variable by another that points in the opposite direction, so the coefficient changes sign and gets renamed.",
         }),
       ],
       citations: lecture7CoreCitations,
@@ -1793,6 +1882,9 @@ const lecture8Module: ModuleDetail = lectureModule({
       title: "Step by step: why heterogeneity changes the aggregate MPC",
       summary: "A mechanism chain rather than a heavy symbolic proof.",
       contentBlocks: [
+        p(
+          "Lecture 8 becomes technical quickly if you forget the representative-agent benchmark it is replacing. In the old benchmark, one average household lets you treat consumption as if one MPC summarized everyone. This lecture changes exactly that. The missing bridge is to ask not only how big the income change is, but also **who receives it**.",
+        ),
         derivation({
           title: "Start from household-level MPCs",
           learningGoal:
@@ -1806,6 +1898,21 @@ const lecture8Module: ModuleDetail = lectureModule({
             "\\Delta C = \\sum_i \\text{MPC}_i \\cdot \\Delta Y_i",
           explanation:
             "Aggregate demand depends on both the size of income changes and where they land. That is the cleanest way to see why heterogeneity matters for macro outcomes.",
+        }),
+        derivation({
+          title: "Show what the representative-agent shortcut is secretly assuming",
+          learningGoal:
+            "Make clear why the aggregate response collapses to one average MPC only under a very special income-incidence pattern.",
+          latexBefore:
+            "\\Delta C = \\sum_i \\text{MPC}_i \\cdot \\Delta Y_i",
+          operation:
+            "Factor out total income growth only in the special case where each household's income change is proportional to the aggregate change. Then compare that case with the general case where incidence differs across households.",
+          whyValid:
+            "If every household receives the same proportional shock, the composition of income gains is fixed and one average MPC is enough. The lecture's whole point is that real shocks rarely satisfy that special case.",
+          latexAfter:
+            "\\Delta C = \\bar{\\text{MPC}}\\,\\Delta Y \\quad \\text{only if income gains are distributed proportionally across households}",
+          explanation:
+            "This is the bridge from RANK to HANK. The old one-household shortcut is not wrong in every setting; it is wrong when the distribution of gains and losses changes, which is exactly when inequality becomes part of macro transmission.",
         }),
         derivation({
           title: "Why the matching multiplier amplifies downturns",

@@ -242,6 +242,9 @@ const lecture9Module: ModuleDetail = lectureModule({
       title: "Step by step: from the flow budget to the intertemporal budget constraint",
       summary: "The key fiscal derivation in the module.",
       contentBlocks: [
+        p(
+          "This derivation is easiest if you remember what changed from the monetary lectures. We are still doing the same benchmark exercise as before: start from a one-period equilibrium condition, then solve forward to see what must be true for the whole path. Here the one-period object is the government's flow budget, and the hidden bridge students often need is the step that turns today's debt dynamics into a present-value solvency condition.",
+        ),
         derivation({
           title: "Start from the debt-accumulation equation",
           learningGoal:
@@ -546,6 +549,9 @@ const lecture10Module: ModuleDetail = lectureModule({
       title: "Step by step: reading the debt-dynamics equation",
       summary: "The most important compact formula in the lecture.",
       contentBlocks: [
+        p(
+          "Students often read the debt equation too fast because it looks short. Do not do that here. The lecture is teaching a layered way to reason: first read the arithmetic, then ask what primary balance stabilizes debt, and only after that add the belief-driven crisis logic. If you skip the middle step, the jump from arithmetic to self-fulfilling crisis feels much more mysterious than it really is.",
+        ),
         derivation({
           title: "Separate the three moving parts",
           learningGoal:
@@ -572,6 +578,21 @@ const lecture10Module: ModuleDetail = lectureModule({
             "g > r \\quad \\Rightarrow \\quad (r-g)d < 0 \\quad \\Rightarrow \\quad \\text{a primary deficit can coexist with stable debt in the benchmark arithmetic}",
           explanation:
             "This is the logic behind the lecture's discussion of countries such as Japan. The arithmetic may be sustainable even with a very high debt ratio when financing conditions remain favorable.",
+        }),
+        derivation({
+          title: "Solve for the stabilizing primary surplus before talking about crisis",
+          learningGoal:
+            "See the exact benchmark fiscal adjustment implied by the debt equation.",
+          latexBefore:
+            "\\Delta d \\approx (r-g)d - s",
+          operation:
+            "Set debt-ratio growth to zero and solve for the primary surplus that keeps the debt ratio constant rather than rising or falling.",
+          whyValid:
+            "A stable debt ratio means $\\Delta d = 0$. This is the natural benchmark before you ask what market beliefs might do to the same arithmetic.",
+          latexAfter:
+            "\\Delta d = 0 \\quad \\Rightarrow \\quad s^{*} = (r-g)d",
+          explanation:
+            "This is the key benchmark number. If the required surplus becomes politically or economically implausible, markets may start doubting repayment, and only then does the crisis-amplification logic enter.",
         }),
         derivation({
           title: "Why a crisis can appear without a huge change in debt",
@@ -823,6 +844,9 @@ const lecture11Module: ModuleDetail = lectureModule({
       title: "Step by step: deriving factor shares from Cobb-Douglas",
       summary: "The cleanest mathematical result in the lecture.",
       contentBlocks: [
+        p(
+          "This lecture mixes measurement and mechanism, so it helps to separate them. The Cobb-Douglas part is a benchmark mechanism result about how total income is split between factors. The Lorenz and Gini part is a measurement exercise about how income is distributed across people. If you keep those two jobs distinct, the mathematics becomes much easier to follow.",
+        ),
         derivation({
           title: "Read the exponents as shares",
           learningGoal:
@@ -838,6 +862,21 @@ const lecture11Module: ModuleDetail = lectureModule({
             "This is one of the lecture's most useful compact results because it turns a production function directly into a distributional benchmark.",
         }),
         derivation({
+          title: "Write the marginal-product step instead of skipping straight to the shares",
+          learningGoal:
+            "See exactly how the production function turns into the labor-share formula.",
+          latexBefore:
+            "Y = K^{\\alpha}L^{1-\\alpha}",
+          operation:
+            "Differentiate output with respect to labor, multiply the marginal product by labor to get labor income, and then divide by total output.",
+          whyValid:
+            "Under competitive factor pricing, wages equal the marginal product of labor. So the labor share is $wL/Y = (\\partial Y/\\partial L)L/Y$.",
+          latexAfter:
+            "\\frac{wL}{Y} = \\frac{\\partial Y}{\\partial L}\\frac{L}{Y} = (1-\\alpha)K^{\\alpha}L^{-\\alpha}\\frac{L}{K^{\\alpha}L^{1-\\alpha}} = 1-\\alpha",
+          explanation:
+            "This is the bridge students often skip by saying 'the exponents are the shares.' That statement is true in the benchmark, but only because marginal-product pricing turns the derivative of the Cobb-Douglas function into factor income.",
+        }),
+        derivation({
           title: "How to move from quintile shares to an approximate Gini",
           learningGoal:
             "Turn the seminar-sheet procedure into a reproducible calculation rather than a memorized formula.",
@@ -849,6 +888,21 @@ const lecture11Module: ModuleDetail = lectureModule({
             "G \\approx 1 - 2A, \\qquad A \\approx \\sum_j \\frac{L_j + L_{j-1}}{2}(P_j - P_{j-1})",
           explanation:
             "This is the mechanical procedure students are expected to carry out. The point is not only to get a number, but to understand how the Lorenz geometry is being translated into an inequality statistic.",
+        }),
+        derivation({
+          title: "Build the cumulative shares before you ever touch the Gini formula",
+          learningGoal:
+            "Remove the hidden jump from raw quintile data to the Lorenz-curve area.",
+          latexBefore:
+            "s_1, s_2, \\ldots, s_n \\quad \\text{with} \\quad \\sum_{j=1}^{n} s_j = 1",
+          operation:
+            "Convert the raw income shares into cumulative shares one group at a time: first group 1 alone, then groups 1 and 2 together, and so on until the final point is one.",
+          whyValid:
+            "The Lorenz curve is defined on cumulative population and cumulative income shares. Raw quintile shares are not yet the coordinates of the curve.",
+          latexAfter:
+            "L_j = \\sum_{i=1}^{j} s_i, \\qquad P_j = \\frac{j}{n}",
+          explanation:
+            "This is the bridge that prevents many calculation errors. The Gini formula does not start from the raw 5%, 10%, 15% numbers directly; it starts from the cumulative Lorenz points built from those numbers.",
         }),
       ],
       citations: lecture11CoreCitations,
@@ -1058,6 +1112,9 @@ const lecture12Module: ModuleDetail = lectureModule({
       title: "Step by step: reading the extended production function",
       summary: "A mechanism chain from green inputs to growth drag.",
       contentBlocks: [
+        p(
+          "The lecture moves from verbal sustainability language to growth accounting very quickly, so keep the benchmark in view. Start from the textbook production function you already know. Then notice that Lecture 12 adds resource and environmental inputs. The technical question is therefore simple: once those new inputs are inside production, how do they change scale properties and the growth-rate decomposition you already know from growth theory?",
+        ),
         derivation({
           title: "Why the extra exponents matter",
           learningGoal:
@@ -1071,6 +1128,21 @@ const lecture12Module: ModuleDetail = lectureModule({
             "\\text{Higher resource dependence} \\Rightarrow \\text{greater potential resource drag on growth}",
           explanation:
             "The lesson is not that growth stops mechanically, but that the economy's long-run path depends on how important constrained natural inputs are.",
+        }),
+        derivation({
+          title: "Check constant returns before doing growth accounting",
+          learningGoal:
+            "Make sure the extended benchmark still has the same scale property as the textbook Cobb-Douglas case.",
+          latexBefore:
+            "Y = K^{\\alpha} R^{\\beta} T^{\\gamma} (AL)^{1-\\alpha-\\beta-\\gamma}",
+          operation:
+            "Scale every input by the same positive factor $\\lambda$ and collect the exponents on $\\lambda$.",
+          whyValid:
+            "A Cobb-Douglas function has constant returns to scale when the exponents on all reproducible and effective inputs sum to one. The lecture and exam both expect students to check that property explicitly before using the model.",
+          latexAfter:
+            "F(\\lambda K,\\lambda R,\\lambda T,\\lambda AL) = \\lambda^{\\alpha+\\beta+\\gamma+1-\\alpha-\\beta-\\gamma}Y = \\lambda Y",
+          explanation:
+            "This is the benchmark bridge. The model is richer than the textbook Solow case, but it still preserves constant returns to scale because the exponents add up to one. That is why the later growth-accounting steps look familiar rather than completely new.",
         }),
         derivation({
           title: "Log-differentiate the production function term by term",

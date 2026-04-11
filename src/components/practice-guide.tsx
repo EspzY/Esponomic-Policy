@@ -26,7 +26,7 @@ export function PracticeGuide({
       <div className="mt-5 grid gap-4 lg:grid-cols-2">
         <div className="rounded-[1.5rem] border border-[var(--color-line)] bg-white p-5">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-teal)]">
-            Problem type
+            What this is
           </p>
           <p className="mt-2 text-lg font-semibold text-[var(--color-ink)]">
             {guide.problemType}
@@ -38,7 +38,7 @@ export function PracticeGuide({
         </div>
         <div className="rounded-[1.5rem] border border-[var(--color-line)] bg-white p-5">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-teal)]">
-            Support mode
+            How to work on it
           </p>
           <p className="mt-2 text-lg font-semibold text-[var(--color-ink)]">
             {supportMode === "derivation" ? "Solve by hand first" : "Write and get feedback"}
@@ -69,7 +69,7 @@ export function PracticeGuide({
         </div>
         <div className="rounded-[1.5rem] bg-[rgba(24,33,45,0.04)] p-5">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-rust)]">
-            Recommended path
+            Safe order to solve it
           </p>
           <ol className="mt-3 space-y-2 text-sm leading-7 text-[var(--color-slate)]">
             {guide.solutionPath.map((item, index) => (
@@ -100,7 +100,7 @@ export function PracticeGuide({
             Stepwise help available
           </p>
           <p className="mt-2 text-sm leading-7 text-[var(--color-slate)]">
-            The workspace below lets you reveal these steps progressively. Each step explains not just what to do next, but why the step is valid and how it fits the full derivation.
+            The workspace below lets you reveal these steps progressively. Each step is meant to answer the questions a stuck student usually has: what to do next, why that move is the right one, what rule justifies it, and how that step fits the full derivation.
           </p>
         </div>
       ) : null}

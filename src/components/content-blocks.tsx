@@ -65,21 +65,21 @@ export function ContentBlocks({
               {block.latexBefore ? (
                 <div className="mt-4 rounded-[1.25rem] border border-[var(--color-line)] bg-white p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-slate)]">
-                    Before
+                    Starting expression
                   </p>
                   <DisplayMath latex={block.latexBefore} />
                 </div>
               ) : null}
               <div className="mt-4 rounded-[1.25rem] border border-[var(--color-line)] bg-white p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-slate)]">
-                  After
+                  Expression after this step
                 </p>
                 <DisplayMath latex={block.latexAfter} />
               </div>
               <div className="mt-4 grid gap-3 md:grid-cols-2">
                 <div className="rounded-[1.25rem] bg-white p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-rust)]">
-                    Operation
+                    What we are doing now
                   </p>
                   <MathMarkdown
                     content={block.operation}
