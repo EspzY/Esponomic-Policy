@@ -56,6 +56,7 @@ type SourcePartConfig = {
   imagePath: string;
   altText: string;
   caption?: string;
+  displayPromptText?: boolean;
   beforePromptBlocks?: ContentBlock[];
   afterPromptBlocks?: ContentBlock[];
   answerPlaceholder?: string;
@@ -73,6 +74,7 @@ function sourcePart({
   imagePath,
   altText,
   caption,
+  displayPromptText = true,
   beforePromptBlocks,
   afterPromptBlocks,
   answerPlaceholder,
@@ -96,7 +98,7 @@ function sourcePart({
         altText,
       }),
       ...(beforePromptBlocks ?? []),
-      p(prompt),
+      ...(displayPromptText ? [p(prompt)] : []),
       ...(afterPromptBlocks ?? []),
     ],
     answerPlaceholder,
@@ -205,24 +207,6 @@ const exam2025Citations = [
     "Official solution guidance used only as support material for the 2025 final exam.",
     "solution",
   ),
-];
-
-const seminar1SetupBlocks = [
-  p(
-    "Consider the basic New Keynesian model used in class and summarized by the following equations with notation and parameterization as in class.",
-  ),
-  p(
-    "$$c_t = E_t c_{t+1} - \\frac{1}{\\sigma}(i_t - E_t \\pi_{t+1} - \\rho) + \\frac{1}{\\sigma}(1-\\rho_z) z_t$$",
-  ),
-  p("$$w_t - p_t = \\sigma c_t + \\phi n_t$$"),
-  p("$$y_t = a_t + n_t$$"),
-  p("$$y_t = c_t$$"),
-  p("$$\\pi_t = \\beta E_t \\pi_{t+1} + \\lambda (mc_t - mc)$$"),
-  p("$$mc_t = w_t - p_t - a_t$$"),
-  p("$$i_t = \\rho + \\phi_\\pi \\pi_t + \\phi_y \\tilde y_t + v_t$$"),
-  p("$$z_t = \\rho_z z_{t-1} + \\varepsilon_t^z$$"),
-  p("$$v_t = \\rho_v v_{t-1} + \\varepsilon_t^v$$"),
-  p("$$a_t = \\rho_a a_{t-1} + \\varepsilon_t^a$$"),
 ];
 
 const seminar3RicardianSetupBlocks = [
@@ -564,44 +548,56 @@ export const curatedPracticeProblems: PracticeProblem[] = [
     sessionParts: [
       sourcePart({
         id: "a",
-        label: "Part a",
+        label: "Part (a)",
         imagePath: "/figures/practice/seminar-1/seminar-1-page-1.png",
         altText: "Original Seminar 1 page 1 with the baseline New Keynesian model equations and part (a).",
-        beforePromptBlocks: seminar1SetupBlocks,
+        caption:
+          "Canonical Seminar 1 wording from GRA6631_TA1_Exercises.pdf. Use the PDF excerpt as the question source for part (a).",
+        displayPromptText: false,
         prompt:
           "Suppose the economy is in steady state. The economy is hit by a temporary positive technology shock. Describe from a qualitative point of view the impact response of output, potential output, inflation and natural rate of interest (i.e. whether each variable increases, decreases or stays constant). Explain briefly the transmission mechanism.",
       }),
       sourcePart({
         id: "b",
-        label: "Part b",
+        label: "Part (b)",
         imagePath: "/figures/practice/seminar-1/seminar-1-page-1.png",
         altText: "Original Seminar 1 page 1 with the baseline New Keynesian model equations and part (b).",
-        beforePromptBlocks: seminar1SetupBlocks,
+        caption:
+          "Canonical Seminar 1 wording from GRA6631_TA1_Exercises.pdf. Use the PDF excerpt as the question source for part (b).",
+        displayPromptText: false,
         prompt:
           "Suppose the economy is in steady state. The economy is hit by one (and only one) temporary shock. In response to the shock, inflation increases and the output gap decreases. Can any of the three shocks included in the model above generate these dynamics? If not, what other shock could be at play? Explain briefly your reasoning.",
       }),
       sourcePart({
         id: "c",
-        label: "Part c",
+        label: "Part (c)",
         imagePath: "/figures/practice/seminar-1/seminar-1-page-1.png",
         altText: "Original Seminar 1 page 1 with the baseline New Keynesian model equations and part (c).",
-        beforePromptBlocks: seminar1SetupBlocks,
+        caption:
+          "Canonical Seminar 1 wording from GRA6631_TA1_Exercises.pdf. Use the PDF excerpt as the question source for part (c).",
+        displayPromptText: false,
         prompt:
           "Suppose the economy is in steady state. The economy is hit by one (and only one) temporary shock. In response to this shock, output increases and total hours worked decrease. What kind of shock has hit the economy? Explain briefly your reasoning.",
       }),
       sourcePart({
         id: "d",
-        label: "Part d",
+        label: "Part (d)",
         imagePath: "/figures/practice/seminar-1/seminar-1-page-2.png",
         altText: "Original Seminar 1 page 2 showing part (d).",
+        caption:
+          "Canonical Seminar 1 wording from GRA6631_TA1_Exercises.pdf. Use the PDF excerpt as the question source for part (d).",
+        displayPromptText: false,
         prompt:
           "Suppose the economy is in steady state. The economy is hit simultaneously by a contractionary temporary monetary policy shock ($v_t$ increases) and a contractionary temporary technology shock ($a_t$ decreases). Do you have sufficient information to evaluate the impact response of hours worked? Explain briefly your reasoning.",
       }),
       sourcePart({
         id: "e",
-        label: "Part e",
+        label: "Part (e)",
         imagePath: "/figures/practice/seminar-1/seminar-1-page-2.png",
         altText: "Original Seminar 1 page 2 showing part (e).",
+        caption:
+          "Canonical Seminar 1 wording from GRA6631_TA1_Exercises.pdf. Use the PDF excerpt as the question source for part (e).",
+        displayPromptText: false,
         prompt:
           "Suppose the economy is in steady state. The economy is hit simultaneously by a positive temporary discount factor shock ($z_t$ increases) and by a positive temporary technology shock ($a_t$ increases). Assume that the monetary policy authority behaves optimally. Describe the combined effect of the two shocks on output gap and inflation. Explain your reasoning. Do you have sufficient information to evaluate the response of the natural interest rate?",
       }),
@@ -673,7 +669,7 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       "Under optimal policy in the no-cost-push benchmark, the central bank implements the flexible-price allocation, so the output gap and inflation are both stabilized at zero even though the economy is hit by two shocks. The natural rate is not pinned down from the information given, because the positive discount-factor shock pushes $r_t^n$ up while the positive technology shock moves $r_t^n$ in the opposite direction in the lecture calibration. Without magnitudes, the combined response of the natural rate is ambiguous.",
     ],
     answerPlaceholder:
-      "Write one subpart at a time. The tutor should judge whether your reasoning is economically coherent, not just whether you guessed the final sign correctly.",
+      "Answer the current seminar subpart only. Keep the wording tied to the source and explain the mechanism that justifies each sign.",
     citations: seminar1Citations,
   }),
   practiceProblem({
@@ -2914,9 +2910,9 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       "Write one bridge sentence on the real rate: if the nominal rate does not rise more than inflation, policy may fail to tighten the real rate enough to anchor expectations.",
     ],
     solutionOutline: [
-      "Clarida, Gali, and Gertler find a weaker inflation response before Volcker and a stronger one after Volcker.",
-      "That means the Taylor principle is more likely to be violated in the first sample and satisfied in the second.",
-      "In New Keynesian theory, that maps onto indeterminacy before Volcker and determinacy after Volcker.",
+      "Clarida, Gali, and Gertler's main result is that U.S. monetary policy responded too weakly to inflation in the pre-Volcker period and much more aggressively in the post-Volcker period. In the earlier sample the estimated inflation coefficient is low enough that the nominal interest rate does not rise sufficiently when inflation increases, whereas in the later sample the policy response is much stronger.",
+      "This matters because the Taylor principle requires the nominal rate to rise by more than one-for-one with inflation. Only then does the real interest rate increase when inflation goes up. If the real rate fails to rise, monetary policy does not restrain demand enough to stabilize inflationary pressure. A weak inflation response therefore means that policy is not anchoring the economy in the way the New Keynesian benchmark requires.",
+      "In the New Keynesian model, that difference maps directly into the Blanchard-Kahn determinacy condition. A policy rule that violates the Taylor principle can produce indeterminacy, meaning that expectations are not pinned down by fundamentals and multiple equilibrium paths may exist. A rule that satisfies the Taylor principle instead supports a unique, determinate equilibrium. The empirical contrast between the pre- and post-Volcker samples is therefore interpreted as a shift from a regime prone to indeterminacy toward one that anchors expectations more successfully.",
     ],
     answerPlaceholder:
       "Keep the answer focused: one paragraph for the empirical result, one for the theoretical interpretation.",

@@ -138,8 +138,34 @@ function lowercaseFirst(value: string) {
   return `${value.charAt(0).toLowerCase()}${value.slice(1)}`;
 }
 
+function isMetaSolutionSentence(value: string) {
+  return /(^|\b)(move\s+\d+|what to do|why this belongs here|carry this forward|safe reading order|safest route|right move now|this is the bridge|the exam wants|strong answer can|write one sentence|write one paragraph|write the|start by)\b/i.test(
+    value,
+  );
+}
+
+function stripMetaCoaching(text: string) {
+  const trimmed = text.trim();
+
+  if (!trimmed) {
+    return "";
+  }
+
+  const sentences = trimmed
+    .split(/(?<=[.!?])\s+/)
+    .map((sentence) => sentence.trim())
+    .filter(Boolean)
+    .filter((sentence) => !isMetaSolutionSentence(sentence));
+
+  if (!sentences.length) {
+    return "";
+  }
+
+  return sentences.join(" ").trim();
+}
+
 function toWorkedSentence(value: string) {
-  const trimmed = value.trim();
+  const trimmed = stripMetaCoaching(value).trim();
 
   if (!trimmed) {
     return "";
@@ -183,13 +209,20 @@ function buildAnswerOutlineMarkdown(problem: PracticeProblem) {
 }
 
 function buildExamReadyAnswer(problem: PracticeProblem) {
-  if (problem.solutionOutline.length) {
-    return problem.solutionOutline.join("\n\n");
+  const cleanedOutline = problem.solutionOutline
+    .map((paragraph) => stripMetaCoaching(paragraph))
+    .filter(Boolean);
+
+  if (cleanedOutline.length) {
+    return cleanedOutline.join("\n\n");
   }
 
   if (problem.stepGuide?.length) {
     const lastStep = problem.stepGuide[problem.stepGuide.length - 1];
-    return [lastStep.contribution, lastStep.latex ? `Result: $$${lastStep.latex}$$` : ""]
+    return [
+      stripMetaCoaching(lastStep.contribution),
+      lastStep.latex ? `Result: $$${lastStep.latex}$$` : "",
+    ]
       .filter(Boolean)
       .join("\n\n");
   }
@@ -409,21 +442,33 @@ function buildNextStepMarkdown(problem: PracticeProblem) {
 function buildDerivationWorkedSteps(problem: PracticeProblem) {
   return (problem.stepGuide ?? []).map((step, index) =>
     [
-      `### ${index + 1}. ${step.title}`,
+      `### Step ${index + 1}`,
       toWorkedSentence(step.whatToDo),
-      ensureSentence(step.whyValid),
-      ensureSentence(step.contribution),
+      ensureSentence(stripMetaCoaching(step.whyValid)),
       step.latex ? `$$${step.latex}$$` : "",
+      stripMetaCoaching(step.contribution)
+        ? ensureSentence(stripMetaCoaching(step.contribution))
+        : "",
     ]
       .filter(Boolean)
       .join("\n\n"),
   );
 }
 
+function extractPartLabel(problem: PracticeProblem) {
+  const match = problem.title.match(/ - (Part\s*\(?[a-z0-9]+\)?)/i);
+  return match?.[1] ?? "";
+}
+
 function buildFullSolutionMarkdown(problem: PracticeProblem) {
-  const solutionParagraphs = problem.solutionOutline.length
-    ? problem.solutionOutline
-    : [buildExamReadyAnswer(problem)];
+  const partLabel = extractPartLabel(problem);
+  const solutionParagraphs = (
+    problem.solutionOutline.length
+      ? problem.solutionOutline
+      : [buildExamReadyAnswer(problem)]
+  )
+    .map((paragraph) => stripMetaCoaching(paragraph))
+    .filter(Boolean);
 
   if (problem.supportMode === "derivation" && problem.stepGuide?.length) {
     const workedSteps = buildDerivationWorkedSteps(problem);
@@ -431,18 +476,20 @@ function buildFullSolutionMarkdown(problem: PracticeProblem) {
     const storedAnswer = solutionParagraphs.join("\n\n").trim();
 
     return [
-      "## Full solution",
+      "## Exam answer",
+      partLabel ? `### ${partLabel}` : "",
       ...solutionParagraphs,
-      "### Worked derivation",
+      "## Worked derivation",
       ...workedSteps,
       examReadyAnswer.trim() && examReadyAnswer.trim() !== storedAnswer
-        ? `### Exam-ready condensed answer\n${examReadyAnswer}`
+        ? `## Exam-ready condensed answer\n${examReadyAnswer}`
         : "",
     ].join("\n\n");
   }
 
   return [
-    "## Full solution",
+    "## Exam answer",
+    partLabel ? `### ${partLabel}` : "",
     ...solutionParagraphs,
   ].join("\n\n");
 }
