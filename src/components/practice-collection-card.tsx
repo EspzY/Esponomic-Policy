@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { buttonClasses } from "@/components/ui/button";
 import { buildPracticeSession, getPracticeSessionHref } from "@/lib/practice-session";
@@ -43,6 +43,26 @@ function storageKey(collectionSlug: string) {
   return `practice-session:${collectionSlug}`;
 }
 
+function readStoredProgress(collectionSlug: string): StoredSessionProgress | null {
+  try {
+    const raw = window.localStorage.getItem(storageKey(collectionSlug));
+
+    if (!raw) {
+      return null;
+    }
+
+    const parsed = JSON.parse(raw) as StoredSessionProgress | null;
+
+    if (!parsed || typeof parsed !== "object") {
+      return null;
+    }
+
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
 export function PracticeCollectionCard({
   collection,
   problems,
@@ -54,18 +74,38 @@ export function PracticeCollectionCard({
     () => buildPracticeSession(collection, problems),
     [collection, problems],
   );
-  const progress = useSyncExternalStore(
-    () => () => undefined,
-    () => {
-      try {
-        const raw = window.localStorage.getItem(storageKey(collection.slug));
-        return raw ? (JSON.parse(raw) as StoredSessionProgress) : null;
-      } catch {
-        return null;
+  const [progress, setProgress] = useState<StoredSessionProgress | null>(null);
+
+  useEffect(() => {
+    function syncProgress() {
+      setProgress(readStoredProgress(collection.slug));
+    }
+
+    function handleStorage(event: StorageEvent) {
+      if (event.key && event.key !== storageKey(collection.slug)) {
+        return;
       }
-    },
-    () => null,
-  );
+
+      syncProgress();
+    }
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === "visible") {
+        syncProgress();
+      }
+    }
+
+    syncProgress();
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener("focus", syncProgress);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("focus", syncProgress);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [collection.slug]);
 
   const visitedCount = progress?.visitedStepKeys?.length ?? 0;
   const ctaLabel = progress?.completedAt
