@@ -273,6 +273,9 @@ export const lecture2Module: ModuleDetail = {
         p(
           "Households choose consumption and labor supply. The Euler equation tells you how current consumption trades off against expected future consumption once the expected real return is taken into account. The labor-supply condition tells you what real wage is required to make a given amount of work acceptable.",
         ),
+        p(
+          "The bridge students most often need here is that the household block matters twice. First, by itself, it tells you how the **actual** economy reacts to the real rate. Second, once you write the same logic under flexible prices, it gives you the **natural benchmark**. Lecture 2 later subtracts those two versions. That subtraction is not a trick; it is the disciplined way to isolate what sticky prices add on top of the same underlying household behavior.",
+        ),
         eq(
           "Euler equation",
           "c_t = E_t c_{t+1} - \\frac{1}{\\sigma}\\bigl(i_t - E_t\\pi_{t+1} - \\rho\\bigr) + \\frac{1-\\rho_z}{\\sigma} z_t",
@@ -322,6 +325,9 @@ export const lecture2Module: ModuleDetail = {
         p(
           "Firms use labor as the only input, so productivity and hours are enough to determine output. The interesting friction is nominal price-setting: only a share $1-\\theta$ of firms can reset prices in a given period, while the others keep the old price. That single assumption is what makes inflation forward looking.",
         ),
+        p(
+          "A safe way to read the pricing block is to slow the logic down into four objects: the firm first chooses a **reset price**, then demand substitution tells you how that price affects quantity sold, then the desired **markup over marginal cost** tells you what price would be attractive, and only after that do you aggregate across resetters and non-resetters. If you keep that order, the later NKPC derivation feels like a chain of connected objects rather than a jump from a firm's problem to inflation.",
+        ),
         eq(
           "Aggregate production",
           "y_t = a_t + n_t",
@@ -370,6 +376,9 @@ export const lecture2Module: ModuleDetail = {
       contentBlocks: [
         p(
           "Lecture 2 does not ask you to memorize the compact three-equation system as if it fell from the sky. The key reduction step is to express the marginal-cost gap in terms of the output gap and then subtract the flexible-price Euler equation from the sticky-price Euler equation.",
+        ),
+        p(
+          "That subtraction works because the flexible-price allocation is not a different economy with different preferences. It is the **same household and shock structure without the pricing friction**. So when you compare sticky prices with flexible prices, anything common to both benchmarks should cancel. What survives is exactly the object the lecture wants you to study: the wedge created by nominal rigidity.",
         ),
         derivation({
           title: "Turn the marginal-cost gap into the output gap",
@@ -527,6 +536,21 @@ export const lecture2Module: ModuleDetail = {
             "The continuation part of the problem from period $t+1$ onward has the same structure as the problem solved one period later.",
           explanation:
             "Today's optimal reset price is a weighted average of current desired pricing and tomorrow's expected optimal reset price.",
+        }),
+        derivation({
+          title: "Make the recursive split algebra explicit before moving on",
+          learningGoal:
+            "See exactly where the current term ends and the continuation term begins in the reset-price recursion.",
+          latexBefore:
+            "p_t^* = (1-\\beta\\theta)\\sum_{k=0}^{\\infty}(\\beta\\theta)^k E_t\\bigl(mc_{t+k\\mid t} - mc + p_{t+k}\\bigr)",
+          operation:
+            "Write the $k=0$ term on its own, then factor out $\\beta\\theta$ from the remaining tail of the sum and re-index it from zero again.",
+          whyValid:
+            "This is just a geometric-series bookkeeping step. The continuation problem from $t+1$ onward has the same structure as the original problem, which is why the re-indexed tail becomes tomorrow's expected reset-price object.",
+          latexAfter:
+            "\\begin{aligned} p_t^* &= (1-\\beta\\theta)(mc_t-mc+p_t) \\\\ &\\quad + (1-\\beta\\theta)\\sum_{k=1}^{\\infty}(\\beta\\theta)^k E_t\\bigl(mc_{t+k\\mid t}-mc+p_{t+k}\\bigr) \\\\ &= (1-\\beta\\theta)(mc_t-mc+p_t) + \\beta\\theta E_t(p_{t+1}^*) \\end{aligned}",
+          explanation:
+            "This is the hidden bridge many students need. Nothing conceptually new happens in the second line. You are only recognizing that the tail of today's pricing problem is tomorrow's pricing problem, viewed one period earlier.",
         }),
         derivation({
           title: "Turn the price-index identities into an inflation equation one step at a time",
@@ -697,6 +721,9 @@ export const lecture2Module: ModuleDetail = {
           "Complementary Lecture 2 slide showing impulse responses to an expansionary technology shock.",
           "Using the lecture screenshot keeps the chart layout and the directional comparisons consistent with the source material.",
         ),
+        p(
+          "When you read these impulse-response figures, use one fixed order every time. First locate the **benchmark object that moves first**: policy for a monetary shock, Euler-demand pressure for a discount-factor shock, or productivity and natural output for a technology shock. Then compare actual output with natural output. Only after that should you read inflation and the output gap. This order stops the charts from turning into visual sign-memorization without mechanism.",
+        ),
       ],
       citations: [...shockTransmissionCitations, ...lecture2NaturalCitations],
     },
@@ -712,11 +739,19 @@ export const lecture2Module: ModuleDetail = {
         p(
           "A good Seminar 1 answer therefore has a fixed order: start from the benchmark object that moves first, then say what happens in the flexible-price economy, then compare that with the sticky-price allocation, and only after that state the signs for inflation, the output gap, and the natural rate. That order is what keeps the answer from turning into disconnected sign guessing.",
         ),
+        p(
+          "If you are unsure where to begin, force yourself into this four-line template before writing any sign: **(1)** name the shock, **(2)** state the flexible-price benchmark object it moves first, **(3)** compare actual with natural quantities, **(4)** infer inflation and the gap from marginal cost and the Phillips curve. That is the safest solving order in Seminar 1 and in most early exam questions built on Lecture 2.",
+        ),
         workedExample({
           title: "Seminar 1(a): positive technology shock",
           prompt:
             "Suppose the economy starts in steady state and is hit by a temporary positive technology shock. Describe the impact response of **output**, **potential output**, **inflation**, and the **natural rate of interest**.",
           steps: [
+            {
+              title: "Step 0: write the answer order before you sign anything",
+              markdown:
+                "Start with the flexible-price benchmark, then move to actual output, then inflation, then the natural rate. This stops the answer from becoming disconnected sign guessing.",
+            },
             {
               title: "Step 1: start with the flexible-price benchmark",
               markdown:

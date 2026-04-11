@@ -176,6 +176,11 @@ const lecture9Module: ModuleDetail = lectureModule({
           "\\text{PV}(C) = \\text{initial wealth} + \\text{PV}(Y-T)",
           "Ricardian equivalence works by showing that lower taxes today imply higher taxes later, so lifetime resources need not change under the benchmark assumptions.",
         ),
+        eq(
+          "Flow versus stock",
+          "\\text{primary deficit}_t = G_t - T_t, \\qquad D_t = \\text{stock of outstanding debt}",
+          "The deficit is a current-period flow; debt is the accumulated stock carried across periods. Keeping those two objects separate removes a lot of fiscal confusion.",
+        ),
       ],
       citations: lecture9CoreCitations,
     },
@@ -199,6 +204,9 @@ const lecture9Module: ModuleDetail = lectureModule({
       contentBlocks: [
         p(
           "Borrowing shifts taxes over time, but it does not erase the budget constraint. Debt dynamics tell you how current deficits accumulate and why future surpluses must eventually validate current borrowing if default or monetization is to be avoided.",
+        ),
+        p(
+          "Keep one more pair of distinctions active here. A **deficit** is a flow that tells you how much new financing is needed this period; **debt** is the stock that remains afterward. And because seminar and exam answers often switch units, keep asking whether the object is being described in nominal or real terms. The economic logic is the same, but the interpretation becomes much safer once stock-versus-flow and nominal-versus-real are stated explicitly.",
         ),
       ],
       citations: lecture9CoreCitations,
@@ -498,6 +506,9 @@ const lecture10Module: ModuleDetail = lectureModule({
         p(
           "The lecture rewrites fiscal sustainability in debt-ratio language. That makes the intuition sharper: whether debt is stabilizing or exploding depends on the starting debt ratio, the interest-growth differential, and the government's primary balance.",
         ),
+        p(
+          "Read this as Lecture 9 with one extra danger layer. Lecture 9 gave you the accounting benchmark. Lecture 10 keeps that arithmetic but asks what happens once rollover conditions, market beliefs, and institutions are allowed to push the same debt path into a fragile region. So the safe order is always **arithmetic first, beliefs second**.",
+        ),
       ],
       citations: lecture10CoreCitations,
     },
@@ -527,6 +538,9 @@ const lecture10Module: ModuleDetail = lectureModule({
         ),
         p(
           "So the lecture's crisis logic has three layers: arithmetic, beliefs, and institutions. A country can look safe when $g>r$, but if debt becomes high enough, markets may demand a higher return, which raises $r$, worsens the debt path, and potentially shifts the economy from a benign equilibrium to a bad one.",
+        ),
+        p(
+          "This is also the clean way to distinguish weak fundamentals from a self-fulfilling crisis. Weak fundamentals mean the debt path already looks bad even if beliefs stay calm. A self-fulfilling crisis means beliefs themselves make the path worse by pushing yields up. Lecture 10 wants you to hold those two stories apart before you explain how they can reinforce each other.",
         ),
       ],
       citations: lecture10CoreCitations,
@@ -841,6 +855,9 @@ const lecture11Module: ModuleDetail = lectureModule({
         p(
           "The lecture's mechanism is that centralized wage bargaining tends to compress wage dispersion more than a decentralized labor market. So when seminar or exam questions ask how the Scandinavian model affects inequality, the safe answer is not just 'more coordination'. It is 'more wage compression, which tends to lower personal income dispersion and therefore lower measured inequality, other things equal.'",
         ),
+        p(
+          "This is the bridge that keeps the section connected to the rest of Lecture 11. Functional distribution tells you how much total income goes to labor versus capital. The Scandinavian model then changes the **distribution within labor income itself** by compressing wages across workers. So the wage-setting section belongs here because it links institutions to the personal distribution, not because it is a separate labor-market side story.",
+        ),
       ],
       citations: lecture11CoreCitations,
     },
@@ -962,6 +979,9 @@ const lecture11Module: ModuleDetail = lectureModule({
         p(
           "The safest order here is: build the Lorenz points first, compute the statistic second, and interpret the institution third. That order matters because the lecture is teaching you to distinguish **how inequality is measured** from **why inequality changes**.",
         ),
+        p(
+          "A strong course-style answer also says what the statistic does **not** tell you. The Gini summarizes the distribution you observe, but it does not by itself tell you whether the cause was technology, bargaining, taxes, transfers, or factor shares. That one sentence often prevents students from treating the measurement tool as if it were already an explanation.",
+        ),
         workedExample({
           title: "How do you compute and interpret a Gini in the course style?",
           prompt:
@@ -1082,6 +1102,9 @@ const lecture12Module: ModuleDetail = lectureModule({
         p(
           "A good way to read the lecture is as an extension of the textbook Solow benchmark. First recall how long-run growth works when production depends on capital, productivity, and labor. Then add resources and environmental stocks and ask what extra drag terms appear in the growth-rate decomposition. That is exactly the skill the exams and seminar sheet are training.",
         ),
+        p(
+          "Two benchmark comparisons should stay active the whole time. First, keep asking what changes relative to the textbook Solow benchmark once resources and environmental constraints enter production. Second, keep asking what changes when $\\beta = 0$. That second benchmark is not a side remark; it is the cleanest way to see exactly which growth effect is coming from resource dependence and which part belongs to the older benchmark.",
+        ),
       ],
       citations: lecture12CoreCitations,
     },
@@ -1096,6 +1119,9 @@ const lecture12Module: ModuleDetail = lectureModule({
         ),
         p(
           "The key lecture move is to compare the standard Solow growth decomposition with the extended production function. When resources deplete at rate $b$ and production depends on resources with share $\\beta$, long-run growth per worker inherits a **negative contribution from resource depletion**. The larger $\\beta$ is, the larger that drag becomes. If $\\beta = 0$, the drag disappears and the model collapses back toward the standard benchmark.",
+        ),
+        p(
+          "So the benchmark-to-failure logic is explicit. The standard growth model says long-run per-worker growth is driven by technology once the usual capital transition is complete. Lecture 12 shows why that benchmark can fail when natural inputs are scarce. Resource drag is the formal statement of that failure, and it is exactly why environmental policy enters as a macroeconomic necessity rather than as a separate essay topic.",
         ),
       ],
       citations: lecture12CoreCitations,
@@ -1264,6 +1290,9 @@ const lecture12Module: ModuleDetail = lectureModule({
         }),
         p(
           "A strong interpretation of the figure therefore does two things at once: it identifies that abatement opportunities are heterogeneous across sectors, and it connects that heterogeneity to instrument choice. The lecture is training students to see policy as a problem of pricing external damage while recognizing that real-world abatement costs and uncertainty are uneven.",
+        ),
+        p(
+          "Keep one classification in view in the final lecture. A **commons problem** is about overuse of a shared resource. An **externality** is about private decisions imposing unpriced social costs. **Carbon taxes** and **cap-and-trade** are policy tools for pricing that wedge. And the **Hotelling rule** is a scarcity benchmark for exhaustible resources. The lecture brings those objects together, but it does not want them blurred into one generic climate essay.",
         ),
       ],
       citations: lecture12CoreCitations,

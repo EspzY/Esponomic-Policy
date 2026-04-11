@@ -212,6 +212,9 @@ const lecture3Module: ModuleDetail = lectureModule({
         p(
           "The lecture keeps the baseline New Keynesian model from Lecture 2 but removes the extra disturbance that would shift inflation independently of slack. That means inflation pressure comes only from expected inflation and the output gap.",
         ),
+        p(
+          "That is why divine coincidence must be read as a **conditional benchmark**. The whole result starts from one explicit assumption: there is no independent inflation wedge. If that assumption fails, the benchmark breaks. Keeping that condition visible now makes Lecture 4 much easier, because Lecture 4 is exactly the lecture where the missing wedge is put back into the Phillips curve.",
+        ),
         checklist(
           [
             "No cost-push shock in the Phillips curve.",
@@ -308,6 +311,9 @@ const lecture3Module: ModuleDetail = lectureModule({
       contentBlocks: [
         p(
           "This is the first place in the course where many students lose the thread, because the lecture suddenly moves from one Phillips-curve line to an infinite forward sum. So slow down and keep two things in mind: the same NKPC holds one period ahead, and recursive substitution just means replacing tomorrow's inflation term with tomorrow's own Phillips-curve expression.",
+        ),
+        p(
+          "Keep one more distinction in view before the determinacy condition arrives. The lecture is not saying 'be hawkish because hawkishness sounds tough.' It is asking whether the policy rule **anchors the forward-looking system**. Determinacy is therefore a question about whether expectations converge to the intended equilibrium, not a slogan about always choosing the highest possible interest rate response.",
         ),
         derivation({
           title: "Write out the first two substitutions before jumping to the infinite sum",
@@ -617,6 +623,9 @@ const lecture4Module: ModuleDetail = lectureModule({
           "The lecture distinguishes **three policy frameworks**. Under **discretion**, the central bank takes future expectations as given and solves period by period. Under **commitment to a simple targeting rule**, the central bank chooses a rule that is tougher on inflation than discretion because private agents internalize the promised future response. Under **full state-contingent commitment**, policy is not restricted to one simple rule; instead, the central bank chooses the entire contingent path and exploits history dependence much more fully.",
         ),
         p(
+          "If that distinction feels abstract, force it into one question: **what is treated as given, and what is chosen?** Under discretion, $E_t\\pi_{t+1}$ is treated as inherited when the policymaker chooses today's gap. Under commitment, the policymaker is choosing a whole path that private agents will use when they form expectations, so today's promise becomes part of tomorrow's inherited state. That is the exact bridge from Lecture 3's anchored benchmark to Lecture 4's history dependence.",
+        ),
+        p(
           "That is why the lecture keeps coming back to credibility. Commitment is valuable precisely because current inflation depends on expected future output gaps. A credible promise to keep demand weak in the future lowers inflation today, so the central bank can improve today's trade-off without engineering as large an immediate contraction as under discretion.",
         ),
         modelMap("Why commitment helps", [
@@ -781,6 +790,9 @@ const lecture4Module: ModuleDetail = lectureModule({
           explanation:
             "The rule keeps the same sign pattern as under discretion, but commitment fights inflation more aggressively. The important intuition is not the algebra alone; it is that credibility makes current inflation easier to stabilize because the private sector believes the future policy path.",
         }),
+        p(
+          "So the commitment logic should be read in two layers. First, what is chosen changes: the central bank is not just picking today's gap, but a path it expects to remain credible. Second, what is inherited changes: lagged promises or lagged multipliers matter because the private sector remembers yesterday's announced strategy when it sets today's prices. That is why commitment produces history dependence instead of the period-by-period reset logic of discretion.",
+        ),
       ],
       citations: lecture4CoreCitations,
     },
@@ -1070,6 +1082,21 @@ const lecture5Module: ModuleDetail = lectureModule({
             "This line makes the temptation concrete. The policymaker would like to push inflation upward whenever output is below the desired target, because surprise inflation relaxes the Phillips-curve constraint in the short run.",
         }),
         derivation({
+          title: "Solve the discretionary first-order condition before imposing equilibrium",
+          learningGoal:
+            "Separate the one-period temptation from the final rational-expectations outcome.",
+          latexBefore:
+            "2(\\pi-\\pi^*) + 2ab\\bigl(y^n + b(\\pi-\\pi^e)-y^*\\bigr) = 0",
+          operation:
+            "Divide by two, collect the inflation terms on one side, and solve for the inflation choice as a function of expected inflation and the desired output gap.",
+          whyValid:
+            "At this stage the policymaker is still taking expected inflation as fixed. So you should read the equation as the **best response** to a given expectation, not yet as the final equilibrium.",
+          latexAfter:
+            "(1+ab^2)\\pi = \\pi^* + ab(y^*-y^n) + ab^2\\pi^e",
+          explanation:
+            "This is the missing timing bridge. The policymaker's best response really does push inflation upward when $y^*>y^n$, but that extra inflation still depends on what the private sector expected in advance.",
+        }),
+        derivation({
           title: "Impose rational expectations in equilibrium",
           learningGoal:
             "Understand why the short-run temptation becomes a long-run inflation bias instead of a lasting output gain.",
@@ -1103,6 +1130,9 @@ const lecture5Module: ModuleDetail = lectureModule({
           note:
             "What to notice: the figure does not prove every institutional claim on its own, but it gives the lecture's incentives story an empirical anchor.",
         }),
+        p(
+          "That is the right way to use the article material in this course. The **course-core intuition** is still the inflation-bias mechanism: incentives, expectations, and credibility. The political-pressure evidence is supporting motivation and empirical reinforcement. So in an exam answer, start from the incentive problem first, then use political pressure as evidence for why institutional insulation may matter in practice.",
+        ),
       ],
       citations: lecture5CoreCitations,
     },
@@ -1243,6 +1273,9 @@ const lecture6Module: ModuleDetail = lectureModule({
         p(
           "The lecture's benchmark is a severe demand shortfall in which the central bank would like to cut the rate further, but cannot do so much today because of the zero lower bound. In that environment, policy works mainly by changing what households and firms expect future policy to be.",
         ),
+        p(
+          "The safest order of thought is fixed and should stay visible throughout the module: **zero lower bound first**, then the **expectations channel** through the Dynamic IS equation, then **forward guidance** as a way of moving that channel, then **Delphic versus Odyssean classification**, and only after that the **forward-guidance puzzle**. If you reverse that order, the lecture can feel like a bag of labels instead of one mechanism chain.",
+        ),
       ],
       citations: lecture6CoreCitations,
     },
@@ -1267,6 +1300,9 @@ const lecture6Module: ModuleDetail = lectureModule({
           explanation:
             "That is the core mechanism of forward guidance. The lecture's labels only make sense once this channel is understood.",
         }),
+        p(
+          "This is the bridge back to Lecture 2: the Dynamic IS equation already taught you that current demand depends on the gap between the actual and natural real rates. Lecture 6 does not invent a new mechanism. It asks what happens when today's nominal rate cannot move enough, so the policymaker instead changes the **expected future path** of real rates.",
+        ),
       ],
       citations: lecture6CoreCitations,
     },
@@ -1564,6 +1600,9 @@ const lecture7Module: ModuleDetail = lectureModule({
         p(
           "The lecture begins with the historical Phillips-curve intuition that tighter labor markets tend to raise inflation. It then moves to the modern New Keynesian version, where inflation is forward looking and depends on a structural measure of slack plus possible cost-push disturbances.",
         ),
+        p(
+          "Keep three layers separate from the start. **Theory** asks what the structural NKPC says. **Evidence** asks what the data cloud looks like. **Identification** asks whether the data cloud lets you recover the structural slope at all. Much of the confusion in Lecture 7 comes from sliding between those three layers without warning.",
+        ),
       ],
       citations: lecture7CoreCitations,
     },
@@ -1714,6 +1753,9 @@ const lecture7Module: ModuleDetail = lectureModule({
           note:
             "What to notice: the lecture does not stop at the historical scatter. It uses that intuition as a starting point before asking how the structural slope should be interpreted in modern policy problems.",
         }),
+        p(
+          "This also gives you the lecture's main warning label: **do not read $\\kappa$ off the scatterplot**. A flatter cloud can come from stronger policy stabilization, more anchored expectations, different shocks, or measurement problems. The scatter is evidence about an observed correlation; the structural slope is an object you still have to identify.",
+        ),
         p(
           "So the careful answer is two-layered. If the structural slope really is smaller, disinflation becomes more costly because slack moves inflation less. But if the flatter pattern mainly reflects anchored expectations or more systematic stabilization policy, the observed relation can flatten a lot even while the structural targeting rule changes much less.",
         ),
@@ -1912,6 +1954,9 @@ const lecture8Module: ModuleDetail = lectureModule({
         p(
           "The lecture also contrasts RANK and HANK directly. In RANK, the direct intertemporal-substitution channel does most of the work. In HANK, the direct effect is much smaller, while indirect effects through labor income, balance sheets, and redistribution become much more important.",
         ),
+        p(
+          "That is why the safe Lecture 8 question is never just 'what is the average income change?' It is 'who gets the income change, who loses, and what are their MPCs?' HANK changes transmission because redistribution changes **spending incidence**, not only fairness or accounting labels.",
+        ),
       ],
       citations: lecture8CoreCitations,
     },
@@ -1970,6 +2015,21 @@ const lecture8Module: ModuleDetail = lectureModule({
             "\\Delta C = \\bar{\\text{MPC}}\\,\\Delta Y \\quad \\text{only if income gains are distributed proportionally across households}",
           explanation:
             "This is the bridge from RANK to HANK. The old one-household shortcut is not wrong in every setting; it is wrong when the distribution of gains and losses changes, which is exactly when inequality becomes part of macro transmission.",
+        }),
+        derivation({
+          title: "Make the covariance term explicit instead of saying 'distribution matters' in words",
+          learningGoal:
+            "Show algebraically why the aggregate response depends on incidence, not only on the average income change.",
+          latexBefore:
+            "\\Delta C = \\sum_i \\text{MPC}_i \\cdot \\Delta Y_i",
+          operation:
+            "Add and subtract the average MPC inside the sum, then split the aggregate response into an average-income term and a composition term.",
+          whyValid:
+            "This is only an accounting decomposition, but it turns the lecture's verbal point into something you can actually read from the expression: if gains land on high-MPC households, the second term is positive and amplification rises.",
+          latexAfter:
+            "\\Delta C = \\bar{\\text{MPC}}\\sum_i \\Delta Y_i + \\sum_i (\\text{MPC}_i-\\bar{\\text{MPC}})\\Delta Y_i",
+          explanation:
+            "Now the key idea is visible. The first term says what average-MPC logic would predict. The second term is the extra redistribution term. It is positive when the income gains are concentrated on households whose MPCs are above average, and negative when the gains land on low-MPC households.",
         }),
         derivation({
           title: "Why the matching multiplier amplifies downturns",

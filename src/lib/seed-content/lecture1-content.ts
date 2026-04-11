@@ -182,6 +182,9 @@ export const lecture1Module: ModuleDetail = lectureModule({
         p(
           "A recurring mistake is to talk about the policy rate as if it were itself the objective. Lecture 1 is careful about the distinction: the **instrument** is the short-term policy rate, while the **objectives** concern inflation and real activity. A rule is only the bridge between the two.",
         ),
+        p(
+          "For a student seeing monetary transmission for the first time, the safest chain is: the central bank changes the **nominal** policy rate, that changes the **real** rate only after you compare it with expected inflation, and the real rate is what then pushes demand, output, and inflation around. Keep that chain in mind now, because Lecture 2 turns it into the Dynamic IS logic formally.",
+        ),
         checklist(
           [
             "The policy rate is the instrument, not the goal.",
@@ -216,6 +219,9 @@ export const lecture1Module: ModuleDetail = lectureModule({
           "The complementary lecture's empirical message is strong: the unsystematic component explains only a **minor fraction** of output and even interest-rate fluctuations in more recent periods. That is why the course cares so much about rules, credibility, and expectations.",
         ),
         p(
+          "This is also the safest way to avoid a common confusion in seminar and exam answers: a large rate move is **not automatically a monetary-policy shock**. First ask what the rule would have implied given inflation and the output gap. Only the leftover part counts as unsystematic policy. The course keeps repeating this because later New Keynesian lectures explain fluctuations mainly through the rule, expectations, and benchmark objects such as the natural rate, not through a constant stream of random policy surprises.",
+        ),
+        p(
           "This is exactly where the Clarida-Gali-Gertler result fits. Their pre-Volcker versus post-Volcker Taylor-rule estimates are used in the course to show that the **systematic response to inflation increased over time**. The core lesson is not just historical. It is that a stronger inflation response is part of what made policy more stabilizing and less erratic.",
         ),
         checklist(
@@ -240,6 +246,9 @@ export const lecture1Module: ModuleDetail = lectureModule({
         ),
         p(
           "Carry this forward into the rest of the course: later lectures will replace the simple rule with a full New Keynesian benchmark, commitment problems, forward-guidance promises, or richer distributional environments. But they still keep asking the same underlying question: **how should policy react once the state of the economy changes?**",
+        ),
+        p(
+          "So the explicit recall bridge is this: whenever a later lecture introduces a richer model, do not throw Lecture 1 away. Reactivate the same three questions. What is the instrument? What makes the real rate move? And is policy reacting strongly enough to stabilize expectations rather than letting them drift? That is the Lecture 1 thread that later becomes the Taylor principle, determinacy, and commitment logic.",
         ),
         modelMap("Why the Taylor rule survives in the course", [
           {
@@ -370,6 +379,11 @@ export const lecture1Module: ModuleDetail = lectureModule({
           prompt:
             "Suppose inflation rises above target and the output gap turns positive. The central bank raises the policy rate. Explain when that move should be read as systematic policy and when the residual should instead be interpreted as an unsystematic monetary-policy shock.",
           steps: [
+            {
+              title: "Step 0: write the benchmark rule in words before you classify the move",
+              markdown:
+                "Start by saying what the rule would normally prescribe when inflation is above target and the output gap is positive: **a higher policy rate**. This stops you from calling the entire rate move a shock before you have identified the benchmark response.",
+            },
             {
               title: "Step 1: read the state of the economy",
               markdown:
