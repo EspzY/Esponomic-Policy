@@ -3,6 +3,7 @@ import type {
   PracticeCollection,
   PracticeGuide,
   PracticeProblem,
+  PracticeSessionPart,
   PracticeStepGuide,
   PracticeSupportMode,
 } from "@/lib/types";
@@ -45,6 +46,65 @@ function step(
     principle,
     contribution,
     latex,
+  };
+}
+
+type SourcePartConfig = {
+  id: string;
+  label: string;
+  prompt: string;
+  imagePath: string;
+  altText: string;
+  caption?: string;
+  beforePromptBlocks?: ContentBlock[];
+  afterPromptBlocks?: ContentBlock[];
+  answerPlaceholder?: string;
+  hintIndexes?: number[];
+  nextStepIndexes?: number[];
+  solutionOutlineIndexes?: number[];
+  stepGuideIndexes?: number[];
+  supportingEquationIds?: string[];
+};
+
+function sourcePart({
+  id,
+  label,
+  prompt,
+  imagePath,
+  altText,
+  caption,
+  beforePromptBlocks,
+  afterPromptBlocks,
+  answerPlaceholder,
+  hintIndexes,
+  nextStepIndexes,
+  solutionOutlineIndexes,
+  stepGuideIndexes,
+  supportingEquationIds,
+}: SourcePartConfig): PracticeSessionPart {
+  return {
+    id,
+    label,
+    prompt,
+    questionBlocks: [
+      figureNote({
+        title: "Original source excerpt",
+        caption:
+          caption ??
+          "This is the original seminar or exam wording from the PDF source. The current step keeps that wording as the canonical question.",
+        imagePath,
+        altText,
+      }),
+      ...(beforePromptBlocks ?? []),
+      p(prompt),
+      ...(afterPromptBlocks ?? []),
+    ],
+    answerPlaceholder,
+    hintIndexes,
+    nextStepIndexes,
+    solutionOutlineIndexes,
+    stepGuideIndexes,
+    supportingEquationIds,
   };
 }
 
@@ -115,6 +175,85 @@ const exam2025Citations = [
     "Official solution guidance for the 2025 final exam.",
     "solution",
   ),
+];
+
+const seminar1SetupBlocks = [
+  p(
+    "Consider the basic New Keynesian model used in class and summarized by the following equations with notation and parameterization as in class.",
+  ),
+  p(
+    "$$c_t = E_t c_{t+1} - \\frac{1}{\\sigma}(i_t - E_t \\pi_{t+1} - \\rho) + \\frac{1}{\\sigma}(1-\\rho_z) z_t$$",
+  ),
+  p("$$w_t - p_t = \\sigma c_t + \\phi n_t$$"),
+  p("$$y_t = a_t + n_t$$"),
+  p("$$y_t = c_t$$"),
+  p("$$\\pi_t = \\beta E_t \\pi_{t+1} + \\lambda (mc_t - mc)$$"),
+  p("$$mc_t = w_t - p_t - a_t$$"),
+  p("$$i_t = \\rho + \\phi_\\pi \\pi_t + \\phi_y \\tilde y_t + v_t$$"),
+  p("$$z_t = \\rho_z z_{t-1} + \\varepsilon_t^z$$"),
+  p("$$v_t = \\rho_v v_{t-1} + \\varepsilon_t^v$$"),
+  p("$$a_t = \\rho_a a_{t-1} + \\varepsilon_t^a$$"),
+];
+
+const seminar3RicardianSetupBlocks = [
+  p("Consider the government budget constraint below. $r(\\tau)$ is the interest rate at time $\\tau$. $G(t)$ and $T(t)$ denote government purchases and taxes at time $t$. $D(t)$ denotes government debt at time $t$."),
+  p("$$R(t)=\\int_{\\tau=0}^{t} r(\\tau)\\,d\\tau, \\qquad \\int_{t=0}^{\\infty} e^{-R(t)} G(t)\\,dt \\le -D(0) + \\int_{t=0}^{\\infty} e^{-R(t)} T(t)\\,dt, \\qquad \\lim_{s\\to\\infty} e^{-R(s)} D(s) \\le 0$$"),
+  p("Below is a budget constraint for the consumers. $C(t)$ and $W(t)$ denote consumption and wages at time $t$. $K(0)$ denotes consumers' capital stock at time $0$."),
+  p("$$\\int_{t=0}^{\\infty} e^{-R(t)} C(t)\\,dt \\le K(0) + D(0) + \\int_{t=0}^{\\infty} e^{-R(t)} [W(t)-T(t)]\\,dt$$"),
+];
+
+const seminar3DebtSetupBlocks = [
+  p("The change in the debt-to-GDP ratio can be approximated as $$\\Delta d \\approx (r-g)\\cdot d - s,$$ where $d = D/Y$, $s$ is the primary surplus as a share of GDP, $r$ is the real interest rate, and $g$ is real GDP growth."),
+];
+
+const seminar3InequalitySetupBlocks = [
+  p("In a Cobb-Douglas economy the seminar writes output as $$Y = K^{\\alpha}L^{1-\\alpha}.$$"),
+];
+
+const seminar3EnvironmentSetupBlocks = [
+  p("Consider the extended Solow model from Lecture 12 with output $$Y = K^{\\alpha}(AL)^{1-\\alpha-\\beta}R^{\\beta},$$ where $A$ grows at rate $g$, $L$ at rate $n$, and resources $R$ deplete at rate $b$."),
+];
+
+const exam2024Question3SetupBlocks = [
+  p("Assume a model economy as represented by the NKPC and the DIS:"),
+  p("$$\\pi_t = \\beta E_t \\pi_{t+1} + \\kappa \\tilde y_t$$"),
+  p("$$\\tilde y_t = E_t \\tilde y_{t+1} - \\frac{1}{\\sigma}(i_t - E_t \\pi_{t+1} - r_t^n)$$"),
+  p("where $$\\pi_t \\equiv p_t - p_{t-1}, \\qquad \\tilde y_t \\equiv y_t - y_t^n,$$"),
+  p("$$\\kappa = \\lambda (\\sigma + \\phi), \\qquad r_t^n = \\rho - \\sigma \\frac{1+\\phi}{\\sigma+\\phi}(1-\\rho_a) a_t + (1-\\rho_z) z_t,$$"),
+  p("$$y_t^n = -\\frac{\\mu}{\\sigma+\\phi} + \\frac{1+\\phi}{\\sigma+\\phi} a_t, \\qquad z_t = \\rho_z z_{t-1} + \\epsilon_t^z, \\qquad a_t = \\rho_a a_{t-1} + \\epsilon_t^a,$$"),
+  p("with calibration $$\\rho_a = 0, \\qquad \\rho_z = 0.5, \\qquad \\epsilon_t^a = 0, \\qquad \\epsilon_t^z = 0.5.$$"),
+];
+
+const exam2025Question2SetupBlocks = [
+  p("Assume that the central bank has the following policy objective (quadratic loss function):"),
+  p("$$\\min_{\\pi_{t+i},x_{t+i}} \\frac{1}{2} E_t \\sum_{i=0}^{\\infty} \\beta^i \\left[\\pi_{t+i}^2 + \\alpha_x x_{t+i}^2\\right]$$"),
+  p("and faces the following New Keynesian Phillips curve (NKPC):"),
+  p("$$\\pi_{t+i} = \\beta \\pi_{t+i+1} + \\kappa x_{t+i} + u_{t+i}^{\\pi}.$$"),
+  p("Notation is identical to the lecture notes. $u_{t+i}^{\\pi}$ represents a transitory cost-push shock $(\\rho_{\\pi}=0)$."),
+  p("$$\\kappa \\equiv \\lambda (\\sigma + \\phi) = \\frac{(1-\\beta \\theta)(1-\\theta)}{\\theta}(\\sigma + \\phi).$$"),
+];
+
+const exam2025Question3SetupBlocks = [
+  p("Assume two economies X and Z."),
+  p("In economy X, 20 percent of individuals have a marginal propensity to consume (MPC) close to 1 (\"hand-to-mouth\" households). 80 percent of individuals have an MPC of 0.4."),
+  p("In economy Z, 60 percent of individuals have a marginal propensity to consume (MPC) close to 1 (\"hand-to-mouth\" households). 40 percent of individuals have an MPC of 0.4."),
+  p("Assume that all individuals in economy X and Y are otherwise identical. Both of these economies are hit by a one-period positive aggregate productivity shock."),
+];
+
+const exam2025Question4SetupBlocks = [
+  p("Consider the macro production function below. It is a Cobb-Douglas macro production function where resources, $R$, are included as a factor of production. $K$, $A$ and $L$ denote capital, productivity and labor used in production, respectively."),
+  p("$$Y = F(K,R,AL) = K^{\\alpha} R^{\\beta} (AL)^{1-\\alpha-\\beta}$$"),
+  p("Assume that the below inequalities are fulfilled:"),
+  p("$$0 < \\alpha < 1, \\qquad 0 < \\beta < 1, \\qquad \\alpha + \\beta < 1$$"),
+  p("Let a dot above a variable denote the derivative with respect to time, i.e. growth: $$\\dot X = \\frac{dX}{dt}.$$ Assume that growth in labor, productivity, capital and resources are given by the below equations:"),
+  p("$$\\dot L = nL, \\qquad \\dot A = gA, \\qquad \\dot K = sY - \\delta K, \\qquad \\dot R = -bR.$$"),
+];
+
+const exam2025Question5SetupBlocks = [
+  p("Assume that tax incomes are distortive so that total costs from taxes at time $t$, $C_t$, increases with taxes' $(T_t)$ share of the total income, $Y_t$, at time $t$ as described by the function $f$."),
+  p("$$C_t = Y_t f\\!\\left(\\frac{T_t}{Y_t}\\right), \\qquad f(0)=0, \\qquad f'(0)=0, \\qquad f''(\\cdot)>0$$"),
+  p("Politicians may wish to minimize costs from taxation. They therefore want to solve the below minimization problem. The constraint is the intertemporal budget constraint."),
+  p("$$\\min_{T_0,T_1,\\ldots} \\sum_{t=0}^{\\infty} \\frac{1}{(1+r)^t} Y_t f\\!\\left(\\frac{T_t}{Y_t}\\right) \\quad \\text{subject to} \\quad \\sum_{t=0}^{\\infty} \\frac{1}{(1+r)^t}T_t = D_0 + \\sum_{t=0}^{\\infty} \\frac{1}{(1+r)^t} G_t$$"),
 ];
 
 const lectureLinkedGuideConfig: Record<
@@ -391,22 +530,51 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       "A full qualitative reasoning set on the baseline New Keynesian model that trains sign logic and benchmark discipline.",
     supportMode: "conceptual",
     relatedModuleSlugs: ["lecture-2"],
-    prompt: [
-      "Consider the basic New Keynesian model used in class and summarized by the standard baseline equations.",
-      "Answer subparts (a)-(e) on technology shocks, impossible sign patterns, hours worked, combined shocks, and optimal-policy reasoning.",
-    ],
-    questionBlocks: [
-      p("The seminar sheet frames the exercise around the baseline equations from Lecture 2:"),
-      p("$$c_t = E_t c_{t+1} - \\frac{1}{\\sigma}(i_t - E_t\\pi_{t+1} - \\rho) + \\frac{1-\\rho_z}{\\sigma}z_t$$"),
-      p("$$w_t - p_t = \\sigma c_t + \\phi n_t, \\quad y_t = a_t + n_t, \\quad y_t = c_t$$"),
-      p("$$\\pi_t = \\beta E_t\\pi_{t+1} + \\lambda(m c_t - m c), \\quad m c_t = w_t - p_t - a_t$$"),
-      p("$$i_t = \\rho + \\phi_\\pi \\pi_t + \\phi_y \\tilde{y}_t + v_t$$"),
-      p("$$z_t = \\rho_z z_{t-1} + \\varepsilon_t^z, \\quad v_t = \\rho_v v_{t-1} + \\varepsilon_t^v, \\quad a_t = \\rho_a a_{t-1} + \\varepsilon_t^a$$"),
-      p("**(a)** Suppose the economy is in steady state and is hit by a temporary positive technology shock. Describe qualitatively the impact response of output, potential output, inflation, and the natural rate of interest, and explain the transmission mechanism."),
-      p("**(b)** Suppose inflation increases while the output gap decreases after a one-time temporary shock. Can any of the three baseline shocks generate that pattern on their own? If not, what other disturbance might be needed?"),
-      p("**(c)** Suppose output increases while total hours worked decrease. What kind of shock has hit the economy? Explain your reasoning."),
-      p("**(d)** Suppose the economy is hit simultaneously by a contractionary monetary-policy shock and a contractionary technology shock. Do you have sufficient information to sign the impact response of hours worked? Explain your reasoning."),
-      p("**(e)** Suppose the economy is hit simultaneously by a positive discount-factor shock and a positive technology shock under optimal monetary policy. Describe the combined effect on the output gap and inflation. Do you have sufficient information to sign the natural rate of interest?"),
+    prompt: [],
+    sessionParts: [
+      sourcePart({
+        id: "a",
+        label: "Part a",
+        imagePath: "/figures/practice/seminar-1/seminar-1-page-1.png",
+        altText: "Original Seminar 1 page 1 with the baseline New Keynesian model equations and part (a).",
+        beforePromptBlocks: seminar1SetupBlocks,
+        prompt:
+          "Suppose the economy is in steady state. The economy is hit by a temporary positive technology shock. Describe from a qualitative point of view the impact response of output, potential output, inflation and natural rate of interest (i.e. whether each variable increases, decreases or stays constant). Explain briefly the transmission mechanism.",
+      }),
+      sourcePart({
+        id: "b",
+        label: "Part b",
+        imagePath: "/figures/practice/seminar-1/seminar-1-page-1.png",
+        altText: "Original Seminar 1 page 1 with the baseline New Keynesian model equations and part (b).",
+        beforePromptBlocks: seminar1SetupBlocks,
+        prompt:
+          "Suppose the economy is in steady state. The economy is hit by one (and only one) temporary shock. In response to the shock, inflation increases and the output gap decreases. Can any of the three shocks included in the model above generate these dynamics? If not, what other shock could be at play? Explain briefly your reasoning.",
+      }),
+      sourcePart({
+        id: "c",
+        label: "Part c",
+        imagePath: "/figures/practice/seminar-1/seminar-1-page-1.png",
+        altText: "Original Seminar 1 page 1 with the baseline New Keynesian model equations and part (c).",
+        beforePromptBlocks: seminar1SetupBlocks,
+        prompt:
+          "Suppose the economy is in steady state. The economy is hit by one (and only one) temporary shock. In response to this shock, output increases and total hours worked decrease. What kind of shock has hit the economy? Explain briefly your reasoning.",
+      }),
+      sourcePart({
+        id: "d",
+        label: "Part d",
+        imagePath: "/figures/practice/seminar-1/seminar-1-page-2.png",
+        altText: "Original Seminar 1 page 2 showing part (d).",
+        prompt:
+          "Suppose the economy is in steady state. The economy is hit simultaneously by a contractionary temporary monetary policy shock ($v_t$ increases) and a contractionary temporary technology shock ($a_t$ decreases). Do you have sufficient information to evaluate the impact response of hours worked? Explain briefly your reasoning.",
+      }),
+      sourcePart({
+        id: "e",
+        label: "Part e",
+        imagePath: "/figures/practice/seminar-1/seminar-1-page-2.png",
+        altText: "Original Seminar 1 page 2 showing part (e).",
+        prompt:
+          "Suppose the economy is in steady state. The economy is hit simultaneously by a positive temporary discount factor shock ($z_t$ increases) and by a positive temporary technology shock ($a_t$ increases). Assume that the monetary policy authority behaves optimally. Describe the combined effect of the two shocks on output gap and inflation. Explain your reasoning. Do you have sufficient information to evaluate the response of the natural interest rate?",
+      }),
     ],
     guide: guide(
       "Qualitative multi-part shock analysis",
@@ -493,13 +661,29 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       "A concept-heavy policy question on what a cost-push shock is and how the optimal response differs across regimes.",
     supportMode: "conceptual",
     relatedModuleSlugs: ["lecture-4", "lecture-6"],
-    prompt: [
-      "Answer the three linked subparts on cost-push shocks, discretion, and commitment.",
-    ],
-    questionBlocks: [
-      p("**(a)** What is a cost-push shock?"),
-      p("**(b)** What is the optimal monetary policy under **discretion** in response to a cost-push shock?"),
-      p("**(c)** What is the optimal monetary policy under **commitment** in response to a cost-push shock?"),
+    prompt: [],
+    sessionParts: [
+      sourcePart({
+        id: "a",
+        label: "Part a",
+        imagePath: "/figures/practice/seminar-2/seminar-2-page-2.png",
+        altText: "Original Seminar 2 page 2 showing Question 1 on cost-push shocks.",
+        prompt: "What is a cost-push shock?",
+      }),
+      sourcePart({
+        id: "b",
+        label: "Part b",
+        imagePath: "/figures/practice/seminar-2/seminar-2-page-2.png",
+        altText: "Original Seminar 2 page 2 showing Question 1 on discretion.",
+        prompt: "What is the optimal monetary policy under discretion in response to a cost-push shock?",
+      }),
+      sourcePart({
+        id: "c",
+        label: "Part c",
+        imagePath: "/figures/practice/seminar-2/seminar-2-page-2.png",
+        altText: "Original Seminar 2 page 2 showing Question 1 on commitment.",
+        prompt: "What is the optimal monetary policy under commitment in response to a cost-push shock?",
+      }),
     ],
     guide: guide(
       "Regime comparison with a cost-push disturbance",
@@ -560,21 +744,32 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       "A classification exercise where students sort guidance statements by commitment content rather than by wording alone.",
     supportMode: "conceptual",
     relatedModuleSlugs: ["lecture-5", "lecture-6"],
-    prompt: [
-      "Explain the distinction between Delphic and Odyssean forward guidance, link it to commitment versus discretion, and then rank the supplied central-bank statements from least to most committed.",
-    ],
-    questionBlocks: [
-      p("**(a)** What is the distinction between Delphic and Odyssean forward guidance?"),
-      p("**(b)** How is the distinction between commitment and discretion in monetary policy linked to these two kinds of forward guidance?"),
-      figureNote({
-        title: "Original Seminar 2 statement set",
-        caption:
-          "Use the original source page when you rank the statements. What matters is **how much policy commitment the statement conveys**, not just whether rates are said to stay low.",
+    prompt: [],
+    sessionParts: [
+      sourcePart({
+        id: "a",
+        label: "Part a",
         imagePath: "/figures/practice/seminar-2/seminar-2-page-2.png",
-        altText:
-          "Seminar 2 page with central-bank forward-guidance statements and Norges Bank interest-rate projection.",
+        altText: "Original Seminar 2 page 2 showing Question 2 on Delphic versus Odyssean guidance.",
+        prompt: "What is the distinction between Delphic and Odyssean forward guidance?",
       }),
-      p("**(c)** Rank the statements from most Delphic to most Odyssean. You should explain why the position changes as the statement becomes more explicitly state-contingent or promise-like."),
+      sourcePart({
+        id: "b",
+        label: "Part b",
+        imagePath: "/figures/practice/seminar-2/seminar-2-page-2.png",
+        altText: "Original Seminar 2 page 2 showing Question 2 on commitment versus discretion.",
+        prompt: "How is the distinction between commitment and discretion in monetary policy linked to the two different types of forward guidance mentioned above?",
+      }),
+      sourcePart({
+        id: "c",
+        label: "Part c",
+        imagePath: "/figures/practice/seminar-2/seminar-2-page-2.png",
+        altText: "Original Seminar 2 page 2 showing Question 3 and the central-bank statement ranking exercise.",
+        caption:
+          "Use the original statement set from the seminar sheet. The ranking should follow commitment content in the source wording, not a paraphrase.",
+        prompt:
+          "In this exercise, we will look at forward guidance given by different central banks. Below, you will find statements from various central banks. Place them on the line and rank them from Delphic to Odyssean, i.e arrange the statements on a line in order of increasing commitment level, with the most discretionary statements (Delphic) at left-hand side and the most committed statements (Odyssean) at the right-hand side. Position the other statements accordingly in between.",
+      }),
     ],
     guide: guide(
       "Policy-statement classification",
@@ -634,12 +829,22 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       "A short policy question on how the slope of the Phillips curve changes discretion and how price flexibility enters the model.",
     supportMode: "conceptual",
     relatedModuleSlugs: ["lecture-4", "lecture-7"],
-    prompt: [
-      "Explain how the slope of the Phillips curve affects optimal policy under discretion and what happens to the Phillips curve when prices become more flexible.",
-    ],
-    questionBlocks: [
-      p("**(a)** How does the slope of the Phillips curve affect optimal policy under discretion?"),
-      p("**(b)** What happens to the Phillips curve if prices become more flexible, everything else equal?"),
+    prompt: [],
+    sessionParts: [
+      sourcePart({
+        id: "a",
+        label: "Part a",
+        imagePath: "/figures/practice/seminar-2/seminar-2-page-3.png",
+        altText: "Original Seminar 2 page 3 showing Question 4 part (a) on the Phillips curve.",
+        prompt: "How does the slope of the Phillips curve affect optimal policy under discretion?",
+      }),
+      sourcePart({
+        id: "b",
+        label: "Part b",
+        imagePath: "/figures/practice/seminar-2/seminar-2-page-3.png",
+        altText: "Original Seminar 2 page 3 showing Question 4 part (b) on price flexibility.",
+        prompt: "What happens to the Phillips curve if prices become more flexible (everything else equal)?",
+      }),
     ],
     guide: guide(
       "Structural-parameter interpretation",
@@ -696,19 +901,51 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       "A full intertemporal-fiscal reasoning problem on government and household budget constraints.",
     supportMode: "conceptual",
     relatedModuleSlugs: ["lecture-9"],
-    prompt: [
-      "Work through subparts (a)-(e) on the government budget constraint, the consumer budget constraint, Ricardian equivalence, and benchmark failures.",
-    ],
-    questionBlocks: [
-      p("The government budget constraint is given in present-value form with a no-Ponzi condition:"),
-      p("$$R(t) = \\int_{\\tau = 0}^{t} r(\\tau)\\, d\\tau, \\quad \\int_{t=0}^{\\infty} e^{-R(t)} G(t)\\, dt \\leq -D(0) + \\int_{t=0}^{\\infty} e^{-R(t)} T(t)\\, dt, \\quad \\lim_{s\\to\\infty} e^{-R(s)} D(s) \\leq 0.$$"),
-      p("The consumer budget constraint is:"),
-      p("$$\\int_{t=0}^{\\infty} e^{-R(t)} C(t)\\, dt \\leq K(0) + D(0) + \\int_{t=0}^{\\infty} e^{-R(t)}[W(t) - T(t)]\\, dt.$$"),
-      p("**(a)** Explain how discounting with $e^{-R(t)}$ allows the interest rate to vary over time."),
-      p("**(b)** Explain how the government budget constraint limits government purchases over time."),
-      p("**(c)** Explain the consumer budget constraint."),
-      p("**(d)** Use the government budget constraint to illustrate why the quantity of government purchases, not whether they are financed with taxes or bonds, affects private consumption in the Ricardian benchmark."),
-      p("**(e)** Discuss reasons why Ricardian equivalence may not hold."),
+    prompt: [],
+    sessionParts: [
+      sourcePart({
+        id: "a",
+        label: "Part a",
+        imagePath: "/figures/practice/seminar-3/seminar-3-page-1.png",
+        altText: "Original Seminar 3 page 1 showing Question 1 on Ricardian equivalence.",
+        beforePromptBlocks: seminar3RicardianSetupBlocks,
+        prompt:
+          "The value of output at time $t$ is discounted to time $0$ with $e^{-R(t)}$. Explain how this allows the interest rate to vary over time.",
+      }),
+      sourcePart({
+        id: "b",
+        label: "Part b",
+        imagePath: "/figures/practice/seminar-3/seminar-3-page-1.png",
+        altText: "Original Seminar 3 page 1 showing Ricardian equivalence part (b).",
+        beforePromptBlocks: seminar3RicardianSetupBlocks,
+        prompt:
+          "Explain how the government budget constraint limits government purchases over time.",
+      }),
+      sourcePart({
+        id: "c",
+        label: "Part c",
+        imagePath: "/figures/practice/seminar-3/seminar-3-page-1.png",
+        altText: "Original Seminar 3 page 1 showing Ricardian equivalence part (c).",
+        beforePromptBlocks: seminar3RicardianSetupBlocks,
+        prompt: "Explain the consumers' budget constraint.",
+      }),
+      sourcePart({
+        id: "d",
+        label: "Part d",
+        imagePath: "/figures/practice/seminar-3/seminar-3-page-1.png",
+        altText: "Original Seminar 3 page 1 showing Ricardian equivalence part (d).",
+        beforePromptBlocks: seminar3RicardianSetupBlocks,
+        prompt:
+          "Use the government budget constraint and illustrate that only the quantity of government purchases, not whether they are financed with taxes or bonds, affects private consumption.",
+      }),
+      sourcePart({
+        id: "e",
+        label: "Part e",
+        imagePath: "/figures/practice/seminar-3/seminar-3-page-1.png",
+        altText: "Original Seminar 3 page 1 showing Ricardian equivalence part (e).",
+        beforePromptBlocks: seminar3RicardianSetupBlocks,
+        prompt: "Discuss reasons why Ricardian equivalence may not hold.",
+      }),
     ],
     guide: guide(
       "Intertemporal benchmark reasoning",
@@ -770,14 +1007,35 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       "A compact debt-dynamics problem mixing arithmetic, institutions, and crisis logic.",
     supportMode: "conceptual",
     relatedModuleSlugs: ["lecture-10"],
-    prompt: [
-      "Use the debt-dynamics approximation to discuss sustainability, Japan's experience, and the fiscal-commons problem.",
-    ],
-    questionBlocks: [
-      p("The seminar gives the approximation $$\\Delta d \\approx (r-g)\\cdot d - s$$ where $d = D/Y$, $s$ is the primary surplus share, $r$ is the real interest rate, and $g$ is real GDP growth."),
-      p("**(a)** Explain under what conditions a primary deficit can coexist with sustainable public debt."),
-      p("**(b)** Japan's debt-to-GDP ratio exceeded 200 percent without a debt crisis. What economic condition made this possible?"),
-      p("**(c)** Explain the fiscal-commons problem. Which type of government is most susceptible, and what institutions can mitigate deficit bias?"),
+    prompt: [],
+    sessionParts: [
+      sourcePart({
+        id: "a",
+        label: "Part a",
+        imagePath: "/figures/practice/seminar-3/seminar-3-page-1.png",
+        altText: "Original Seminar 3 page 1 showing Question 2 on sustainable public debt.",
+        beforePromptBlocks: seminar3DebtSetupBlocks,
+        prompt:
+          "Explain under what conditions a primary deficit can coexist with a sustainable level of debt.",
+      }),
+      sourcePart({
+        id: "b",
+        label: "Part b",
+        imagePath: "/figures/practice/seminar-3/seminar-3-page-1.png",
+        altText: "Original Seminar 3 page 1 showing Question 2 part (b) on Japan.",
+        beforePromptBlocks: seminar3DebtSetupBlocks,
+        prompt:
+          "Japan's debt-to-GDP ratio exceeded 200% in recent years yet it did not face a debt crisis. What economic condition made this possible?",
+      }),
+      sourcePart({
+        id: "c",
+        label: "Part c",
+        imagePath: "/figures/practice/seminar-3/seminar-3-page-1.png",
+        altText: "Original Seminar 3 page 1 showing Question 2 part (c) on the fiscal commons problem.",
+        beforePromptBlocks: seminar3DebtSetupBlocks,
+        prompt:
+          "Explain the 'fiscal commons' problem. Which type of government is most susceptible, and what institutional mechanisms can help mitigate deficit bias?",
+      }),
     ],
     guide: guide(
       "Debt arithmetic plus political economy",
@@ -840,13 +1098,35 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       "A mixed inequality problem combining Cobb-Douglas factor shares, Lorenz geometry, and centralized bargaining.",
     supportMode: "derivation",
     relatedModuleSlugs: ["lecture-11"],
-    prompt: [
-      "Work through subparts (a)-(c) on Cobb-Douglas factor shares, the Gini approximation, and centralized wage bargaining.",
-    ],
-    questionBlocks: [
-      p("**(a)** In a Cobb-Douglas economy $$Y = K^{\\alpha}L^{1-\\alpha}$$, show that the labour share equals $(1-\\alpha)$ and the capital share equals $\\alpha$. What is a key limitation of applying this result literally to observed wage inequality?"),
-      p("**(b)** Consider five income quintiles with shares $5\\%, 10\\%, 15\\%, 25\\%, 45\\%$. Compute cumulative income shares and approximate the Gini coefficient using $$G \\approx 1 - 2 \\times (\\text{area under the Lorenz curve}).$$"),
-      p("**(c)** Would centralized wage bargaining as in the Scandinavian model be expected to produce a higher or lower Gini than a fully decentralized labor market? Explain the mechanism."),
+    prompt: [],
+    sessionParts: [
+      sourcePart({
+        id: "a",
+        label: "Part a",
+        imagePath: "/figures/practice/seminar-3/seminar-3-page-2.png",
+        altText: "Original Seminar 3 page 2 showing Question 3 on income distribution and inequality.",
+        beforePromptBlocks: seminar3InequalitySetupBlocks,
+        prompt:
+          "In a Cobb-Douglas economy $Y = K^{\\alpha}L^{1-\\alpha}$, show that the labour share of income equals $(1-\\alpha)$ and the capital share equals $\\alpha$. What is a key limitation of applying this result literally to observed wage inequality?",
+      }),
+      sourcePart({
+        id: "b",
+        label: "Part b",
+        imagePath: "/figures/practice/seminar-3/seminar-3-page-2.png",
+        altText: "Original Seminar 3 page 2 showing Question 3 part (b) on the Gini coefficient.",
+        beforePromptBlocks: seminar3InequalitySetupBlocks,
+        prompt:
+          "Consider a society with five income quintiles with shares 5%, 10%, 15%, 25%, 45%. Compute the cumulative income shares and approximate the Gini coefficient using $G \\approx 1 - 2 \\cdot (\\text{area under the Lorenz curve})$, where the area is computed with the trapezoid rule.",
+      }),
+      sourcePart({
+        id: "c",
+        label: "Part c",
+        imagePath: "/figures/practice/seminar-3/seminar-3-page-2.png",
+        altText: "Original Seminar 3 page 2 showing Question 3 part (c) on centralized bargaining.",
+        beforePromptBlocks: seminar3InequalitySetupBlocks,
+        prompt:
+          "Would centralised wage bargaining (as in the Scandinavian model) be expected to produce a higher or lower Gini than a fully decentralised labour market? Explain the mechanism.",
+      }),
     ],
     guide: guide(
       "By-hand inequality calculation and interpretation",
@@ -946,14 +1226,35 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       "A mixed question on resource drag, the Coase benchmark, and carbon-pricing instrument choice.",
     supportMode: "derivation",
     relatedModuleSlugs: ["lecture-12"],
-    prompt: [
-      "Work through subparts (a)-(c) on the extended Solow model, the Coase theorem, and carbon-pricing instruments.",
-    ],
-    questionBlocks: [
-      p("Consider the extended Solow model with $$Y = K^{\\alpha}(AL)^{1-\\alpha-\\beta}R^{\\beta}$$ where productivity grows at rate $g$, labor at rate $n$, and resources deplete at rate $b$."),
-      p("**(a)** Set $b = g$ as in the Lecture 12 homework. Derive the steady-state per-capita growth rate. What is the resource drag, and when is it larger?"),
-      p("**(b)** State the Coase theorem. Give three features of climate change that make private Coasian solutions ineffective."),
-      p("**(c)** Compare carbon taxes and cap-and-trade. Which is preferred when the marginal abatement cost curve is steep, and why?"),
+    prompt: [],
+    sessionParts: [
+      sourcePart({
+        id: "a",
+        label: "Part a",
+        imagePath: "/figures/practice/seminar-3/seminar-3-page-2.png",
+        altText: "Original Seminar 3 page 2 showing Question 4 on economic growth, resources, and the environment.",
+        beforePromptBlocks: seminar3EnvironmentSetupBlocks,
+        prompt:
+          "Set $b = g$ (as in the Lecture 12 homework). Derive the steady-state per-capita growth rate. What is the 'resource drag', and when is it larger?",
+      }),
+      sourcePart({
+        id: "b",
+        label: "Part b",
+        imagePath: "/figures/practice/seminar-3/seminar-3-page-2.png",
+        altText: "Original Seminar 3 page 2 showing Question 4 part (b) on the Coase theorem.",
+        beforePromptBlocks: seminar3EnvironmentSetupBlocks,
+        prompt:
+          "State the Coase theorem. Give three features of climate change that make private Coasian solutions ineffective.",
+      }),
+      sourcePart({
+        id: "c",
+        label: "Part c",
+        imagePath: "/figures/practice/seminar-3/seminar-3-page-2.png",
+        altText: "Original Seminar 3 page 2 showing Question 4 part (c) on carbon taxes versus cap-and-trade.",
+        beforePromptBlocks: seminar3EnvironmentSetupBlocks,
+        prompt:
+          "Compare carbon taxes and cap-and-trade as policy instruments. Which is preferred when the marginal abatement cost curve is steep, and why?",
+      }),
     ],
     guide: guide(
       "Derivation plus policy interpretation",
@@ -1046,12 +1347,24 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       "A short exam question testing whether the student can connect Delphic versus Odyssean guidance to commitment versus discretion.",
     supportMode: "conceptual",
     relatedModuleSlugs: ["lecture-5", "lecture-6"],
-    prompt: [
-      "Discuss the distinction between Delphic and Odyssean forward guidance and explain how it links to commitment and discretion in monetary policy.",
-    ],
-    questionBlocks: [
-      p("**(a)** What is the distinction between Delphic and Odyssean forward guidance? Give a short example of each."),
-      p("**(b)** How is the distinction between commitment and discretion in monetary policy linked to the two different types of forward guidance?"),
+    prompt: [],
+    sessionParts: [
+      sourcePart({
+        id: "a",
+        label: "Part a",
+        imagePath: "/figures/practice/exam-2024/exam-2024-page-1.png",
+        altText: "Original Exam 2024 page 1 showing Question 1 on forward guidance.",
+        prompt:
+          "What is the distinction between Delphic and Odyssean forward guidance? Give a short example of each.",
+      }),
+      sourcePart({
+        id: "b",
+        label: "Part b",
+        imagePath: "/figures/practice/exam-2024/exam-2024-page-1.png",
+        altText: "Original Exam 2024 page 1 showing Question 1 part (b) on commitment and discretion.",
+        prompt:
+          "How is the distinction between commitment and discretion in monetary policy linked to the two different types of forward guidance mentioned above?",
+      }),
     ],
     guide: guide(
       "Short conceptual exam answer",
@@ -1100,14 +1413,32 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       "A heterogeneity question on why MPCs differ and why the covariance term amplifies aggregate shocks.",
     supportMode: "conceptual",
     relatedModuleSlugs: ["lecture-8"],
-    prompt: [
-      "Explain why individuals may have different MPCs, then interpret the covariance term in Patterson's aggregate-MPC decomposition.",
-    ],
-    questionBlocks: [
-      p("The exam gives the decomposition"),
-      p("$$\\mathrm{MPC} = \\sum_i \\frac{dC_i}{dE_i}\\frac{dE_i}{dY} = \\sum_i \\frac{E_i}{Y}\\frac{dC_i}{dE_i} + \\operatorname{cov}\\!\\left(\\frac{dC_i}{dE_i}, \\frac{dE_i}{dY}\\frac{Y}{E_i}\\right).$$"),
-      p("**(a)** Briefly discuss a few reasons why individuals may have different MPCs."),
-      p("**(b)** Explain what role the covariance term has for the amplification of aggregate shocks and economic policy."),
+    prompt: [],
+    sessionParts: [
+      sourcePart({
+        id: "a",
+        label: "Part a",
+        imagePath: "/figures/practice/exam-2024/exam-2024-page-1.png",
+        altText: "Original Exam 2024 page 1 showing Question 2 on MPC distribution.",
+        beforePromptBlocks: [
+          p("As shown in Patterson (2023, AER), the aggregate marginal propensity to consume (MPC) can be decomposed as follows:"),
+          p("$$MPC = \\sum_i \\frac{dC_i}{dE_i}\\frac{dE_i}{dY} = \\sum_i \\frac{E_i}{Y}\\frac{dC_i}{dE_i} + \\operatorname{cov}\\!\\left(\\frac{dC_i}{dE_i}, \\frac{dE_i}{dY}\\frac{Y}{E_i}\\right).$$"),
+          p("where $E_i$ denotes earnings of individual $i$, $C_i$ consumption of individual $i$, and $Y$ is aggregate output."),
+        ],
+        prompt: "Briefly discuss a few reason for why individuals may have different MPC.",
+      }),
+      sourcePart({
+        id: "b",
+        label: "Part b",
+        imagePath: "/figures/practice/exam-2024/exam-2024-page-1.png",
+        altText: "Original Exam 2024 page 1 showing Question 2 part (b) on the covariance term.",
+        beforePromptBlocks: [
+          p("As shown in Patterson (2023, AER), the aggregate marginal propensity to consume (MPC) can be decomposed as follows:"),
+          p("$$MPC = \\sum_i \\frac{dC_i}{dE_i}\\frac{dE_i}{dY} = \\sum_i \\frac{E_i}{Y}\\frac{dC_i}{dE_i} + \\operatorname{cov}\\!\\left(\\frac{dC_i}{dE_i}, \\frac{dE_i}{dY}\\frac{Y}{E_i}\\right).$$"),
+        ],
+        prompt:
+          "Explain what role the covariance term in the equation (1) has for the amplification of aggregate shocks and economic policy.",
+      }),
     ],
     guide: guide(
       "Heterogeneity and amplification",
@@ -1165,17 +1496,34 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       "A benchmark divine-coincidence question asking what the shock is, what optimal policy does, and why $i_t = r_t^n$ is not a sufficient practical rule.",
     supportMode: "derivation",
     relatedModuleSlugs: ["lecture-2", "lecture-3", "lecture-4"],
-    prompt: [
-      "Work through the exam's three-part question on the NKPC, DIS, the implied shock, and the logic of optimal monetary policy.",
-    ],
-    questionBlocks: [
-      p("The exam gives the benchmark system"),
-      p("$$\\pi_t = \\beta E_t\\pi_{t+1} + \\kappa \\tilde y_t$$"),
-      p("$$\\tilde y_t = E_t\\tilde y_{t+1} - \\frac{1}{\\sigma}(i_t - E_t\\pi_{t+1} - r_t^n)$$"),
-      p("together with the benchmark expressions for $\\kappa$, $r_t^n$, and $y_t^n$, and the calibration $\\rho_a = 0$, $\\rho_z = 0.5$, $\\varepsilon_t^a = 0$, $\\varepsilon_t^z = 0.5$."),
-      p("**(a)** What shock is present in this model economy?"),
-      p("**(b)** What is optimal monetary policy here? Discuss in words and show using equations."),
-      p("**(c)** Discuss whether the rule $$i_t = r_t^n$$ could be the optimal rule for the central bank in response to this shock, and whether there are more advantageous rules."),
+    prompt: [],
+    sessionParts: [
+      sourcePart({
+        id: "a",
+        label: "Part a",
+        imagePath: "/figures/practice/exam-2024/exam-2024-page-2.png",
+        altText: "Original Exam 2024 page 2 showing Question 3 on optimal monetary policy.",
+        beforePromptBlocks: exam2024Question3SetupBlocks,
+        prompt: "What shock is present in this model economy?",
+      }),
+      sourcePart({
+        id: "b",
+        label: "Part b",
+        imagePath: "/figures/practice/exam-2024/exam-2024-page-2.png",
+        altText: "Original Exam 2024 page 2 showing Question 3 part (b) on optimal policy.",
+        beforePromptBlocks: exam2024Question3SetupBlocks,
+        prompt:
+          "What is optimal monetary policy here? Discuss in words and show using the equations. HINT: you only need to use equation 2 and 3.",
+      }),
+      sourcePart({
+        id: "c",
+        label: "Part c",
+        imagePath: "/figures/practice/exam-2024/exam-2024-page-2.png",
+        altText: "Original Exam 2024 page 2 showing Question 3 part (c) on the interest-rate rule.",
+        beforePromptBlocks: exam2024Question3SetupBlocks,
+        prompt:
+          "Discuss if an interest rate rule of $i_t = r_t^n$ could be the optimal rule for the central bank in response to this shock. Explain if there are other more advantages rules and in that case why and how.",
+      }),
     ],
     guide: guide(
       "Model-based derivation and interpretation",
@@ -1278,18 +1626,16 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       "A figure-based interpretation question on why a flatter reduced-form correlation can still coexist with an unchanged structural targeting rule.",
     supportMode: "conceptual",
     relatedModuleSlugs: ["lecture-4", "lecture-7"],
-    prompt: [
-      "Use Figure 1 and the lecture hypotheses to explain how the red line in the scatter plot can flatten even when the structural targeting rule is unchanged.",
-    ],
-    questionBlocks: [
-      figureNote({
-        title: "Exam 2024 Figure 1 and prompt",
-        caption:
-          "This is the original exam page. The key teaching point is that the **red reduced-form correlation can flatten without changing the structural targeting rule in panel (b)**.",
-        imagePath: "/figures/practice/exam-2024/exam-2024-q4-page.png",
-        altText: "Original 2024 exam page with Figure 1 and the Phillips-curve slope question.",
+    prompt: [],
+    sessionParts: [
+      sourcePart({
+        id: "main",
+        label: "Question",
+        imagePath: "/figures/practice/exam-2024/exam-2024-page-3.png",
+        altText: "Original 2024 exam page with Figure 1 and Question 4 on the slope of the Phillips curve.",
+        prompt:
+          "Assume now that there is a reduction in the average correlation in the data, as shown by the red line in figure 1a. There is no changes to the targeting rule in Figure 1b. Discuss clearly one of the potential explanations for why the two figures may still be consistent with each other. HINT: The Phillips Curve in Figure 1b is unchanged.",
       }),
-      p("The exam asks you to discuss one explanation for why the lower average correlation in panel (a) can still be consistent with an unchanged targeting rule in panel (b)."),
     ],
     guide: guide(
       "Figure interpretation with structural discipline",
@@ -1341,52 +1687,55 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       "A long-form fiscal benchmark question with original budget-constraint pages preserved as source images.",
     supportMode: "conceptual",
     relatedModuleSlugs: ["lecture-9"],
-    prompt: [
-      "Explain the government and consumer budget constraints, then use them to show the Ricardian benchmark and discuss why it may fail.",
-    ],
-    questionBlocks: [
-      figureNote({
-        title: "Exam 2024 Question 5 original page",
-        caption:
-          "Use the original exam page to keep the government and consumer budget constraints exactly as stated in the source.",
-        imagePath: "/figures/practice/exam-2024/exam-2024-q5-page.png",
-        altText: "Original 2024 exam page for Question 5 on Ricardian equivalence.",
-      }),
-      p("Answer subparts **(a)-(e)** in the same structure as the original exam question."),
-    ],
+    prompt: [],
     sessionParts: [
-      {
+      sourcePart({
         id: "a",
         label: "Part a",
-        prompt: "Explain the present-value government budget constraint in words.",
+        imagePath: "/figures/practice/exam-2024/exam-2024-page-4.png",
+        altText: "Original Exam 2024 page 4 showing Question 5 on Ricardian equivalence.",
+        beforePromptBlocks: [
+          p("The value of output at time $t$ is discounted to time 0 with $e^{-R(t)}$."),
+        ],
+        prompt:
+          "Explain how this allow the interest rate to vary over time.",
         solutionOutlineIndexes: [0],
-      },
-      {
+      }),
+      sourcePart({
         id: "b",
         label: "Part b",
-        prompt: "Explain the consumer budget constraint in words.",
-        solutionOutlineIndexes: [1],
-      },
-      {
+        imagePath: "/figures/practice/exam-2024/exam-2024-page-4.png",
+        altText: "Original Exam 2024 page 4 showing Question 5 part (b).",
+        prompt:
+          "Explain how the government budget constraint limits government purchases over time.",
+        solutionOutlineIndexes: [0],
+      }),
+      sourcePart({
         id: "c",
         label: "Part c",
-        prompt: "Explain the role of the no-Ponzi condition in the Ricardian benchmark.",
-        solutionOutlineIndexes: [0, 1],
-      },
-      {
+        imagePath: "/figures/practice/exam-2024/exam-2024-page-4.png",
+        altText: "Original Exam 2024 page 4 showing Question 5 part (c).",
+        prompt: "Explain the consumers' budget constraint.",
+        solutionOutlineIndexes: [1],
+      }),
+      sourcePart({
         id: "d",
         label: "Part d",
+        imagePath: "/figures/practice/exam-2024/exam-2024-page-4.png",
+        altText: "Original Exam 2024 page 4 showing Question 5 part (d).",
         prompt:
-          "Use the government and consumer budget constraints to show why debt-financed tax changes do not change private consumption in the Ricardian benchmark.",
+          "Use the government budget constraint and illustrate that only the quantity of government purchases, not whether they are financed with taxes or bonds, affects private consumption.",
         nextStepIndexes: [0],
         solutionOutlineIndexes: [2],
-      },
-      {
+      }),
+      sourcePart({
         id: "e",
         label: "Part e",
-        prompt: "Give economically grounded reasons why Ricardian equivalence may fail in practice.",
+        imagePath: "/figures/practice/exam-2024/exam-2024-page-4.png",
+        altText: "Original Exam 2024 page 4 showing Question 5 part (e).",
+        prompt: "Discuss reasons why Ricardian equivalence may not hold.",
         solutionOutlineIndexes: [3],
-      },
+      }),
     ],
     guide: guide(
       "Long-form benchmark explanation",
@@ -1440,35 +1789,28 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       "A derivation question on why convex tax distortions imply a constant tax share over time in the benchmark.",
     supportMode: "derivation",
     relatedModuleSlugs: ["lecture-9"],
-    prompt: [
-      "Derive the tax-smoothing result and explain why the optimal policy equalizes marginal distortion across time.",
-    ],
-    questionBlocks: [
-      figureNote({
-        title: "Exam 2024 Question 6 original page",
-        caption:
-          "The original exam page preserves the tax-cost function and minimization problem exactly as students see it in the source.",
-        imagePath: "/figures/practice/exam-2024/exam-2024-q6-page.png",
-        altText: "Original 2024 exam page for Question 6 on tax smoothing.",
-      }),
-      p("The exam asks **(a)** why tax costs rise with the tax share of income and **(b)** why the minimization problem implies that taxes should be a constant fraction of income over time."),
-    ],
+    prompt: [],
     sessionParts: [
-      {
+      sourcePart({
         id: "a",
         label: "Part a",
-        prompt: "Explain why tax costs rise when taxes absorb a larger share of income.",
+        imagePath: "/figures/practice/exam-2024/exam-2024-page-5.png",
+        altText: "Original Exam 2024 page 5 showing Question 6 on tax smoothing.",
+        prompt:
+          "What can be reasons that costs of taxing increase with taxes' share of income?",
         stepGuideIndexes: [0],
         solutionOutlineIndexes: [0],
-      },
-      {
+      }),
+      sourcePart({
         id: "b",
         label: "Part b",
+        imagePath: "/figures/practice/exam-2024/exam-2024-page-5.png",
+        altText: "Original Exam 2024 page 5 showing Question 6 part (b) on the minimization problem.",
         prompt:
-          "Use the minimization problem to show why optimal policy keeps taxes as a constant fraction of income over time.",
+          "Show that the minimization problem requires that taxes should be a constant fraction of income. Explain.",
         stepGuideIndexes: [1, 2, 3],
         solutionOutlineIndexes: [1, 2, 3],
-      },
+      }),
     ],
     guide: guide(
       "By-hand optimal-tax derivation",
@@ -1564,12 +1906,16 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       "A conceptual bridge from Clarida-Gali-Gertler to the Taylor principle and Blanchard-Kahn determinacy.",
     supportMode: "conceptual",
     relatedModuleSlugs: ["lecture-1", "lecture-3"],
-    prompt: [
-      "Discuss the main pre-Volcker versus post-Volcker Taylor-rule result and connect it to the Taylor principle and the Blanchard-Kahn condition.",
-    ],
-    questionBlocks: [
-      p("Clarida, Gali, and Gertler (2000) estimate Taylor rules over a pre-Volcker sample and a post-Volcker sample."),
-      p("Discuss the main result and relate it to the Taylor principle and the Blanchard-Kahn condition in the New Keynesian model discussed in class."),
+    prompt: [],
+    sessionParts: [
+      sourcePart({
+        id: "main",
+        label: "Question",
+        imagePath: "/figures/practice/exam-2025/exam-2025-page-1.png",
+        altText: "Original Exam 2025 page 1 showing Question 1 on estimation of Taylor rules.",
+        prompt:
+          "Clarida, Gali, and Gertler (2000, Quarterly Journal of Economics) have estimated Taylor rules over a pre-Volcker sample (1960-1979) and a post-Volcker sample (1979-1996). Discuss their main result and relate it to the Taylor principle and the Blanchard-Kahn condition in the context of the New Keynesian model discussed in class.",
+      }),
     ],
     guide: guide(
       "Empirical result linked to theory",
@@ -1629,25 +1975,42 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       "A major derivation-and-interpretation question on targeting rules under discretion and commitment after a cost-push shock.",
     supportMode: "derivation",
     relatedModuleSlugs: ["lecture-4", "lecture-6"],
-    prompt: [
-      "Derive the targeting rules under discretion and state-contingent commitment, then explain the impulse responses and the role of lower price stickiness.",
-    ],
-    questionBlocks: [
-      p("The exam gives the policy objective"),
-      p("$$\\min_{\\{\\pi_{t+i},x_{t+i}\\}} \\frac{1}{2} E_t \\sum_{i=0}^{\\infty} \\beta^i\\left[\\pi_{t+i}^2 + \\alpha_x x_{t+i}^2\\right]$$"),
-      p("subject to the NKPC $$\\pi_{t+i} = \\beta \\pi_{t+i+1} + \\kappa x_{t+i} + u_{t+i}^{\\pi},$$ where the cost-push shock is transitory."),
-      p("**(a)** Derive the targeting rule under discretion and explain how you solve it."),
-      p("**(b)** Derive the targeting rule under state-contingent commitment and explain how you solve it."),
-      figureNote({
-        title: "Exam 2025 Question 2 original figure page",
-        caption:
-          "The original exam page contains the cost-push-shock impulse responses used in part (c). Read the figure together with the targeting rules, not as a separate chart-reading exercise.",
-        imagePath: "/figures/practice/exam-2025/exam-2025-q2-page.png",
-        altText:
-          "Original 2025 exam page showing Question 2 and the impulse-response figure for discretion versus commitment.",
+    prompt: [],
+    sessionParts: [
+      sourcePart({
+        id: "a",
+        label: "Part a",
+        imagePath: "/figures/practice/exam-2025/exam-2025-page-1.png",
+        altText: "Original Exam 2025 page 1 showing Question 2 part (a) on discretion.",
+        beforePromptBlocks: exam2025Question2SetupBlocks,
+        prompt:
+          "Derive the targeting rule which shows the optimal relationship between $\\pi_t$ and $x_t$ under discretion. Describe how you solve it.",
       }),
-      p("**(c)** Describe and explain the impulse responses under both regimes using the formulas."),
-      p("**(d)** Explain how lower price stickiness, formalized as a lower $\\theta$, changes the targeting rules."),
+      sourcePart({
+        id: "b",
+        label: "Part b",
+        imagePath: "/figures/practice/exam-2025/exam-2025-page-1.png",
+        altText: "Original Exam 2025 page 1 showing Question 2 part (b) on commitment.",
+        beforePromptBlocks: exam2025Question2SetupBlocks,
+        prompt:
+          "Derive the targeting rule which shows the optimal relationship between $\\pi_{t+i}$ and $x_{t+i}$ under state-contingent commitment. Describe how you solve it.",
+      }),
+      sourcePart({
+        id: "c",
+        label: "Part c",
+        imagePath: "/figures/practice/exam-2025/exam-2025-page-2.png",
+        altText: "Original Exam 2025 page 2 showing the impulse-response figure for Question 2 part (c).",
+        prompt:
+          "The following figure shows the resulting impulse responses following a cost-push shock. Describe and explain the impulse responses under both regimes. Use the formulas to explain your reasoning.",
+      }),
+      sourcePart({
+        id: "d",
+        label: "Part d",
+        imagePath: "/figures/practice/exam-2025/exam-2025-page-2.png",
+        altText: "Original Exam 2025 page 2 showing Question 2 part (d) on lower price stickiness.",
+        prompt:
+          "Assume that this economy implements electronic pricing which makes it easier for firms to change prices. One way to formalize this is that $\\theta$, the probability of not changing prices, is smaller. Use the model framework to explain how this changes the targeting rule in (a) and (b).",
+      }),
     ],
     guide: guide(
       "Full derivation and regime comparison",
@@ -1747,15 +2110,26 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       "A heterogeneity question on why the same productivity shock creates different aggregate-consumption dynamics across economies with different MPC distributions.",
     supportMode: "conceptual",
     relatedModuleSlugs: ["lecture-2", "lecture-8"],
-    prompt: [
-      "Compare the consumption dynamics in two economies with different shares of hand-to-mouth households after the same one-period productivity shock, and discuss the monetary-policy implications.",
-    ],
-    questionBlocks: [
-      p("Economy X has 20 percent hand-to-mouth households with MPC near one and 80 percent households with MPC 0.4."),
-      p("Economy Z has 60 percent hand-to-mouth households with MPC near one and 40 percent households with MPC 0.4."),
-      p("Both economies experience the same one-period positive aggregate productivity shock."),
-      p("**(a)** Describe the difference in the dynamics of aggregate consumption across the two economies and highlight the mechanisms."),
-      p("**(b)** Discuss the optimal monetary policy response to this shock. Does it vary across the two economies?"),
+    prompt: [],
+    sessionParts: [
+      sourcePart({
+        id: "a",
+        label: "Part a",
+        imagePath: "/figures/practice/exam-2025/exam-2025-page-2.png",
+        altText: "Original Exam 2025 page 2 showing Question 3 setup and part (a) on heterogeneity.",
+        beforePromptBlocks: exam2025Question3SetupBlocks,
+        prompt:
+          "Describe the difference in the dynamics (first period and future periods) of aggregate consumption between country X and Y. Highlight the mechanisms.",
+      }),
+      sourcePart({
+        id: "b",
+        label: "Part b",
+        imagePath: "/figures/practice/exam-2025/exam-2025-page-3.png",
+        altText: "Original Exam 2025 page 3 showing Question 3 part (b) on the policy response.",
+        beforePromptBlocks: exam2025Question3SetupBlocks,
+        prompt:
+          "Discuss the optimal monetary policy response to this shock. Does it vary across the two economies? Provide a clear economic reasoning, possibly but not necessary using equations and references to different parts of the course. Your discussion can be in bullet form and should not exceed 1 page.",
+      }),
     ],
     guide: guide(
       "Heterogeneity plus policy reasoning",
@@ -1814,15 +2188,34 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       "A derivation question on constant returns, output growth, per-worker growth, and the $\\beta = 0$ benchmark.",
     supportMode: "derivation",
     relatedModuleSlugs: ["lecture-12"],
-    prompt: [
-      "Show constant returns, derive the growth rate of output and output per worker, and then analyze the benchmark where resources drop out of production.",
-    ],
-    questionBlocks: [
-      p("The production function is $$Y = K^{\\alpha}R^{\\beta}(AL)^{1-\\alpha-\\beta}$$ with $0 < \\alpha < 1$, $0 < \\beta < 1$, and $\\alpha + \\beta < 1$."),
-      p("The growth equations are $$\\dot L = nL, \\quad \\dot A = gA, \\quad \\dot K = sY - \\delta K, \\quad \\dot R = -bR.$$"),
-      p("**(a)** Show that there is constant returns to scale."),
-      p("**(b)** Calculate the growth rate of output and of output per worker in steady state."),
-      p("**(c)** Set $\\beta = 0$. What changes in the growth rate of output and output per worker?"),
+    prompt: [],
+    sessionParts: [
+      sourcePart({
+        id: "a",
+        label: "Part a",
+        imagePath: "/figures/practice/exam-2025/exam-2025-page-3.png",
+        altText: "Original Exam 2025 page 3 showing Question 4 part (a) on constant returns to scale.",
+        beforePromptBlocks: exam2025Question4SetupBlocks,
+        prompt: "Show that there is constant returns to scale in production.",
+      }),
+      sourcePart({
+        id: "b",
+        label: "Part b",
+        imagePath: "/figures/practice/exam-2025/exam-2025-page-3.png",
+        altText: "Original Exam 2025 page 3 showing Question 4 part (b) on growth rates.",
+        beforePromptBlocks: exam2025Question4SetupBlocks,
+        prompt:
+          "Calculate the growth rate in production and the growth rate in production per worker. You can assume that the economy is in steady state so that the growth rate in production is equal to the growth rate in the stock of capital.",
+      }),
+      sourcePart({
+        id: "c",
+        label: "Part c",
+        imagePath: "/figures/practice/exam-2025/exam-2025-page-4.png",
+        altText: "Original Exam 2025 page 4 showing Question 4 part (c) on the beta equals zero benchmark.",
+        beforePromptBlocks: exam2025Question4SetupBlocks,
+        prompt:
+          "Now assume that $\\beta = 0$. What is the effect of this assumption for the growth rate in production and the growth rate in production per worker?",
+      }),
     ],
     guide: guide(
       "Growth-accounting derivation",
@@ -1919,18 +2312,35 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       "A longer tax-smoothing derivation that adds uncertainty to the benchmark constant-tax-share result.",
     supportMode: "derivation",
     relatedModuleSlugs: ["lecture-9"],
-    prompt: [
-      "Derive the constant-tax-share benchmark and then discuss how uncertainty about government income changes the result.",
-    ],
-    questionBlocks: [
-      p("The exam defines tax costs as $$C_t = Y_t f\\!\\left(\\frac{T_t}{Y_t}\\right), \\quad f(0)=0,\\quad f'(0)=0,\\quad f''(\\cdot)>0.$$"),
-      p("The planner solves"),
-      p("$$\\min_{T_0,T_1,\\ldots} \\sum_{t=0}^{\\infty} \\frac{1}{(1+r)^t} Y_t f\\!\\left(\\frac{T_t}{Y_t}\\right)$$"),
-      p("subject to the intertemporal budget constraint"),
-      p("$$\\sum_{t=0}^{\\infty} \\frac{1}{(1+r)^t} T_t = D_0 + \\sum_{t=0}^{\\infty} \\frac{1}{(1+r)^t} G_t.$$"),
-      p("**(a)** What can be reasons that tax costs increase with taxes' share of income?"),
-      p("**(b)** Show that the minimization problem requires taxes to be a constant fraction of income."),
-      p("**(c)** Discuss whether the conclusion changes under uncertainty about the path of government income."),
+    prompt: [],
+    sessionParts: [
+      sourcePart({
+        id: "a",
+        label: "Part a",
+        imagePath: "/figures/practice/exam-2025/exam-2025-page-4.png",
+        altText: "Original Exam 2025 page 4 showing Question 5 on tax smoothing.",
+        beforePromptBlocks: exam2025Question5SetupBlocks,
+        prompt:
+          "What can be reasons that costs of taxing increases with taxes' share of income?",
+      }),
+      sourcePart({
+        id: "b",
+        label: "Part b",
+        imagePath: "/figures/practice/exam-2025/exam-2025-page-4.png",
+        altText: "Original Exam 2025 page 4 showing Question 5 part (b) on the constant tax share.",
+        beforePromptBlocks: exam2025Question5SetupBlocks,
+        prompt:
+          "Show that the minimization problem requires that taxes should be a constant fraction of income. Explain.",
+      }),
+      sourcePart({
+        id: "c",
+        label: "Part c",
+        imagePath: "/figures/practice/exam-2025/exam-2025-page-4.png",
+        altText: "Original Exam 2025 page 4 showing Question 5 part (c) on uncertainty.",
+        beforePromptBlocks: exam2025Question5SetupBlocks,
+        prompt:
+          "Discuss whether the conclusion would change if there is uncertainty about the path of government incomes.",
+      }),
     ],
     guide: guide(
       "Optimal-tax derivation with uncertainty extension",
