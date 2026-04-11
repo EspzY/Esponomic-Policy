@@ -163,9 +163,21 @@ export function practiceProblem(problem: PracticeProblem): PracticeProblem {
     const confusionHint = guide.commonMistakes[0]
       ? `Likely confusion to avoid: ${guide.commonMistakes[0]}`
       : "";
+    const benchmarkHint =
+      "Before you answer, reactivate the benchmark, definition, or lecture object the problem is built on. Most weak answers start one step too late and then have to guess the mechanism.";
+    const structureHint =
+      "If you feel lost, force the answer into three moves: benchmark first, mechanism second, interpretation third.";
 
     if (!baseHints.includes(framingHint)) {
       baseHints.unshift(framingHint);
+    }
+
+    if (!baseHints.includes(benchmarkHint)) {
+      baseHints.push(benchmarkHint);
+    }
+
+    if (!baseHints.includes(structureHint)) {
+      baseHints.push(structureHint);
     }
 
     if (conceptHint && !baseHints.includes(conceptHint)) {
@@ -247,6 +259,15 @@ export function practiceProblem(problem: PracticeProblem): PracticeProblem {
           `Move ${index + 1}: ${item} Why this belongs here: it gives the answer one more piece of the benchmark-to-mechanism-to-conclusion chain instead of forcing the reader to infer the missing bridge.`,
       )
     : [];
+
+  const conceptualNextStep =
+    guide?.solutionPath?.[0]
+      ? `Write the first sentence around the benchmark, not the conclusion: ${guide.solutionPath[0]}`
+      : "";
+
+  if (conceptualNextStep && !baseNextSteps.includes(conceptualNextStep)) {
+    baseNextSteps.unshift(conceptualNextStep);
+  }
 
   return {
     ...problem,

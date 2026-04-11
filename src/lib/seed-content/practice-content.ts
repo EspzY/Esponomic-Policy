@@ -310,6 +310,31 @@ export function enrichLectureLinkedPracticeProblem(
   moduleTitle: string,
 ): PracticeProblem {
   const config = lectureLinkedGuideConfig[problem.moduleSlug];
+  const lectureLinkedKeyConcepts = [
+    "Current lecture benchmark",
+    "What changes relative to the previous lecture",
+    ...problem.supportingEquations.map((equation) => equation.label),
+  ];
+  const lectureLinkedPath = config
+    ? [
+        "Start by reactivating the benchmark or definition the lecture built the question on before you try to answer from intuition.",
+        ...config.solutionPath,
+        "End by stating what stays from the benchmark, what changes in this lecture, and what the result means economically.",
+      ]
+    : [
+        "Start by naming the lecture benchmark or definition before you chase the answer.",
+        "Explain the mechanism in words before jumping to the conclusion.",
+        "End by stating what the result means economically and what you should carry forward from the lecture.",
+      ];
+  const lectureLinkedMistakes = config
+    ? [
+        "Answering from vague intuition without first naming the benchmark or notation the lecture used.",
+        ...config.commonMistakes,
+      ]
+    : [
+        "Skipping the benchmark logic and jumping straight to the answer.",
+        "Using informal intuition without tying it back to the lecture notation or benchmark.",
+      ];
 
   return practiceProblem({
     ...problem,
@@ -327,20 +352,17 @@ export function enrichLectureLinkedPracticeProblem(
     guide: config
       ? guide(
           config.problemType,
-          config.whatIsBeingAsked,
-          problem.supportingEquations.map((equation) => equation.label),
-          config.solutionPath,
-          config.commonMistakes,
+          `${config.whatIsBeingAsked} Start from the lecture benchmark, then explain what changes relative to that benchmark before you state the final conclusion.`,
+          lectureLinkedKeyConcepts,
+          lectureLinkedPath,
+          lectureLinkedMistakes,
         )
       : guide(
           "Lecture-linked reasoning question",
           "Use the lecture benchmark to explain the mechanism clearly and in the same notation as the module.",
-          problem.supportingEquations.map((equation) => equation.label),
-          [
-            "Identify which equation or benchmark concept the question is really asking about.",
-            "Explain the mechanism in words before jumping to the conclusion.",
-          ],
-          ["Skipping the benchmark logic and jumping straight to the answer."],
+          lectureLinkedKeyConcepts,
+          lectureLinkedPath,
+          lectureLinkedMistakes,
         ),
     handSolveNote: config?.handSolveNote,
     answerPlaceholder:
@@ -384,7 +406,7 @@ export const curatedPracticeProblems: PracticeProblem[] = [
     ],
     guide: guide(
       "Qualitative multi-part shock analysis",
-      "You are being asked to reason from the Lecture 2 benchmark equations, not to improvise from intuition alone. The core skill is to keep actual and natural variables separate and to explain the transmission channel for each sign.",
+      "You are being asked to reason from the Lecture 2 benchmark equations, not to improvise from intuition alone. The core skill is to keep actual and natural variables separate, say which equation moves first, and explain the transmission channel for each sign before you state the sign itself.",
       [
         "Dynamic IS equation",
         "Natural output versus actual output",
@@ -393,14 +415,18 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         "Missing cost-push shock logic",
       ],
       [
-        "Start each subpart by identifying the shock and the first equation or benchmark object it moves directly.",
-        "Then separate what happens in the flexible-price benchmark from what happens under sticky prices.",
-        "Only after that should you sign inflation, the gap, and the natural rate.",
+        "Start each subpart by identifying what the question is asking for: one sign pattern, one impossible pattern, or one combined-shock ambiguity.",
+        "Then name the shock and the first object it moves directly: the Euler equation, productivity, or the policy rule.",
+        "Separate the flexible-price benchmark from the sticky-price economy before you talk about actual output, inflation, or the output gap.",
+        "Only after that should you sign inflation, the gap, and the natural rate, and you should state one sentence on why the sign follows.",
+        "If the model does not pin down the sign cleanly under combined shocks, say that explicitly instead of forcing an answer.",
       ],
       [
+        "Starting with actual output and forgetting to establish the natural benchmark first.",
         "Talking about output without distinguishing $y_t$ from $y_t^n$.",
         "Forgetting that inflation can move directly because of marginal-cost logic, not only because output moves.",
         "Treating an impossible sign pattern as proof that one of the three baseline shocks must fit.",
+        "Forcing a sign in the combined-shock part even when the lecture logic only gives an ambiguity result.",
       ],
     ),
     supportingEquations: [
@@ -410,6 +436,13 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         latex: "\\tilde{y}_t = y_t - y_t^n",
         explanation:
           "Use this to keep actual and natural output separate. Most mistakes in this seminar come from collapsing the two objects too early.",
+      },
+      {
+        id: "seminar1-nkpc",
+        label: "New Keynesian Phillips curve",
+        latex: "\\pi_t = \\beta E_t\\pi_{t+1} + \\lambda(mc_t-mc)",
+        explanation:
+          "Use this whenever you need to explain why inflation rises or falls. The safest route is to talk through marginal cost first, then inflation.",
       },
       {
         id: "seminar1-natural-rate",
@@ -738,7 +771,7 @@ export const curatedPracticeProblems: PracticeProblem[] = [
     ],
     guide: guide(
       "Debt arithmetic plus political economy",
-      "The question is deliberately broader than one formula. You need to use the debt equation, then connect it to institutions and equilibrium risk.",
+      "The question is deliberately broader than one formula. You need to read the debt arithmetic first, then connect that arithmetic to institutions, credibility, and equilibrium risk. If you start with political economy before the debt equation is clear, the answer usually becomes vague.",
       [
         "Debt dynamics",
         "Interest-growth differential",
@@ -747,12 +780,15 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         "Institutional deficit bias",
       ],
       [
-        "Explain the arithmetic first: what happens when $r-g$ is favorable or unfavorable.",
-        "Then move from arithmetic to institutions, credibility, and coalition incentives.",
+        "Start from the benchmark debt equation and say what each term means before you discuss any country example or institution.",
+        "Explain what happens when $r-g$ is favorable or unfavorable and what primary balance is needed to stabilize the ratio.",
+        "Only then move to Japan as an example of benign financing conditions rather than as proof that high debt is always safe.",
+        "End with the fiscal-commons problem and explain why coalition structure or weak budget institutions can push deficits above the stabilizing benchmark.",
       ],
       [
         "Answering only with $r-g$ and ignoring the role of institutions and political fragmentation.",
         "Talking about Japan as if high debt is always harmless rather than conditional on financing conditions.",
+        "Treating the fiscal-commons problem as a moral story rather than a mechanism where each actor internalizes only part of the budget cost.",
       ],
     ),
     supportingEquations: [
@@ -1365,7 +1401,7 @@ export const curatedPracticeProblems: PracticeProblem[] = [
     ],
     guide: guide(
       "By-hand optimal-tax derivation",
-      "The real task is not to memorize the result but to show why convex distortions imply equalized marginal tax costs across time.",
+      "The real task is not to memorize the result but to show why convex distortions imply equalized marginal tax costs across time. The safest way to do that is to move from intuition, to the marginal comparison, to the constant-share conclusion without skipping the intermediate condition.",
       [
         "Convex distortions",
         "Intertemporal budget constraint",
@@ -1373,13 +1409,15 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         "Constant tax share",
       ],
       [
-        "Interpret part (a) briefly, then spend most of your effort on part (b).",
-        "Set the marginal benefit of lowering taxes today equal to the marginal cost of raising them tomorrow.",
-        "Use that equality to show that the optimal tax share is constant over time in the benchmark.",
+        "Interpret part (a) briefly, because it only motivates why smoothing matters.",
+        "For part (b), imagine shifting a tiny amount of taxation from one date to the next while keeping the intertemporal budget constraint satisfied.",
+        "Write the marginal condition explicitly before you say anything about a constant tax share.",
+        "Only after the marginal distortions are equalized should you use monotonicity of $f'$ to conclude that the tax share itself is constant.",
       ],
       [
         "Stating the constant-tax-share result without showing the marginal condition.",
         "Forgetting that the result is about the tax share of income, not necessarily the level of taxes.",
+        "Jumping from convexity directly to the final answer without writing the equal-marginal-distortion condition.",
       ],
     ),
     supportingEquations: [
@@ -1405,6 +1443,7 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         "This is the clean marginal-comparison argument used in the official solution.",
         "Marginal benefit equals marginal cost across time.",
         "This is the step that generates the constant-share result.",
+        "f'\\!\\left(\\frac{T_t}{Y_t}\\right) = f'\\!\\left(\\frac{T_{t+1}}{Y_{t+1}}\\right)",
       ),
       step(
         "Write the marginal condition",
@@ -1412,6 +1451,7 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         "In the optimum, there is no gain from shifting distortions across dates if the intertemporal constraint is respected.",
         "First-order optimality across time.",
         "This is the algebraic core of the derivation.",
+        "f'\\!\\left(\\frac{T_t}{Y_t}\\right)=\\lambda \\quad \\forall t",
       ),
       step(
         "Read off the implication",
@@ -1419,6 +1459,7 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         "If marginal distortions are equalized and $f'$ is one-to-one, the tax share must be equalized too.",
         "Invertibility of the marginal distortion schedule.",
         "This gives the result the exam is asking you to explain.",
+        "\\frac{T_t}{Y_t}=\\tau \\quad \\forall t",
       ),
     ],
     hints: [
@@ -1537,7 +1578,7 @@ export const curatedPracticeProblems: PracticeProblem[] = [
     ],
     guide: guide(
       "Full derivation and regime comparison",
-      "This is a flagship by-hand problem. You must derive two different targeting rules, interpret a figure, and then explain what happens when the Phillips curve becomes steeper.",
+      "This is a flagship by-hand problem. You must derive two different targeting rules, interpret a figure, and then explain what happens when the Phillips curve becomes steeper. The safest route is to solve discretion cleanly first, because the commitment logic only makes sense once the static benchmark trade-off is already on paper.",
       [
         "Loss function and NKPC",
         "Discretionary targeting rule",
@@ -1546,12 +1587,15 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         "Price stickiness and $\\kappa$",
       ],
       [
-        "Solve discretion first as a period-by-period problem where expectations are taken as given.",
-        "Then solve commitment as an intertemporal problem with inherited promises.",
+        "Solve discretion first as a period-by-period problem where expected future inflation is taken as inherited in the current period.",
+        "Write the discretion first-order condition all the way to the targeting rule before you touch commitment.",
+        "Then solve commitment as an intertemporal problem where today's choice also shapes future expectations and inherited promises.",
         "Use the two targeting rules to interpret the figure before you discuss lower $\\theta$.",
+        "Only after the regime comparison is clear should you map lower $\\theta$ into a higher $\\kappa$ and explain how that changes the inflation-gap trade-off.",
       ],
       [
         "Mixing the discretion and commitment Lagrangians.",
+        "Jumping to the commitment answer before the discretion benchmark is clear.",
         "Explaining the figure without tying it back to the targeting rules.",
         "Saying that lower price stickiness changes policy only qualitatively and not through $\\kappa$.",
       ],
@@ -1572,6 +1616,7 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         "Under discretion, the policymaker re-optimizes each period and does not inherit promises from the past.",
         "Period-by-period optimization.",
         "This yields the simple targeting rule used for the discretion part of the figure.",
+        "x_t = -\\frac{\\kappa}{\\alpha_x}\\pi_t",
       ),
       step(
         "Set up the commitment problem",
@@ -1579,10 +1624,11 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         "Commitment changes the problem because future promises are part of today's optimization.",
         "Intertemporal optimization with history dependence.",
         "This is what generates the difference equation in the commitment targeting rule.",
+        "\\pi_t + \\frac{\\alpha_x}{\\kappa}(x_t-x_{t-1}) = 0",
       ),
       step(
         "Interpret the impulse responses",
-        "Use the discretion rule and commitment rule to explain why commitment creates a more history-dependent path for inflation and the output gap.",
+        "Use the discretion rule and commitment rule to explain why commitment creates a more history-dependent path for inflation and the output gap. The safe reading order is: identify the impact trade-off, then explain why the commitment path stays persistent because earlier promises must be validated over time.",
         "The figure is a visual consequence of the two targeting rules, not an independent fact.",
         "Formula-to-figure interpretation.",
         "This is the bridge from derivation to economic meaning.",
@@ -1593,6 +1639,7 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         "Price flexibility steepens the Phillips curve, so inflation responds more to the same amount of slack.",
         "Structural parameter mapping.",
         "This is the final comparative-static step the question wants.",
+        "\\theta \\downarrow \\Rightarrow \\kappa \\uparrow",
       ),
     ],
     hints: [
@@ -1706,7 +1753,7 @@ export const curatedPracticeProblems: PracticeProblem[] = [
     ],
     guide: guide(
       "Growth-accounting derivation",
-      "This is a calculation question with a benchmark comparison built in. The cleanest route is to handle scale, then growth accounting, then the $\\beta = 0$ benchmark.",
+      "This is a calculation question with a benchmark comparison built in. The cleanest route is to handle scale, then growth accounting, then the $\\beta = 0$ benchmark. Students usually get lost when they skip the explicit bridge from the level equation to the growth-rate equation, so do not skip the log-differentiation line.",
       [
         "Constant returns to scale",
         "Log differentiation",
@@ -1740,6 +1787,7 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         "A Cobb-Douglas function has constant returns when the exponents sum to one.",
         "Definition of constant returns to scale.",
         "This completes part (a) cleanly and sets up the benchmark intuition.",
+        "F(\\lambda K,\\lambda R,\\lambda AL)=\\lambda Y",
       ),
       step(
         "Differentiate in growth rates",
@@ -1747,6 +1795,7 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         "This is the standard growth-accounting shortcut for a Cobb-Douglas function.",
         "Log differentiation.",
         "This is the core step for part (b).",
+        "\\frac{\\dot Y}{Y}=\\alpha\\frac{\\dot K}{K}+\\beta\\frac{\\dot R}{R}+(1-\\alpha-\\beta)\\left(\\frac{\\dot A}{A}+\\frac{\\dot L}{L}\\right)",
       ),
       step(
         "Use the steady-state shortcut",
@@ -1754,6 +1803,7 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         "The exam explicitly allows this simplification.",
         "Steady-state growth condition.",
         "This gives you the closed-form output-growth expression.",
+        "(1-\\alpha)g_Y = \\beta g_R + (1-\\alpha-\\beta)(g+n)",
       ),
       step(
         "Move to per-worker growth and the $\\beta = 0$ benchmark",
@@ -1761,6 +1811,7 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         "Output per worker is output growth minus labor growth, and the benchmark comparison shows exactly what role the resource term played.",
         "Per-worker conversion and benchmark comparison.",
         "This closes parts (b) and (c).",
+        "g_{Y/L} = g + \\frac{\\beta}{1-\\alpha}g_R \\quad \\Rightarrow \\quad \\beta=0 \\; \\Longrightarrow \\; g_{Y/L}=g",
       ),
     ],
     hints: [
@@ -1810,7 +1861,7 @@ export const curatedPracticeProblems: PracticeProblem[] = [
     ],
     guide: guide(
       "Optimal-tax derivation with uncertainty extension",
-      "This is the same tax-smoothing logic as in Lecture 9 and the 2024 exam, but the final step adds an uncertainty discussion. Keep the benchmark derivation clean before extending it.",
+      "This is the same tax-smoothing logic as in Lecture 9 and the 2024 exam, but the final step adds an uncertainty discussion. Keep the benchmark derivation clean before extending it, because the uncertainty result only makes sense once the certainty marginal condition is already clear.",
       [
         "Convex tax distortions",
         "Intertemporal budget constraint",
@@ -1818,12 +1869,14 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         "Random walk tax share under uncertainty",
       ],
       [
-        "Answer part (a) quickly, then derive the constant-share benchmark in part (b).",
-        "For part (c), ask what happens to the first-order condition when expectations enter under uncertainty.",
+        "Answer part (a) quickly, then derive the constant-share benchmark in part (b) without mentioning uncertainty yet.",
+        "Write the certainty marginal condition explicitly and translate it into a constant tax share first.",
+        "For part (c), ask what changes when tomorrow's marginal distortion is uncertain and therefore enters the condition through an expectation.",
       ],
       [
         "Blurring the certainty benchmark and the uncertainty extension together.",
         "Talking about uncertainty qualitatively without referring back to the marginal-condition logic.",
+        "Jumping straight to 'random walk' language without first writing the expected marginal-distortion condition.",
       ],
     ),
     supportingEquations: [
@@ -1849,6 +1902,7 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         "The planner is indifferent only when marginal distortion is equalized across dates.",
         "Intertemporal marginal condition.",
         "This yields the constant-tax-share benchmark in part (b).",
+        "f'\\!\\left(\\frac{T_t}{Y_t}\\right)=\\lambda \\quad \\forall t",
       ),
       step(
         "Translate the condition into a constant share",
@@ -1856,6 +1910,7 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         "If $f'$ is one-to-one, equal marginal distortion implies equal arguments.",
         "Invertibility of $f'$ under convexity.",
         "This is the exact step the exam wants explained.",
+        "\\frac{T_t}{Y_t}=\\tau \\quad \\forall t",
       ),
       step(
         "Add uncertainty",
@@ -1863,6 +1918,7 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         "Under uncertainty, expectations enter the first-order condition directly.",
         "Expected marginal distortion under uncertainty.",
         "This lets you explain why the tax share follows a random walk in the quadratic benchmark.",
+        "f'\\!\\left(\\frac{T_t}{Y_t}\\right)=E_t\\left[f'\\!\\left(\\frac{T_{t+1}}{Y_{t+1}}\\right)\\right]",
       ),
     ],
     hints: [

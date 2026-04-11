@@ -109,6 +109,52 @@ function firstNonEmpty(values: Array<string | undefined>) {
   return values.find((value) => Boolean(value?.trim()));
 }
 
+function buildConceptualRewriteTemplate(problem: PracticeProblem) {
+  const path = problem.guide?.solutionPath ?? [];
+
+  return [
+    path[0]
+      ? `Open with the benchmark or definition the question rests on: ${path[0]}`
+      : "Open with the benchmark, definition, or starting point the question is built on.",
+    path[1]
+      ? `Then trace the mechanism one link at a time: ${path[1]}`
+      : "Then trace the mechanism one link at a time instead of jumping straight to the conclusion.",
+    path[2]
+      ? `Close with the interpretation the examiner cares about: ${path[2]}`
+      : "Close with the economic interpretation and say what the result means in the model.",
+  ];
+}
+
+function buildConceptualTeachingSteps(problem: PracticeProblem) {
+  const path = problem.guide?.solutionPath ?? [];
+  const outline = problem.solutionOutline;
+  const stepCount = Math.max(path.length, outline.length, 3);
+  const roleLabels = [
+    "Benchmark or starting point",
+    "Mechanism or transmission logic",
+    "Conclusion and economic meaning",
+  ];
+
+  return Array.from({ length: stepCount }, (_, index) => {
+    const whatToDo =
+      path[index] ??
+      (index === 0
+        ? "State the benchmark or definition first."
+        : index === 1
+          ? "Explain the mechanism before stating the conclusion."
+          : "Interpret the result economically.");
+    const whatToConclude =
+      outline[index] ??
+      outline[outline.length - 1] ??
+      "Tie the answer back to the benchmark and explain what the result means.";
+    const role =
+      roleLabels[index] ??
+      "Carry the previous result forward without skipping the bridge.";
+
+    return { role, whatToDo, whatToConclude };
+  });
+}
+
 function buildLocalConceptualFeedback(
   problem: PracticeProblem,
   studentWork: string,
@@ -190,6 +236,11 @@ function buildLocalConceptualFeedback(
       .map((item, index) => `${index + 1}. ${item}`)
       .join("\n"),
     "",
+    "## Safer rewrite template",
+    buildConceptualRewriteTemplate(problem)
+      .map((item, index) => `${index + 1}. ${item}`)
+      .join("\n"),
+    "",
     "## Best next revision step",
     nextRevisionStep,
   ].join("\n");
@@ -254,6 +305,13 @@ function buildLocalDerivationFeedback(
           )
           .join("\n")
       : "1. The main remaining job is to show the intermediate algebra cleanly, not just the final expression.",
+    "",
+    "## How to keep the derivation from jumping",
+    [
+      "1. Name the exact object you are substituting, isolating, canceling, or differentiating before you write the next line.",
+      "2. Write the new line explicitly on paper instead of keeping the bridge in your head.",
+      "3. Say which rule justifies the move: substitution, algebraic rearrangement, FOC, equilibrium condition, approximation, or benchmark comparison.",
+    ].join("\n"),
     "",
     "## First missing bridge step to write on paper",
     missing[0]
@@ -321,6 +379,9 @@ function buildHintMarkdown(problem: PracticeProblem) {
     problem.guide?.solutionPath?.[0]
       ? `Start with this safe first move: ${problem.guide.solutionPath[0]}`
       : "Start by naming the benchmark, then ask what mechanism the question wants you to trace.",
+    problem.guide?.solutionPath?.[1]
+      ? `Why we start there: it keeps you from skipping straight to the conclusion before you have shown the benchmark-to-mechanism bridge. The next layer after that is: ${problem.guide.solutionPath[1]}`
+      : "",
     problem.guide?.keyConcepts?.length
       ? `**Concepts to keep in view:** ${problem.guide.keyConcepts.join(", ")}.`
       : "",
@@ -399,6 +460,9 @@ function buildFullSolutionMarkdown(problem: PracticeProblem) {
           `**Why this is the right step:** ${step.contribution}`,
           `**What rule justifies it:** ${step.principle}`,
           `**Why the move is valid:** ${step.whyValid}`,
+          problem.guide?.commonMistakes?.[index]
+            ? `**Likely confusion at this point:** ${problem.guide.commonMistakes[index]}`
+            : "",
           `**If this step feels non-obvious:** write the new line on paper and say out loud what object you just substituted, isolated, canceled, or reinterpreted. That is usually the hidden bridge students skip.`,
           step.latex ? `$$${step.latex}$$` : "",
         ]
@@ -407,10 +471,19 @@ function buildFullSolutionMarkdown(problem: PracticeProblem) {
       ),
     );
   } else {
+    const teachingSteps = buildConceptualTeachingSteps(problem);
+
     sections.push(
       "",
-      "## Teaching answer outline",
-      ...problem.solutionOutline.map((step, index) => `${index + 1}. ${step}`),
+      "## Teaching solution",
+      ...teachingSteps.map((step, index) =>
+        [
+          `### Step ${index + 1}: ${step.role}`,
+          `**What to do:** ${step.whatToDo}`,
+          `**Why this step belongs here:** This keeps the answer in a safe order so the benchmark, mechanism, and conclusion do not collapse into one vague paragraph.`,
+          `**What you should conclude from this step:** ${step.whatToConclude}`,
+        ].join("\n\n"),
+      ),
     );
   }
 

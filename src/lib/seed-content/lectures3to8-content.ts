@@ -418,6 +418,9 @@ const lecture3Module: ModuleDetail = lectureModule({
       title: "Guided problem walkthrough",
       summary: "A benchmark reasoning exercise before trade-offs reappear.",
       contentBlocks: [
+        p(
+          "If you get lost in this type of question, use one fixed order: first recall the benchmark assumption that there is **no independent inflation wedge**, then ask what inflation stabilization implies for the gap through the Phillips curve, and only after that interpret the result economically. That order stops the answer from sounding like a slogan about 'no trade-off' without showing why.",
+        ),
         workedExample({
           title: "Why is there no separate trade-off in Lecture 3?",
           prompt:
@@ -660,6 +663,9 @@ const lecture4Module: ModuleDetail = lectureModule({
         p(
           "Recall the red thread from Lecture 3 before starting the algebra: there we could set inflation and the gap to zero together because no extra wedge disturbed inflation. Lecture 4 changes exactly that. The cost-push shock forces the policymaker to choose how much slack to create in order to reduce inflation, so every algebra line below is really about making that trade-off explicit.",
         ),
+        p(
+          "There is one more hidden bridge worth making explicit before you differentiate anything: under **discretion**, expected future inflation and the current cost-push shock are treated as inherited objects in the current-period problem. If you forget that, it becomes very easy to mix the commitment logic into the discretion derivation and lose track of why the static targeting rule is valid here.",
+        ),
         derivation({
           title: "Write the objective and the constraint together",
           learningGoal:
@@ -689,6 +695,21 @@ const lecture4Module: ModuleDetail = lectureModule({
             "L_t = \\bigl(\\beta E_t\\pi_{t+1} + \\kappa x_t + u_t^{\\pi}\\bigr)^2 + \\alpha_x x_t^2",
           explanation:
             "This line tells you what is being traded off. Tightening policy lowers the inflation term through $\\kappa x_t$, but it raises the direct stabilization cost attached to the welfare-relevant gap.",
+        }),
+        derivation({
+          title: "Freeze the inherited objects before taking derivatives",
+          learningGoal:
+            "See exactly which terms are fixed under discretion and which term the policymaker is actually choosing.",
+          latexBefore:
+            "L_t = \\bigl(\\beta E_t\\pi_{t+1} + \\kappa x_t + u_t^{\\pi}\\bigr)^2 + \\alpha_x x_t^2",
+          operation:
+            "Group expected future inflation and the cost-push shock into one inherited term, then rewrite the loss as a simple quadratic in the current gap choice.",
+          whyValid:
+            "Under discretion, the policymaker cannot rewrite private expectations that were formed before the current action. From today's point of view, $\\beta E_t\\pi_{t+1}+u_t^{\\pi}$ is data, while $x_t$ is the current control.",
+          latexAfter:
+            "L_t = (A_t + \\kappa x_t)^2 + \\alpha_x x_t^2, \\qquad A_t \\equiv \\beta E_t\\pi_{t+1} + u_t^{\\pi}",
+          explanation:
+            "This is the bridge that makes the derivative feel ordinary rather than mysterious. Once the inherited objects are bundled into $A_t$, the discretion problem becomes a one-variable trade-off between lowering inflation pressure and paying the welfare cost of extra slack.",
         }),
         derivation({
           title: "Differentiate carefully with respect to the welfare-relevant gap",
@@ -797,6 +818,9 @@ const lecture4Module: ModuleDetail = lectureModule({
       title: "Guided problem walkthrough",
       summary: "A Seminar 2-style trade-off question.",
       contentBlocks: [
+        p(
+          "The safest way to answer this Lecture 4-style question is to begin by saying exactly what changed relative to Lecture 3: inflation now has an extra wedge. Once that is on the page, the rest of the answer becomes much easier because you are no longer trying to force divine coincidence to survive after the lecture has already broken it.",
+        ),
         workedExample({
           title: "Why does a cost-push shock reintroduce the trade-off?",
           prompt:
@@ -1012,6 +1036,9 @@ const lecture5Module: ModuleDetail = lectureModule({
         p(
           "Students often find Lecture 5 frustrating because the result is simple but the logic is easy to blur. Keep the timing straight. First the policymaker would like to create surprise inflation to push output above the natural level. Then private agents anticipate that temptation. The algebra below is just the formal way of showing that the output gain disappears once expectations catch up, while inflation stays too high.",
         ),
+        p(
+          "So the safe order is not 'write the final inflation-bias formula from memory'. It is: solve the policymaker's current problem **with expected inflation treated as fixed**, then impose rational expectations only after the first-order condition is clear. That is the hidden timing bridge that makes the whole lecture coherent.",
+        ),
         derivation({
           title: "Combine the loss function and Phillips curve",
           learningGoal:
@@ -1085,6 +1112,9 @@ const lecture5Module: ModuleDetail = lectureModule({
       title: "Guided problem walkthrough",
       summary: "A classic inflation-bias question, made explicit.",
       contentBlocks: [
+        p(
+          "When you answer this type of question, do not begin with the equilibrium formula. Begin with the policymaker's temptation under fixed expectations, then explain why private agents internalize that temptation, and only then state the equilibrium result. That sequence is what turns the lecture from a slogan about credibility into a real incentives argument.",
+        ),
         workedExample({
           title: "Why is inflation high without a permanent output gain?",
           prompt:
@@ -1298,6 +1328,21 @@ const lecture6Module: ModuleDetail = lectureModule({
             "If you do not first isolate the real-rate gap, the forward-guidance puzzle can sound mysterious. This line shows the whole mechanism in one period: demand is strong when the actual real rate is expected to stay below the natural rate.",
         }),
         derivation({
+          title: "Write tomorrow's IS equation and take expectations today",
+          learningGoal:
+            "Make visible the exact expectation step that lets you substitute one period ahead into today's equation.",
+          latexBefore:
+            "\\tilde y_{t+1} = E_{t+1}\\tilde y_{t+2} - \\frac{1}{\\sigma}(r_{t+1}-r_{t+1}^n)",
+          operation:
+            "Apply the time-$t$ expectations operator to the one-period-ahead IS equation before substituting it into today's relation.",
+          whyValid:
+            "The same Dynamic IS equation holds at $t+1$, and the law of iterated expectations lets you rewrite $E_t(E_{t+1}\\tilde y_{t+2})$ as $E_t\\tilde y_{t+2}$. This is the hidden bridge between the one-period equation and the two-period expression.",
+          latexAfter:
+            "E_t\\tilde y_{t+1} = E_t\\tilde y_{t+2} - \\frac{1}{\\sigma}E_t(r_{t+1}-r_{t+1}^n)",
+          explanation:
+            "Many students jump straight from the period-$t$ equation to the forward sum and never write this line. But this is the real mechanical step: tomorrow's output gap is replaced by tomorrow's own IS logic, viewed from today.",
+        }),
+        derivation({
           title: "Why distant promises matter in the benchmark model",
           learningGoal:
             "Understand the source of the puzzle before criticizing the model.",
@@ -1399,6 +1444,9 @@ const lecture6Module: ModuleDetail = lectureModule({
       title: "Guided problem walkthrough",
       summary: "A Seminar 2-style distinction between information and commitment.",
       contentBlocks: [
+        p(
+          "The safest answer order here is classification before macro interpretation. First decide whether the announcement is mainly **information about the outlook** or **a commitment about future policy**. Only after that should you ask whether the statement is expansionary, contractionary, or bad news. If you reverse that order, the lecture's whole Delphic-versus-Odyssean distinction becomes blurry.",
+        ),
         workedExample({
           title: "Is the announcement good news or bad news?",
           prompt:
@@ -1589,6 +1637,9 @@ const lecture7Module: ModuleDetail = lectureModule({
         p(
           "The risky jump in this lecture is that the Phillips curve suddenly appears with unemployment-gap language instead of output-gap language. Do not read that as a different inflation theory. It is the same pricing logic rewritten with a different slack proxy, and the whole bridge is a substitution step linking two gap measures that move inversely in the labor market.",
         ),
+        p(
+          "A safe way to read the algebra is therefore: keep the original output-gap Phillips curve in view, write the relation between the two slack measures explicitly, and then substitute once. If you start from the unemployment-gap equation as if it were a brand-new model, the sign change looks arbitrary even though it is only a mapping result.",
+        ),
         derivation({
           title: "Translate the slack measure",
           learningGoal:
@@ -1675,6 +1726,9 @@ const lecture7Module: ModuleDetail = lectureModule({
       title: "Guided problem walkthrough",
       summary: "A concept-heavy Phillips-curve question.",
       contentBlocks: [
+        p(
+          "A strong answer to this lecture does one thing very deliberately: it separates **structural slope changes** from **changes in observed correlations**. Start by asking whether the question is about the deep parameter $\\kappa$ or about what you see in the data. Only then list the reasons inflation can look inert.",
+        ),
         workedExample({
           title: "Why can inflation stay stable when unemployment moves a lot?",
           prompt:
@@ -1885,6 +1939,9 @@ const lecture8Module: ModuleDetail = lectureModule({
         p(
           "Lecture 8 becomes technical quickly if you forget the representative-agent benchmark it is replacing. In the old benchmark, one average household lets you treat consumption as if one MPC summarized everyone. This lecture changes exactly that. The missing bridge is to ask not only how big the income change is, but also **who receives it**.",
         ),
+        p(
+          "The safest route through the mechanism is: start from the household-level response, aggregate it explicitly, ask under what special condition one average MPC would still work, and only then add covariance or matching-multiplier logic. That order keeps the lecture anchored in the old benchmark while making clear why the old shortcut fails.",
+        ),
         derivation({
           title: "Start from household-level MPCs",
           learningGoal:
@@ -1983,6 +2040,9 @@ const lecture8Module: ModuleDetail = lectureModule({
       title: "Guided problem walkthrough",
       summary: "A concept-heavy HANK practice problem.",
       contentBlocks: [
+        p(
+          "If this question feels vague, force it into the Lecture 8 order: first compare the MPC distributions, then ask **who receives the shock**, and only then state the aggregate implication. That is what turns heterogeneity from a background fact into a transmission mechanism.",
+        ),
         workedExample({
           title: "Which economy reacts more when the share of hand-to-mouth households differs?",
           prompt:

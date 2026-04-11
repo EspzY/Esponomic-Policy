@@ -383,6 +383,9 @@ const lecture9Module: ModuleDetail = lectureModule({
       title: "Guided problem walkthrough",
       summary: "A Seminar 3-style Ricardian-equivalence question.",
       contentBlocks: [
+        p(
+          "The safest order here is: name the fiscal change, write the government's intertemporal logic, then explain the household side, and only after that state the demand implication. If you jump straight from 'taxes fall today' to 'households save more', the Ricardian argument sounds like magic instead of a budget-constraint result.",
+        ),
         workedExample({
           title: "When does debt-financed tax relief fail to boost demand?",
           prompt:
@@ -553,6 +556,21 @@ const lecture10Module: ModuleDetail = lectureModule({
           "Students often read the debt equation too fast because it looks short. Do not do that here. The lecture is teaching a layered way to reason: first read the arithmetic, then ask what primary balance stabilizes debt, and only after that add the belief-driven crisis logic. If you skip the middle step, the jump from arithmetic to self-fulfilling crisis feels much more mysterious than it really is.",
         ),
         derivation({
+          title: "Move from the debt level to the debt ratio before you use the approximation",
+          learningGoal:
+            "Understand why the lecture works with debt relative to GDP rather than with the debt stock alone.",
+          latexBefore:
+            "d_t \\equiv \\frac{D_t}{Y_t}, \\qquad D_t \\approx (1+r)D_{t-1} + G_t - T_t",
+          operation:
+            "Divide the debt accumulation equation by output and use the fact that GDP growth changes the denominator that the debt stock is being compared with.",
+          whyValid:
+            "Sustainability is about repayment capacity, not just the level of debt. A given debt stock is easier to carry when GDP is growing quickly, which is exactly why the interest-growth differential enters the approximation.",
+          latexAfter:
+            "\\Delta d_t \\approx (r-g)d_{t-1} - s_t",
+          explanation:
+            "This is the bridge many students need. The debt ratio worsens when existing debt compounds faster than GDP grows, and it improves when the government runs a primary surplus. The famous $(r-g)$ term is therefore not magic: it comes from comparing the growth of liabilities with the growth of the tax base.",
+        }),
+        derivation({
           title: "Separate the three moving parts",
           learningGoal:
             "Read the debt-dynamics equation term by term rather than as one opaque expression.",
@@ -666,6 +684,9 @@ const lecture10Module: ModuleDetail = lectureModule({
       title: "Guided problem walkthrough",
       summary: "A Seminar 3-style sustainability question.",
       contentBlocks: [
+        p(
+          "A good Lecture 10 answer always has two layers in the right order: first compute the arithmetic benchmark from the debt equation, then add the belief or credibility layer. If you start with crisis language before the stabilizing-surplus benchmark is clear, students usually lose track of what comes from fundamentals and what comes from amplification.",
+        ),
         workedExample({
           title: "When does the debt ratio become unstable?",
           prompt:
@@ -847,6 +868,9 @@ const lecture11Module: ModuleDetail = lectureModule({
         p(
           "This lecture mixes measurement and mechanism, so it helps to separate them. The Cobb-Douglas part is a benchmark mechanism result about how total income is split between factors. The Lorenz and Gini part is a measurement exercise about how income is distributed across people. If you keep those two jobs distinct, the mathematics becomes much easier to follow.",
         ),
+        p(
+          "The safest solving order is therefore benchmark first, measurement second. Derive the factor-share result slowly, then build cumulative shares, then compute the inequality summary. If you try to jump from a production function straight to a Gini interpretation, you end up mixing mechanisms and statistics that the lecture deliberately keeps separate.",
+        ),
         derivation({
           title: "Read the exponents as shares",
           learningGoal:
@@ -935,6 +959,9 @@ const lecture11Module: ModuleDetail = lectureModule({
       title: "Guided problem walkthrough",
       summary: "A compact problem on factor shares and inequality measures.",
       contentBlocks: [
+        p(
+          "The safest order here is: build the Lorenz points first, compute the statistic second, and interpret the institution third. That order matters because the lecture is teaching you to distinguish **how inequality is measured** from **why inequality changes**.",
+        ),
         workedExample({
           title: "How do you compute and interpret a Gini in the course style?",
           prompt:
@@ -1115,6 +1142,9 @@ const lecture12Module: ModuleDetail = lectureModule({
         p(
           "The lecture moves from verbal sustainability language to growth accounting very quickly, so keep the benchmark in view. Start from the textbook production function you already know. Then notice that Lecture 12 adds resource and environmental inputs. The technical question is therefore simple: once those new inputs are inside production, how do they change scale properties and the growth-rate decomposition you already know from growth theory?",
         ),
+        p(
+          "A safe route through the derivation is: check constant returns, write the growth-rate decomposition explicitly, impose the steady-state shortcut, and only then compare with the $\\beta=0$ benchmark. That order matters because many students otherwise skip the line where the resource term first enters the growth formula and then struggle to explain where the drag came from.",
+        ),
         derivation({
           title: "Why the extra exponents matter",
           learningGoal:
@@ -1244,6 +1274,9 @@ const lecture12Module: ModuleDetail = lectureModule({
       title: "Guided problem walkthrough",
       summary: "A Seminar 3-style environmental-policy question.",
       contentBlocks: [
+        p(
+          "The safest order for this type of answer is benchmark first, failure of assumptions second, policy tools third. Start by saying what the Coase benchmark would require, then explain why climate change violates those conditions, and only after that compare carbon taxes with cap-and-trade. That sequence keeps the lecture grounded in economics rather than drifting into vague environmental rhetoric.",
+        ),
         workedExample({
           title: "Why is Coase not enough for climate policy?",
           prompt:

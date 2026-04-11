@@ -456,6 +456,9 @@ export const lecture2Module: ModuleDetail = {
         p(
           "This is the derivation most likely to feel rushed in class. The pricing problem is forward looking because a firm that resets today may remain stuck with the same price for several future periods. That is why the factor $(\\beta\\theta)^k$ appears from the very start.",
         ),
+        p(
+          "The safest reading order is: first understand **why the reset-price problem is forward looking**, then understand **what object the firm is averaging over**, and only after that convert reset-price gaps into inflation. If you jump straight to the final NKPC, the steps involving the infinite sum and the Calvo price index are much harder to reconstruct later on paper.",
+        ),
         derivation({
           title: "Set up the reset-price problem",
           learningGoal:
@@ -705,6 +708,9 @@ export const lecture2Module: ModuleDetail = {
       contentBlocks: [
         p(
           "Seminar 1 is useful because it tests whether you can move from equations to qualitative logic. The safest way to answer is to identify the shock, separate actual and natural objects, and explain the adjustment mechanism rather than giving only sign predictions.",
+        ),
+        p(
+          "A good Seminar 1 answer therefore has a fixed order: start from the benchmark object that moves first, then say what happens in the flexible-price economy, then compare that with the sticky-price allocation, and only after that state the signs for inflation, the output gap, and the natural rate. That order is what keeps the answer from turning into disconnected sign guessing.",
         ),
         workedExample({
           title: "Seminar 1(a): positive technology shock",
