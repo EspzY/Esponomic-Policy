@@ -120,24 +120,6 @@ function uniqueNonEmpty(values: Array<string | undefined>) {
   });
 }
 
-function ensureSentence(value: string) {
-  const trimmed = value.trim();
-
-  if (!trimmed) {
-    return "";
-  }
-
-  return /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
-}
-
-function lowercaseFirst(value: string) {
-  if (!value) {
-    return value;
-  }
-
-  return `${value.charAt(0).toLowerCase()}${value.slice(1)}`;
-}
-
 function isMetaSolutionSentence(value: string) {
   return /(^|\b)(move\s+\d+|what to do|why this belongs here|carry this forward|safe reading order|safest route|right move now|this is the bridge|the exam wants|strong answer can|write one sentence|write one paragraph|write the|start by)\b/i.test(
     value,
@@ -162,20 +144,6 @@ function stripMetaCoaching(text: string) {
   }
 
   return sentences.join(" ").trim();
-}
-
-function toWorkedSentence(value: string) {
-  const trimmed = stripMetaCoaching(value).trim();
-
-  if (!trimmed) {
-    return "";
-  }
-
-  if (/^(we|the|this|that|under|with|because|if|once|after|in)\b/i.test(trimmed)) {
-    return ensureSentence(trimmed);
-  }
-
-  return ensureSentence(`We ${lowercaseFirst(trimmed)}`);
 }
 
 function buildConceptualRewriteTemplate(problem: PracticeProblem) {
@@ -439,22 +407,6 @@ function buildNextStepMarkdown(problem: PracticeProblem) {
   return buildAnswerOutlineMarkdown(problem);
 }
 
-function buildDerivationWorkedSteps(problem: PracticeProblem) {
-  return (problem.stepGuide ?? []).map((step, index) =>
-    [
-      `### Step ${index + 1}`,
-      toWorkedSentence(step.whatToDo),
-      ensureSentence(stripMetaCoaching(step.whyValid)),
-      step.latex ? `$$${step.latex}$$` : "",
-      stripMetaCoaching(step.contribution)
-        ? ensureSentence(stripMetaCoaching(step.contribution))
-        : "",
-    ]
-      .filter(Boolean)
-      .join("\n\n"),
-  );
-}
-
 function extractPartLabel(problem: PracticeProblem) {
   const match = problem.title.match(/ - (Part\s*\(?[a-z0-9]+\)?)/i);
   return match?.[1] ?? "";
@@ -477,19 +429,10 @@ function buildFullSolutionMarkdown(problem: PracticeProblem) {
       : ["A stored model answer is not available for this step yet."];
 
   if (problem.supportMode === "derivation" && problem.stepGuide?.length) {
-    const workedSteps = buildDerivationWorkedSteps(problem);
-    const examReadyAnswer = buildExamReadyAnswer(problem);
-    const storedAnswer = answerParagraphs.join("\n\n").trim();
-
     return [
       "## Exam answer",
       partLabel ? `### ${partLabel}` : "",
       ...answerParagraphs,
-      "## Worked derivation",
-      ...workedSteps,
-      examReadyAnswer.trim() && examReadyAnswer.trim() !== storedAnswer
-        ? `## Exam-ready condensed answer\n${examReadyAnswer}`
-        : "",
     ].join("\n\n");
   }
 

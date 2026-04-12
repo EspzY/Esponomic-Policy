@@ -489,6 +489,11 @@ export async function getPracticeProblemBySlug(slug: string) {
       .map((step) => String(step.content_markdown)),
   };
 
+  const localSolutionOutline = localProblem?.solutionOutline ?? [];
+  const mergedSolutionOutline = localSolutionOutline.length
+    ? localSolutionOutline
+    : grouped.solutionOutline;
+
   return {
     ...localProblem,
     id: String(data.id),
@@ -499,7 +504,7 @@ export async function getPracticeProblemBySlug(slug: string) {
     supportingEquations: mapPracticeSupportEquations(data),
     hints: grouped.hints,
     nextSteps: grouped.nextSteps,
-    solutionOutline: grouped.solutionOutline,
+    solutionOutline: mergedSolutionOutline,
     citations: isArrayOfObjects(data.citations)
       ? (data.citations as PracticeProblem["citations"])
       : [],

@@ -1134,6 +1134,8 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         beforePromptBlocks: seminar3InequalitySetupBlocks,
         prompt:
           "In a Cobb-Douglas economy $Y = K^{\\alpha}L^{1-\\alpha}$, show that the labour share of income equals $(1-\\alpha)$ and the capital share equals $\\alpha$. What is a key limitation of applying this result literally to observed wage inequality?",
+        stepGuideIndexes: [0],
+        solutionOutlineIndexes: [0],
       }),
       sourcePart({
         id: "b",
@@ -1143,6 +1145,8 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         beforePromptBlocks: seminar3InequalitySetupBlocks,
         prompt:
           "Consider a society with five income quintiles with shares 5%, 10%, 15%, 25%, 45%. Compute the cumulative income shares and approximate the Gini coefficient using $G \\approx 1 - 2 \\cdot (\\text{area under the Lorenz curve})$, where the area is computed with the trapezoid rule.",
+        stepGuideIndexes: [1, 2],
+        solutionOutlineIndexes: [1, 2],
       }),
       sourcePart({
         id: "c",
@@ -1152,6 +1156,8 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         beforePromptBlocks: seminar3InequalitySetupBlocks,
         prompt:
           "Would centralised wage bargaining (as in the Scandinavian model) be expected to produce a higher or lower Gini than a fully decentralised labour market? Explain the mechanism.",
+        stepGuideIndexes: [3],
+        solutionOutlineIndexes: [3],
       }),
     ],
     guide: guide(
@@ -1205,6 +1211,7 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         "The trapezoid rule is the approximation method specified in the seminar question.",
         "Numerical approximation by trapezoids.",
         "Once you have the area $A$, the Gini follows immediately.",
+        "A = \\frac{1}{2}\\Big[(0+0.05)0.2 + (0.05+0.15)0.2 + (0.15+0.30)0.2 + (0.30+0.55)0.2 + (0.55+1.00)0.2\\Big]",
       ),
       step(
         "Interpret the bargaining mechanism",
@@ -1229,8 +1236,9 @@ export const curatedPracticeProblems: PracticeProblem[] = [
     ],
     solutionOutline: [
       "In a competitive Cobb-Douglas economy, the marginal product conditions imply $wL=(1-\\alpha)Y$ and $rK=\\alpha Y$, so the labour share is $(1-\\alpha)$ and the capital share is $\\alpha$. The limitation is that this result is about functional income shares, not about the distribution of wages across individual workers, so it cannot by itself explain observed wage inequality.",
-      "The cumulative income shares are $(0.05, 0.15, 0.30, 0.55, 1.00)$ for cumulative population shares $(0.2, 0.4, 0.6, 0.8, 1.0)$. Using the trapezoid rule gives an area under the Lorenz curve of about $A=0.31$, so the approximate Gini coefficient is $G \\approx 1-2A = 0.38$. That tells us inequality is clearly present, but not extreme enough to put most income in the top quintile alone.",
-      "Centralized bargaining would normally be expected to produce a lower Gini than a fully decentralized labour market, because coordinated wage setting compresses wage differentials between low- and high-wage workers. The mechanism is wage compression: unions and employer coordination limit dispersion at the bottom and middle of the distribution relative to a purely decentralized benchmark.",
+      "For the Lorenz-curve calculation, first convert the quintile shares into cumulative income shares. Starting from $(0.05, 0.10, 0.15, 0.25, 0.45)$, the cumulative shares are $$(0.05, 0.15, 0.30, 0.55, 1.00),$$ while the cumulative population shares are $$(0.2, 0.4, 0.6, 0.8, 1.0).$$ The relevant Lorenz points are therefore $(0,0)$, $(0.2,0.05)$, $(0.4,0.15)$, $(0.6,0.30)$, $(0.8,0.55)$, and $(1,1)$.",
+      "Using the trapezoid rule, the area under the Lorenz curve is $$A = \\tfrac12\\big[(0+0.05)0.2 + (0.05+0.15)0.2 + (0.15+0.30)0.2 + (0.30+0.55)0.2 + (0.55+1.00)0.2\\big] = 0.31.$$ Hence the approximate Gini coefficient is $$G \\approx 1-2A = 1-0.62 = 0.38.$$ So the worked answer is that the society has a Gini of roughly $0.38$, which signals noticeable but not extreme inequality.",
+      "Centralized bargaining would normally be expected to produce a lower Gini than a fully decentralized labour market. The reason is wage compression: coordinated bargaining raises low wages relative to high wages and narrows dispersion across firms and sectors. That tends to flatten the Lorenz curve less sharply away from the 45-degree line, which lowers the Gini relative to a decentralized benchmark with wider wage dispersion.",
     ],
     handSolveNote:
       "Solve this one by hand. Use the progressive help only if you get stuck on the algebra or the Lorenz-curve geometry.",
@@ -1262,6 +1270,8 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         beforePromptBlocks: seminar3EnvironmentSetupBlocks,
         prompt:
           "Set $b = g$ (as in the Lecture 12 homework). Derive the steady-state per-capita growth rate. What is the 'resource drag', and when is it larger?",
+        stepGuideIndexes: [0, 1, 2],
+        solutionOutlineIndexes: [0, 1],
       }),
       sourcePart({
         id: "b",
@@ -1271,6 +1281,8 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         beforePromptBlocks: seminar3EnvironmentSetupBlocks,
         prompt:
           "State the Coase theorem. Give three features of climate change that make private Coasian solutions ineffective.",
+        stepGuideIndexes: [3],
+        solutionOutlineIndexes: [2],
       }),
       sourcePart({
         id: "c",
@@ -1280,6 +1292,8 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         beforePromptBlocks: seminar3EnvironmentSetupBlocks,
         prompt:
           "Compare carbon taxes and cap-and-trade as policy instruments. Which is preferred when the marginal abatement cost curve is steep, and why?",
+        stepGuideIndexes: [4],
+        solutionOutlineIndexes: [3],
       }),
     ],
     guide: guide(
@@ -1332,13 +1346,21 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         "Removing the resource input cleanly isolates what part of the growth formula is due to scarcity.",
         "Benchmark comparison.",
         "This is how you explain what resource drag means rather than just naming it.",
+        "g_{Y/L} = g + \\frac{\\beta}{1-\\alpha}g_R \\quad \\Rightarrow \\quad b=g \\; \\Longrightarrow \\; g_{Y/L} = g - \\frac{\\beta}{1-\\alpha}g",
       ),
       step(
-        "Move from theory to policy",
-        "After the derivation, explain why the Coase benchmark fails in climate policy and how the choice between taxes and quantities depends on slope and uncertainty.",
-        "The question is designed to connect the model benchmark to real policy design.",
-        "Externalities and instrument choice under uncertainty.",
-        "This completes the bridge from growth theory to climate-policy reasoning.",
+        "State the Coase benchmark and its failure here",
+        "Write the Coase theorem as a benchmark with well-defined property rights and negligible transaction costs, then explain why climate change violates those conditions.",
+        "The question wants the benchmark first and the failure of the benchmark second.",
+        "Coase theorem as a benchmark, not a policy prescription.",
+        "This answers part (b) directly and keeps the logic tied to Lecture 12.",
+      ),
+      step(
+        "Compare taxes and quantities",
+        "State clearly that a carbon tax fixes the emissions price while cap-and-trade fixes the emissions quantity, then explain why steep marginal abatement costs make quantity mistakes especially expensive.",
+        "This is the classic price-versus-quantity comparison under uncertainty.",
+        "Instrument choice under uncertainty.",
+        "This completes part (c) with a direct policy answer.",
       ),
     ],
     hints: [
@@ -1348,9 +1370,10 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       "Write the growth rate of output as a weighted sum of the growth rates of $K$, $A$, $L$, and $R$ before simplifying.",
     ],
     solutionOutline: [
-      "Log-differentiating the production function gives $$g_Y = \\alpha g_K + (1-\\alpha-\\beta)(g+n) + \\beta g_R.$$ In steady state we use $g_K=g_Y$, so $$g_{Y/L}= g + \\frac{\\beta}{1-\\alpha}g_R.$$ Since resources deplete at rate $b$, we have $g_R=-b$, and with $b=g$ this becomes $$g_{Y/L}= g - \\frac{\\beta}{1-\\alpha}g.$$ The resource drag is therefore $\\frac{\\beta}{1-\\alpha}b$: the part of per-worker growth lost because production depends on a depleting resource. It is larger when the resource share $\\beta$ is larger or depletion is faster.",
-      "The Coase theorem says that private bargaining can internalize an externality when property rights are well defined and transaction costs are negligible. Climate change violates those conditions badly: there are many agents, damages are diffuse and global, and transaction costs plus enforcement problems are enormous. That is why private Coasian bargaining is a useful benchmark here, but not a realistic climate-policy solution.",
-      "A carbon tax fixes the emissions price, while cap-and-trade fixes the emissions quantity and lets the permit price adjust. When the marginal abatement cost curve is steep, a quantity mistake is especially costly because forcing the wrong emissions cap generates large jumps in compliance costs. In that case a tax is usually preferred, because price certainty avoids those large quantity-induced cost errors.",
+      "Start from the production function $$Y = K^{\\alpha}(AL)^{1-\\alpha-\\beta}R^{\\beta}.$$ Log-differentiating gives $$g_Y = \\alpha g_K + (1-\\alpha-\\beta)(g+n) + \\beta g_R.$$ In steady state the seminar lets us impose $$g_K=g_Y,$$ so $$g_Y = \\alpha g_Y + (1-\\alpha-\\beta)(g+n) + \\beta g_R.$$ Rearranging gives $$ (1-\\alpha)g_Y = (1-\\alpha-\\beta)(g+n) + \\beta g_R,$$ and therefore $$ g_Y = \\frac{(1-\\alpha-\\beta)(g+n)+\\beta g_R}{1-\\alpha}. $$",
+      "Per-capita growth is $$g_{Y/L}=g_Y-n.$$ Using $$g_R=-b$$ gives $$g_{Y/L}=g + \\frac{\\beta}{1-\\alpha}g_R = g - \\frac{\\beta}{1-\\alpha}b.$$ With the homework assumption $$b=g,$$ this becomes $$g_{Y/L}=g - \\frac{\\beta}{1-\\alpha}g.$$ The resource drag is therefore $$\\frac{\\beta}{1-\\alpha}b,$$ the amount of growth lost because production depends on a resource stock that is shrinking over time. It is larger when the resource share $\\beta$ is larger and when depletion $b$ is faster.",
+      "The Coase theorem says that if property rights are well defined and transaction costs are negligible, private bargaining can internalize an externality and reach an efficient allocation. Climate change is a poor candidate for such bargaining because the externality involves a huge number of agents, damages are diffuse across countries and generations, and monitoring plus enforcement costs are extremely high. So the Coase theorem is useful here as a benchmark, but not as a realistic decentralized solution.",
+      "A carbon tax fixes the emissions price, while cap-and-trade fixes the emissions quantity and lets the permit price adjust. When the marginal abatement cost curve is steep, getting the quantity wrong is especially expensive because a small quantity error causes a large jump in abatement costs. In that case a carbon tax is usually preferred: price certainty prevents those large cost spikes, whereas a rigid cap can generate unnecessarily large welfare losses when costs are uncertain.",
     ],
     handSolveNote:
       "This one is meant for paper. The derivation is easier to follow by hand, and the stepwise guide explains the logic behind each manipulation.",
@@ -2464,6 +2487,8 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         altText: "Original Exam 2024 page 2 showing Question 3 on optimal monetary policy.",
         beforePromptBlocks: exam2024Question3SetupBlocks,
         prompt: "What shock is present in this model economy?",
+        stepGuideIndexes: [0],
+        solutionOutlineIndexes: [0],
       }),
       sourcePart({
         id: "b",
@@ -2473,6 +2498,8 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         beforePromptBlocks: exam2024Question3SetupBlocks,
         prompt:
           "What is optimal monetary policy here? Discuss in words and show using the equations. HINT: you only need to use equation 2 and 3.",
+        stepGuideIndexes: [1, 2],
+        solutionOutlineIndexes: [1, 2, 3],
       }),
       sourcePart({
         id: "c",
@@ -2482,6 +2509,8 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         beforePromptBlocks: exam2024Question3SetupBlocks,
         prompt:
           "Discuss if an interest rate rule of $i_t = r_t^n$ could be the optimal rule for the central bank in response to this shock. Explain if there are other more advantages rules and in that case why and how.",
+        stepGuideIndexes: [3],
+        solutionOutlineIndexes: [4],
       }),
     ],
     guide: guide(
@@ -2560,8 +2589,10 @@ export const curatedPracticeProblems: PracticeProblem[] = [
     ],
     solutionOutline: [
       "The active disturbance is the discount-factor shock, because the calibration sets the technology innovation to zero and leaves the discount-factor innovation positive.",
-      "Optimal monetary policy sets inflation and the output gap equal to zero, because in this benchmark there is no cost-push shock and divine coincidence holds. With $$\\pi_t=0$$ and $$\\tilde y_t=0$$, the NKPC is satisfied immediately, and the Dynamic IS equation implies that the central bank must set the real rate equal to the natural rate along the equilibrium path.",
-      "The condition $$i_t=r_t^n$$ describes the equilibrium allocation only under the maintained benchmark, but it is not a robust practical policy rule. The natural rate is not directly observable, and a rule written only in terms of $r_t^n$ does not by itself guarantee a determinate equilibrium. A Taylor-style rule written in observables is usually more practical because it anchors expectations and satisfies the determinacy logic directly.",
+      "Optimal monetary policy in this benchmark is to stabilize both inflation and the output gap at zero. The reason is that the Phillips curve contains no cost-push disturbance, so there is no inflation-output trade-off: the policymaker can target $$\\pi_t=0$$ and $$\\tilde y_t=0$$ at the same time.",
+      "To show this with the equations, start from the NKPC $$\\pi_t = \\beta E_t\\pi_{t+1} + \\kappa \\tilde y_t.$$ If the central bank chooses $$\\pi_t=0$$ today and expects to keep inflation at zero tomorrow as well, then $$E_t\\pi_{t+1}=0.$$ The Phillips curve becomes $$0 = 0 + \\kappa \\tilde y_t,$$ so $$\\tilde y_t=0.$$ That proves the zero-inflation allocation is consistent with a zero output gap in this benchmark.",
+      "Now use the Dynamic IS equation $$\\tilde y_t = E_t\\tilde y_{t+1} - \\frac{1}{\\sigma}(i_t - E_t\\pi_{t+1} - r_t^n).$$ Under the optimal allocation we also have $$\\tilde y_t=0$$ and $$E_t\\tilde y_{t+1}=0.$$ So $$0 = 0 - \\frac{1}{\\sigma}(i_t - E_t\\pi_{t+1} - r_t^n),$$ which implies $$i_t - E_t\\pi_{t+1} = r_t^n.$$ Since optimal policy also keeps inflation at zero, this reduces to $$i_t = r_t^n.$$ So the central bank implements the optimal allocation by making the real interest rate equal to the natural rate.",
+      "The rule $$i_t=r_t^n$$ describes the benchmark equilibrium allocation, but it is not by itself a good practical rule. The natural rate is not directly observable, and a pure natural-rate rule written only in terms of $$r_t^n$$ does not automatically deliver a determinate equilibrium in the way an observable Taylor-style rule can. So the economic answer is that it characterizes the optimal allocation in this benchmark, but a more practical central bank rule would respond to observable inflation and activity variables in a way that still tracks the natural-rate benchmark and anchors expectations.",
     ],
     handSolveNote:
       "Solve this one by hand. The point is to move from the benchmark equations to the policy interpretation step by step.",
@@ -2840,9 +2871,9 @@ export const curatedPracticeProblems: PracticeProblem[] = [
     ],
     solutionOutline: [
       "Tax costs rise with the tax share because higher tax rates usually generate more than proportional increases in distortion, avoidance, evasion, and other efficiency losses.",
-      "The planner therefore smooths taxes across time: with convex distortion costs, it is cheaper to spread taxation evenly than to bunch it into a single period.",
-      "The formal first-order condition equalizes marginal distortion costs across dates, so $$f'\\!\\left(\\frac{T_t}{Y_t}\\right)=\\lambda \\quad \\forall t.$$",
-      "Because $f'$ is increasing under convexity, equal marginal distortions imply equal tax shares. The minimization problem therefore requires $$\\frac{T_t}{Y_t}=\\tau$$ for all $t$ in the benchmark.",
+      "The minimization problem can be written with the Lagrangian $$\\mathcal{L} = \\sum_{t=0}^{\\infty}\\frac{1}{(1+r)^t}Y_t f\\!\\left(\\frac{T_t}{Y_t}\\right) + \\lambda\\left[\\sum_{t=0}^{\\infty}\\frac{1}{(1+r)^t}G_t + D_0 - \\sum_{t=0}^{\\infty}\\frac{1}{(1+r)^t}T_t\\right].$$ The planner chooses the whole tax path to minimize discounted distortion costs subject to the present-value government budget constraint.",
+      "Differentiate with respect to $T_t$. Because $$Y_t f\\!\\left(\\frac{T_t}{Y_t}\\right)$$ depends on $T_t$ only through the tax share, we get $$\\frac{\\partial}{\\partial T_t}\\left[Y_t f\\!\\left(\\frac{T_t}{Y_t}\\right)\\right] = f'\\!\\left(\\frac{T_t}{Y_t}\\right).$$ The first-order condition is therefore $$\\frac{1}{(1+r)^t}f'\\!\\left(\\frac{T_t}{Y_t}\\right) - \\lambda\\frac{1}{(1+r)^t} = 0,$$ or equivalently $$f'\\!\\left(\\frac{T_t}{Y_t}\\right)=\\lambda \\quad \\forall t.$$",
+      "Since $$f''(\\cdot)>0,$$ the function $$f'(\\cdot)$$ is strictly increasing. So if the marginal distortion is the same in every period, its argument must also be the same in every period. Hence $$\\frac{T_t}{Y_t}=\\tau \\quad \\forall t.$$ This is the tax-smoothing result: under convex distortion costs, the government minimizes welfare losses by keeping the tax share constant over time rather than bunching taxes into a few periods.",
     ],
     handSolveNote:
       "This problem should be solved by hand. The stepwise help is meant to teach the derivation logic rather than replace it.",
@@ -2943,6 +2974,8 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         beforePromptBlocks: exam2025Question2SetupBlocks,
         prompt:
           "Derive the targeting rule which shows the optimal relationship between $\\pi_t$ and $x_t$ under discretion. Describe how you solve it.",
+        stepGuideIndexes: [0, 1, 2],
+        solutionOutlineIndexes: [0, 1, 2],
       }),
       sourcePart({
         id: "b",
@@ -2952,6 +2985,8 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         beforePromptBlocks: exam2025Question2SetupBlocks,
         prompt:
           "Derive the targeting rule which shows the optimal relationship between $\\pi_{t+i}$ and $x_{t+i}$ under state-contingent commitment. Describe how you solve it.",
+        stepGuideIndexes: [3, 4, 5, 6],
+        solutionOutlineIndexes: [3, 4, 5, 6],
       }),
       sourcePart({
         id: "c",
@@ -2960,6 +2995,8 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         altText: "Original Exam 2025 page 2 showing the impulse-response figure for Question 2 part (c).",
         prompt:
           "The following figure shows the resulting impulse responses following a cost-push shock. Describe and explain the impulse responses under both regimes. Use the formulas to explain your reasoning.",
+        stepGuideIndexes: [7],
+        solutionOutlineIndexes: [7],
       }),
       sourcePart({
         id: "d",
@@ -2968,6 +3005,8 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         altText: "Original Exam 2025 page 2 showing Question 2 part (d) on lower price stickiness.",
         prompt:
           "Assume that this economy implements electronic pricing which makes it easier for firms to change prices. One way to formalize this is that $\\theta$, the probability of not changing prices, is smaller. Use the model framework to explain how this changes the targeting rule in (a) and (b).",
+        stepGuideIndexes: [8, 9],
+        solutionOutlineIndexes: [8, 9],
       }),
     ],
     guide: guide(
@@ -3005,35 +3044,80 @@ export const curatedPracticeProblems: PracticeProblem[] = [
     ],
     stepGuide: [
       step(
-        "Solve discretion first",
-        "Write the one-period Lagrangian by treating future expectations as given, then differentiate with respect to $x_t$ and $\\pi_t$.",
-        "Under discretion, the policymaker re-optimizes each period and does not inherit promises from the past.",
+        "Write the discretion problem as a one-period Lagrangian",
+        "Treat $E_t\\pi_{t+1}$ as given and write $$\\mathcal{L}_t = \\tfrac12(\\pi_t^2 + \\alpha_x x_t^2) + \\lambda_t\\big(\\pi_t - \\beta E_t\\pi_{t+1} - \\kappa x_t - u_t^{\\pi}\\big).$$",
+        "Under discretion the central bank re-optimizes period by period, so future inflation expectations are inherited when the current choice is made.",
         "Period-by-period optimization.",
-        "This yields the simple targeting rule used for the discretion part of the figure.",
+        "This sets up the algebra needed for the discretion targeting rule.",
+      ),
+      step(
+        "Differentiate the discretion Lagrangian with respect to $x_t$",
+        "Take the derivative of $$\\mathcal{L}_t$$ with respect to the output gap. This gives $$\\alpha_x x_t - \\lambda_t \\kappa = 0,$$ so $$\\lambda_t = \\frac{\\alpha_x}{\\kappa}x_t.$$",
+        "The multiplier measures how costly it is to tighten the NKPC constraint by one unit.",
+        "First-order condition for the output gap.",
+        "This expresses the multiplier in terms of the output gap.",
+        "\\alpha_x x_t - \\lambda_t \\kappa = 0",
+      ),
+      step(
+        "Differentiate with respect to inflation and eliminate the multiplier",
+        "The derivative with respect to inflation gives $$\\pi_t + \\lambda_t = 0,$$ so $$\\lambda_t = -\\pi_t.$$ Combining this with $$\\lambda_t = \\frac{\\alpha_x}{\\kappa}x_t$$ yields $$\\pi_t = -\\frac{\\alpha_x}{\\kappa}x_t,$$ or equivalently $$x_t = -\\frac{\\kappa}{\\alpha_x}\\pi_t.$$",
+        "This is the discretion trade-off: each period the central bank chooses current inflation and the current output gap, but it does not manipulate inherited expectations through promises about future gaps.",
+        "Eliminate the multiplier to obtain the targeting rule.",
+        "This is the final answer for part (a).",
         "x_t = -\\frac{\\kappa}{\\alpha_x}\\pi_t",
       ),
       step(
-        "Set up the commitment problem",
-        "Write the full intertemporal Lagrangian with multipliers on the NKPC in every period.",
-        "Commitment changes the problem because future promises are part of today's optimization.",
-        "Intertemporal optimization with history dependence.",
-        "This is what generates the difference equation in the commitment targeting rule.",
-        "\\pi_t + \\frac{\\alpha_x}{\\kappa}(x_t-x_{t-1}) = 0",
+        "Write the intertemporal Lagrangian under commitment",
+        "Under state-contingent commitment the central bank chooses the entire future path, so write $$\\mathcal{L} = E_t\\sum_{i=0}^{\\infty} \\beta^i\\Big[\\tfrac12(\\pi_{t+i}^2 + \\alpha_x x_{t+i}^2) + \\mu_{t+i}(\\pi_{t+i} - \\beta\\pi_{t+i+1} - \\kappa x_{t+i} - u_{t+i}^{\\pi})\\Big].$$",
+        "Unlike discretion, commitment internalizes that today's promised future choices affect current expectations and therefore today's inflation-output trade-off.",
+        "Intertemporal optimization under commitment.",
+        "This is the correct starting point for the history-dependent targeting rule.",
       ),
       step(
-        "Interpret the impulse responses",
-        "Use the discretion rule and commitment rule to explain why commitment creates a more history-dependent path for inflation and the output gap. The safe reading order is: identify the impact trade-off, then explain why the commitment path stays persistent because earlier promises must be validated over time.",
-        "The figure is a visual consequence of the two targeting rules, not an independent fact.",
-        "Formula-to-figure interpretation.",
-        "This is the bridge from derivation to economic meaning.",
+        "Take the FOC with respect to $x_{t+i}$",
+        "For every date $t+i$, differentiation with respect to $x_{t+i}$ gives $$\\alpha_x x_{t+i} - \\kappa \\mu_{t+i} = 0,$$ so $$\\mu_{t+i} = \\frac{\\alpha_x}{\\kappa}x_{t+i}.$$",
+        "This is the same marginal-loss versus multiplier trade-off as before, but now the multiplier is dated because the whole path is chosen jointly.",
+        "First-order condition for the committed path of output gaps.",
+        "This again expresses the multiplier in terms of the output gap path.",
+        "\\alpha_x x_{t+i} - \\kappa \\mu_{t+i}=0",
       ),
       step(
-        "Explain lower price stickiness",
-        "Translate a lower $\\theta$ into a higher $\\kappa$, then explain how that changes the trade-off embedded in both targeting rules.",
-        "Price flexibility steepens the Phillips curve, so inflation responds more to the same amount of slack.",
-        "Structural parameter mapping.",
-        "This is the final comparative-static step the question wants.",
+        "Take the FOC with respect to $\\pi_{t+i}$",
+        "Inflation appears in the current NKPC constraint and in the one-period-ahead term of the previous constraint. The FOC is therefore $$\\pi_{t+i} + \\mu_{t+i} - \\mu_{t+i-1} = 0$$ for $i\\ge 0$, with the usual convention that the inherited multiplier is zero at the initial date if there is no earlier promise.",
+        "This extra lagged multiplier is exactly what discretion does not have. It is the algebraic source of history dependence.",
+        "Inflation first-order condition under commitment.",
+        "This is the key bridge from the Lagrangian to the commitment targeting rule.",
+        "\\pi_{t+i} + \\mu_{t+i} - \\mu_{t+i-1} = 0",
+      ),
+      step(
+        "Substitute the multipliers into the commitment targeting rule",
+        "Replace $$\\mu_{t+i}$$ and $$\\mu_{t+i-1}$$ by $$\\frac{\\alpha_x}{\\kappa}x_{t+i}$$ and $$\\frac{\\alpha_x}{\\kappa}x_{t+i-1}$$. This gives $$\\pi_{t+i} + \\frac{\\alpha_x}{\\kappa}(x_{t+i}-x_{t+i-1}) = 0.$$",
+        "The commitment rule depends on the change in the output gap relative to the previously promised path, not just on the current output gap in isolation.",
+        "Eliminate the multipliers to obtain the commitment rule.",
+        "This is the full derivation for part (b).",
+        "\\pi_{t+i} + \\frac{\\alpha_x}{\\kappa}(x_{t+i}-x_{t+i-1}) = 0",
+      ),
+      step(
+        "Use the two targeting rules to read the impulse responses",
+        "A positive cost-push shock pushes inflation up on impact. Under discretion the central bank only has the static rule $$x_t = -(\\kappa/\\alpha_x)\\pi_t,$$ so it lowers the output gap enough to lean against inflation today and then re-optimizes next period. Under commitment the rule $$\\pi_t + (\\alpha_x/\\kappa)(x_t-x_{t-1})=0$$ makes today's inflation depend on how policy moves the gap relative to yesterday, so the response becomes history dependent. That is why commitment can spread the adjustment over time, promise a future path, and typically achieve a better inflation-output trade-off than pure discretion.",
+        "The figure is therefore a consequence of the formulas: discretion produces a purely static current trade-off, whereas commitment uses the expected future path of the gap to influence inflation today.",
+        "Formula-based interpretation of the IRFs.",
+        "This is the full answer for part (c).",
+      ),
+      step(
+        "Map lower $\\theta$ into a higher $\\kappa$",
+        "Use $$\\kappa = \\frac{(1-\\beta\\theta)(1-\\theta)}{\\theta}(\\sigma+\\phi).$$ A lower probability of not changing prices means a lower $$\\theta$$, which raises $$\\kappa$$ and makes the Phillips curve steeper.",
+        "With more flexible prices, a given output-gap movement has a larger effect on inflation.",
+        "Structural parameter mapping from price flexibility to the Phillips-curve slope.",
+        "This is the comparative-static starting point for part (d).",
         "\\theta \\downarrow \\Rightarrow \\kappa \\uparrow",
+      ),
+      step(
+        "Rewrite the discretion and commitment rules after the change in $\\kappa$",
+        "Under discretion the rule is still $$x_t = -(\\kappa/\\alpha_x)\\pi_t,$$ while under commitment it is still $$\\pi_{t+i} + (\\alpha_x/\\kappa)(x_{t+i}-x_{t+i-1}) = 0.$$ A higher $$\\kappa$$ means inflation reacts more to the gap, so the sacrifice ratio improves: for a given change in the output gap, the central bank gets more inflation stabilization. Equivalently, for a given inflation objective the needed change in slack is smaller. The same logic applies under commitment, where a given promised change in the gap now moves inflation more strongly because $$\\alpha_x/\\kappa$$ is smaller.",
+        "So the form of the targeting rules is unchanged, but the trade-off embedded in both rules becomes more favorable when prices are more flexible.",
+        "Comparative statics of the targeting rules.",
+        "This closes part (d).",
       ),
     ],
     hints: [
@@ -3043,10 +3127,14 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       "For part (a), treat future inflation expectations as fixed and combine the two first-order conditions to get the discretion targeting rule.",
     ],
     solutionOutline: [
-      "Under discretion, the central bank solves a one-period problem taking expected future inflation as given. The first-order conditions imply the static targeting rule $$x_t = -\\frac{\\kappa}{\\alpha_x}\\pi_t,$$ so the current output gap is chosen as a one-for-one trade-off against current inflation.",
-      "Under state-contingent commitment, the bank chooses the whole future path and internalizes how today's promises affect expectations. That produces the history-dependent targeting rule $$\\pi_t + \\frac{\\alpha_x}{\\kappa}(x_t-x_{t-1}) = 0,$$ which links today's choice to past commitments instead of solving period by period.",
-      "The figure therefore shows a more persistent and history-dependent adjustment under commitment. Discretion re-optimizes each period and returns monotonically toward steady state, while commitment allows inflation and the output gap to move in a way that validates past promises and improves the intertemporal trade-off.",
-      "A lower $\\theta$ means prices are less sticky, so $$\\kappa = \\frac{(1-\\beta\\theta)(1-\\theta)}{\\theta}(\\sigma+\\phi)$$ rises. Inflation then reacts more strongly to a given output gap. Under discretion that changes the slope of the static trade-off, and under commitment it changes the coefficient on the history-dependent term in exactly the same direction.",
+      "Under discretion the central bank solves the problem period by period and takes $$E_t\\pi_{t+1}$$ as given. The one-period Lagrangian is $$\\mathcal{L}_t = \\tfrac12(\\pi_t^2 + \\alpha_x x_t^2) + \\lambda_t(\\pi_t - \\beta E_t\\pi_{t+1} - \\kappa x_t - u_t^{\\pi}).$$",
+      "The first-order conditions are $$\\alpha_x x_t - \\lambda_t\\kappa = 0$$ and $$\\pi_t + \\lambda_t = 0.$$ From the second condition, $$\\lambda_t=-\\pi_t.$$ Substitute this into the first condition to get $$\\alpha_x x_t + \\kappa \\pi_t = 0,$$ so the discretion targeting rule is $$x_t = -\\frac{\\kappa}{\\alpha_x}\\pi_t.$$",
+      "This is the required relationship under discretion: the central bank accepts a current negative output gap in order to reduce current inflation, but it does not create history dependence because it re-optimizes each period.",
+      "Under state-contingent commitment the central bank chooses the whole future path, so the correct object is the intertemporal Lagrangian $$\\mathcal{L} = E_t\\sum_{i=0}^{\\infty}\\beta^i\\Big[\\tfrac12(\\pi_{t+i}^2 + \\alpha_x x_{t+i}^2) + \\mu_{t+i}(\\pi_{t+i} - \\beta\\pi_{t+i+1} - \\kappa x_{t+i} - u_{t+i}^{\\pi})\\Big].$$",
+      "The FOC with respect to $$x_{t+i}$$ gives $$\\alpha_x x_{t+i} - \\kappa \\mu_{t+i}=0,$$ so $$\\mu_{t+i}=\\frac{\\alpha_x}{\\kappa}x_{t+i}.$$ The FOC with respect to inflation gives $$\\pi_{t+i} + \\mu_{t+i} - \\mu_{t+i-1}=0.$$ The lagged multiplier appears because current inflation also affects the previously promised path.",
+      "Substituting the multiplier expression into the inflation FOC yields $$\\pi_{t+i} + \\frac{\\alpha_x}{\\kappa}(x_{t+i}-x_{t+i-1}) = 0.$$ This is the commitment targeting rule. Unlike discretion, it links today's inflation to the change in the output gap relative to yesterday's promised position, which is why commitment is history dependent.",
+      "The impulse responses after a positive cost-push shock follow directly from these formulas. Under discretion the bank obeys the static rule $$x_t = -(\\kappa/\\alpha_x)\\pi_t,$$ so it creates a negative output gap on impact to offset the inflation surge and then re-optimizes in the next period. Under commitment the rule $$\\pi_t + (\\alpha_x/\\kappa)(x_t-x_{t-1})=0$$ lets the bank use the promised future path of the output gap to influence current inflation. That is why the commitment response is more history dependent and typically delivers a better inflation-output trade-off in the figure.",
+      "If electronic pricing lowers $$\\theta$$, then $$\\kappa = \\frac{(1-\\beta\\theta)(1-\\theta)}{\\theta}(\\sigma+\\phi)$$ rises. Under discretion the rule remains $$x_t = -(\\kappa/\\alpha_x)\\pi_t,$$ but the steeper Phillips curve means a given amount of slack moves inflation more strongly. Under commitment the rule remains $$\\pi_{t+i} + (\\alpha_x/\\kappa)(x_{t+i}-x_{t+i-1}) = 0,$$ and the smaller coefficient $$\\alpha_x/\\kappa$$ means a given promised change in the gap has a larger effect on inflation. So the form of the rules is unchanged, but the trade-off becomes more favorable when prices are more flexible.",
     ],
     handSolveNote:
       "This is a by-hand derivation problem. Work it on paper and use the progressive help one step at a time if needed.",
@@ -3155,6 +3243,8 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         altText: "Original Exam 2025 page 3 showing Question 4 part (a) on constant returns to scale.",
         beforePromptBlocks: exam2025Question4SetupBlocks,
         prompt: "Show that there is constant returns to scale in production.",
+        stepGuideIndexes: [0],
+        solutionOutlineIndexes: [0],
       }),
       sourcePart({
         id: "b",
@@ -3164,6 +3254,8 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         beforePromptBlocks: exam2025Question4SetupBlocks,
         prompt:
           "Calculate the growth rate in production and the growth rate in production per worker. You can assume that the economy is in steady state so that the growth rate in production is equal to the growth rate in the stock of capital.",
+        stepGuideIndexes: [1, 2, 3],
+        solutionOutlineIndexes: [1, 2, 3],
       }),
       sourcePart({
         id: "c",
@@ -3173,6 +3265,8 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         beforePromptBlocks: exam2025Question4SetupBlocks,
         prompt:
           "Now assume that $\\beta = 0$. What is the effect of this assumption for the growth rate in production and the growth rate in production per worker?",
+        stepGuideIndexes: [4],
+        solutionOutlineIndexes: [4],
       }),
     ],
     guide: guide(
@@ -3231,11 +3325,19 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       ),
       step(
         "Move to per-worker growth and the $\\beta = 0$ benchmark",
-        "Subtract labor-force growth to get per-worker growth, then set $\\beta = 0$ and simplify.",
-        "Output per worker is output growth minus labor growth, and the benchmark comparison shows exactly what role the resource term played.",
-        "Per-worker conversion and benchmark comparison.",
-        "This closes parts (b) and (c).",
-        "g_{Y/L} = g + \\frac{\\beta}{1-\\alpha}g_R \\quad \\Rightarrow \\quad \\beta=0 \\; \\Longrightarrow \\; g_{Y/L}=g",
+        "Subtract labor-force growth to get per-worker growth and then substitute $$g_R=-b$$. This gives $$g_{Y/L}=g_Y-n = g + \\frac{\\beta}{1-\\alpha}g_R = g - \\frac{\\beta}{1-\\alpha}b.$$",
+        "Output per worker is output growth minus labor growth, and the resource term survives exactly because resource depletion subtracts from growth.",
+        "Per-worker conversion.",
+        "This completes the derivation for part (b).",
+        "g_{Y/L} = g - \\frac{\\beta}{1-\\alpha}b",
+      ),
+      step(
+        "Apply the benchmark $\\beta = 0$",
+        "Set the resource exponent equal to zero in the general formulas. Then the resource-drag term disappears, so output growth becomes $$g_Y=g+n$$ and per-worker growth becomes $$g_{Y/L}=g.$$",
+        "The right way to answer part (c) is to use the general result first and then switch off the resource channel.",
+        "Benchmark comparison.",
+        "This shows exactly what the resource term was doing in the general model.",
+        "\\beta=0 \\Rightarrow g_Y = g+n, \\quad g_{Y/L}=g",
       ),
     ],
     hints: [
@@ -3246,8 +3348,10 @@ export const curatedPracticeProblems: PracticeProblem[] = [
     ],
     solutionOutline: [
       "There is constant returns to scale because scaling every input by the same factor $\\lambda$ gives $$F(\\lambda K,\\lambda R,\\lambda AL)=\\lambda^{\\alpha+\\beta+1-\\alpha-\\beta}F(K,R,AL)=\\lambda Y.$$ The exponents sum to one, so the production function is homogeneous of degree one.",
-      "Log-differentiating the production function yields $$\\frac{\\dot Y}{Y}=\\alpha\\frac{\\dot K}{K}+\\beta\\frac{\\dot R}{R}+(1-\\alpha-\\beta)\\left(\\frac{\\dot A}{A}+\\frac{\\dot L}{L}\\right).$$ In steady state, the exam allows us to set $$g_K=g_Y$$, so $$ (1-\\alpha)g_Y = \\beta g_R + (1-\\alpha-\\beta)(g+n). $$ Subtracting labour growth gives per-worker output growth $$g_{Y/L}=g_Y-n = g + \\frac{\\beta}{1-\\alpha}g_R.$$",
-      "If $\\beta = 0$, the resource-input channel disappears completely. Then the extended model collapses back toward the textbook benchmark: the resource-drag term vanishes, total output growth is no longer depressed by resource depletion, and per-worker growth reduces to $$g_{Y/L}=g.$$",
+      "For part (b), log-differentiate the production function $$Y = K^{\\alpha}R^{\\beta}(AL)^{1-\\alpha-\\beta}$$ to get $$\\frac{\\dot Y}{Y}=\\alpha\\frac{\\dot K}{K}+\\beta\\frac{\\dot R}{R}+(1-\\alpha-\\beta)\\left(\\frac{\\dot A}{A}+\\frac{\\dot L}{L}\\right).$$ Writing growth rates as $$g_Y, g_K, g_R, g, n$$ gives $$g_Y = \\alpha g_K + \\beta g_R + (1-\\alpha-\\beta)(g+n).$$",
+      "The exam then lets us impose the steady-state shortcut $$g_K=g_Y.$$ Substitute that into the previous line: $$g_Y = \\alpha g_Y + \\beta g_R + (1-\\alpha-\\beta)(g+n).$$ Rearranging gives $$ (1-\\alpha)g_Y = \\beta g_R + (1-\\alpha-\\beta)(g+n),$$ so $$ g_Y = \\frac{\\beta g_R + (1-\\alpha-\\beta)(g+n)}{1-\\alpha}. $$ This is the growth rate of aggregate output.",
+      "Per-worker growth is $$g_{Y/L}=g_Y-n.$$ Using the expression above and the law of motion $$g_R=-b$$ gives $$g_{Y/L}=g + \\frac{\\beta}{1-\\alpha}g_R = g - \\frac{\\beta}{1-\\alpha}b.$$ So the resource term lowers growth because resource depletion subtracts from the growth contribution of inputs.",
+      "If $$\\beta = 0,$$ the resource-input channel is shut down. The formulas simplify to $$g_Y=g+n$$ and $$g_{Y/L}=g.$$ So the effect of setting $$\\beta=0$$ is exactly to remove the resource drag and return the model to the textbook benchmark in which per-worker growth is driven only by productivity growth.",
     ],
     handSolveNote:
       "This is a by-hand derivation. Solve the growth-accounting steps on paper and use the step guide progressively if needed.",
@@ -3279,6 +3383,8 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         beforePromptBlocks: exam2025Question5SetupBlocks,
         prompt:
           "What can be reasons that costs of taxing increases with taxes' share of income?",
+        stepGuideIndexes: [0],
+        solutionOutlineIndexes: [0],
       }),
       sourcePart({
         id: "b",
@@ -3288,6 +3394,8 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         beforePromptBlocks: exam2025Question5SetupBlocks,
         prompt:
           "Show that the minimization problem requires that taxes should be a constant fraction of income. Explain.",
+        stepGuideIndexes: [1, 2],
+        solutionOutlineIndexes: [1, 2],
       }),
       sourcePart({
         id: "c",
@@ -3297,6 +3405,8 @@ export const curatedPracticeProblems: PracticeProblem[] = [
         beforePromptBlocks: exam2025Question5SetupBlocks,
         prompt:
           "Discuss whether the conclusion would change if there is uncertainty about the path of government incomes.",
+        stepGuideIndexes: [3],
+        solutionOutlineIndexes: [3, 4],
       }),
     ],
     guide: guide(
@@ -3338,15 +3448,15 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       ),
       step(
         "Derive the certainty benchmark",
-        "Set up the marginal benefit and marginal cost of shifting one unit of taxes across adjacent dates and equate them.",
-        "The planner is indifferent only when marginal distortion is equalized across dates.",
-        "Intertemporal marginal condition.",
-        "This yields the constant-tax-share benchmark in part (b).",
+        "The planner's problem can be written with the Lagrangian $$\\mathcal{L} = \\sum_{t=0}^{\\infty}\\frac{1}{(1+r)^t}Y_t f\\!\\left(\\frac{T_t}{Y_t}\\right) + \\lambda\\left[D_0 + \\sum_{t=0}^{\\infty}\\frac{1}{(1+r)^t}G_t - \\sum_{t=0}^{\\infty}\\frac{1}{(1+r)^t}T_t\\right].$$ Differentiating with respect to $T_t$ gives the certainty first-order condition.",
+        "The planner is indifferent only when marginal distortion is equalized across dates subject to the intertemporal budget constraint.",
+        "Lagrangian first-order condition under certainty.",
+        "This yields the key marginal condition for part (b).",
         "f'\\!\\left(\\frac{T_t}{Y_t}\\right)=\\lambda \\quad \\forall t",
       ),
       step(
         "Translate the condition into a constant share",
-        "Use the monotonicity of $f'$ to show that equal marginal distortions imply equal tax shares across time.",
+        "Because $$f''(\\cdot)>0,$$ the derivative $$f'(\\cdot)$$ is strictly increasing. So if $$f'\\!\\left(\\frac{T_t}{Y_t}\\right)$$ is the same in every period, then $$\\frac{T_t}{Y_t}$$ itself must also be the same in every period.",
         "If $f'$ is one-to-one, equal marginal distortion implies equal arguments.",
         "Invertibility of $f'$ under convexity.",
         "This is the exact step the exam wants explained.",
@@ -3354,7 +3464,7 @@ export const curatedPracticeProblems: PracticeProblem[] = [
       ),
       step(
         "Add uncertainty",
-        "Replace tomorrow's marginal distortion with its expectation and explain what happens when $f$ is quadratic.",
+        "Under uncertainty the planner no longer equates today's marginal distortion to a known future value. Instead the Euler-style condition becomes $$f'\\!\\left(\\frac{T_t}{Y_t}\\right)=E_t\\left[f'\\!\\left(\\frac{T_{t+1}}{Y_{t+1}}\\right)\\right].$$ If $$f$$ is quadratic, then $$f'$$ is linear, so the expected future tax share equals today's tax share.",
         "Under uncertainty, expectations enter the first-order condition directly.",
         "Expected marginal distortion under uncertainty.",
         "This lets you explain why the tax share follows a random walk in the quadratic benchmark.",
@@ -3369,8 +3479,10 @@ export const curatedPracticeProblems: PracticeProblem[] = [
     ],
     solutionOutline: [
       "Tax costs rise with the tax share because higher rates usually create more than proportional increases in labour-supply distortions, avoidance, evasion, and other efficiency losses. That is the economic reason the tax-cost function is convex.",
-      "In the certainty benchmark, the planner minimizes the discounted distortion cost subject to the intertemporal government budget. The optimality condition equalizes marginal distortion costs across time, $$f'\\!\\left(\\frac{T_t}{Y_t}\\right)=\\lambda \\quad \\forall t,$$ and because $f'$ is increasing this implies a constant tax share $$\\frac{T_t}{Y_t}=\\tau$$ over time.",
-      "With uncertainty about future government income, tomorrow's marginal distortion enters through an expectation instead of a certainty value: $$f'\\!\\left(\\frac{T_t}{Y_t}\\right)=E_t\\left[f'\\!\\left(\\frac{T_{t+1}}{Y_{t+1}}\\right)\\right].$$ In the quadratic benchmark this implies that the optimal tax share follows a random walk, so the certainty result becomes an expectations-based smoothing condition rather than a literally constant deterministic path.",
+      "The minimization problem can be written with the Lagrangian $$\\mathcal{L} = \\sum_{t=0}^{\\infty}\\frac{1}{(1+r)^t}Y_t f\\!\\left(\\frac{T_t}{Y_t}\\right) + \\lambda\\left[D_0 + \\sum_{t=0}^{\\infty}\\frac{1}{(1+r)^t}G_t - \\sum_{t=0}^{\\infty}\\frac{1}{(1+r)^t}T_t\\right].$$ Differentiating with respect to $$T_t$$ gives $$\\frac{1}{(1+r)^t}f'\\!\\left(\\frac{T_t}{Y_t}\\right) - \\lambda\\frac{1}{(1+r)^t} = 0,$$ so $$f'\\!\\left(\\frac{T_t}{Y_t}\\right)=\\lambda \\quad \\forall t.$$",
+      "Because $$f''(\\cdot)>0,$$ the derivative $$f'(\\cdot)$$ is strictly increasing. Equal marginal distortions therefore require equal tax shares, so $$\\frac{T_t}{Y_t}=\\tau \\quad \\forall t.$$ This is the formal tax-smoothing result: under certainty, the minimization problem is solved by keeping the tax share constant over time.",
+      "With uncertainty about future government income, the conclusion changes from a deterministic constant path to an expectations-based smoothing condition. The first-order condition becomes $$f'\\!\\left(\\frac{T_t}{Y_t}\\right)=E_t\\left[f'\\!\\left(\\frac{T_{t+1}}{Y_{t+1}}\\right)\\right],$$ because tomorrow's marginal distortion is no longer known with certainty at time $$t$$.",
+      "If $$f$$ is quadratic, then $$f'$$ is linear, so the expected future tax share must equal today's tax share. In that benchmark the tax share follows a random walk or martingale-type process rather than a literally constant deterministic path. So uncertainty does not kill tax smoothing, but it changes the exact form of the condition from equal realized marginal distortions to equal expected marginal distortions.",
     ],
     handSolveNote:
       "This is a by-hand derivation problem. Use the step guide to learn the derivation logic rather than to skip it.",
