@@ -3,6 +3,7 @@ import "katex/dist/katex.min.css";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { TutorWidgetShell } from "@/components/tutor-widget-shell";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "Economic Policy",
@@ -23,6 +24,7 @@ export default async function RootLayout({
           {children}
         </div>
         <TutorWidgetShell />
+        <Analytics />
       </body>
     </html>
   );
